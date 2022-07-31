@@ -24,6 +24,7 @@
 #include "Player.h"
 #include "ScriptMgr.h"
 #include "DatabaseEnv.h"
+#include "Util.h"
 
 class battlenet_account_commandscript : public CommandScript
 {
@@ -87,18 +88,30 @@ public:
             return false;
         }
 
-        switch (Battlenet::AccountMgrNet::CreateBattlenetAccount(std::string(accountName), std::string(password)))
-        {
+		char* createGameAccountParam = strtok(NULL, " ");
+		bool createGameAccount = true;
+		if (createGameAccountParam)
+			createGameAccount = StringToBool(createGameAccountParam);
+
+		std::string gameAccountName;
+		switch (Battlenet::AccountMgrNet::CreateBattlenetAccount(std::string(accountName), std::string(password), createGameAccount, &gameAccountName))
+		{
             case AccountOpResult::AOR_OK:
-                handler->PSendSysMessage(LANG_ACCOUNT_CREATED, accountName);
-                if (handler->GetSession())
+			{
+				if (createGameAccount)
+					handler->PSendSysMessage(LANG_ACCOUNT_CREATED_BNET_WITH_GAME, accountName, gameAccountName.c_str());
+				else
+					handler->PSendSysMessage(LANG_ACCOUNT_CREATED_BNET, accountName);
+
+				if (handler->GetSession())
                 {
-                    TC_LOG_INFO(LOG_FILTER_CHARACTER, "Battle.net account: %d (IP: %s) Character:[%s] (GUID: %u) created Account %s",
+                    TC_LOG_INFO(LOG_FILTER_CHARACTER, "Account: %d (IP: %s) Character:[%s] (GUID: %u) created Battle.net account %s%s%s",
                         handler->GetSession()->GetAccountId(), handler->GetSession()->GetRemoteAddress().c_str(),
                         handler->GetSession()->GetPlayer()->GetName(), handler->GetSession()->GetPlayer()->GetGUID().GetGUIDLow(),
-                        accountName);
+						accountName, createGameAccount ? " with game account " : "", createGameAccount ? gameAccountName.c_str() : "");
                 }
                 break;
+			}
             case AccountOpResult::AOR_NAME_TOO_LONG:
                 handler->SendSysMessage(LANG_ACCOUNT_TOO_LONG);
                 handler->SetSentErrorMessage(true);
@@ -415,7 +428,11 @@ public:
         uint8 index = Battlenet::AccountMgrNet::GetMaxIndex(accountId) + 1;
         std::string accountName = std::to_string(accountId) + '#' + std::to_string(uint32(index));
 		
-        switch (sAccountMgr->CreateAccount(accountName, "DUMMY", bnetAccountName, accountId, index))
+        // Generate random hex string for password, these accounts must not be logged on with GRUNT
+        BigNumber randPassword;
+        randPassword.SetRand(8 * 16);
+
+        switch (sAccountMgr->CreateAccount(accountName, ByteArrayToHexStr(randPassword.AsByteArray().get(), randPassword.GetNumBytes()), bnetAccountName, accountId, index))
         {
             case AccountOpResult::AOR_OK:
                 handler->PSendSysMessage(LANG_ACCOUNT_CREATED, accountName.c_str());

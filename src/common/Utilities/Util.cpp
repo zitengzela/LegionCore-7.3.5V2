@@ -25,6 +25,7 @@
 #include <cstdarg>
 #include "StringFormat.h"
 #include <boost/asio/ip/address.hpp>
+#include <boost/algorithm/string/case_conv.hpp>
 
 #if COMPILER == COMPILER_GNU
 #include <sys/socket.h>
@@ -730,6 +731,12 @@ void HexStrToByteArray(std::string const& str, uint8* out, bool reverse /*= fals
         char buffer[3] = { str[i], str[i + 1], '\0' };
         out[j++] = strtoul(buffer, nullptr, 16);
     }
+}
+
+bool StringToBool(std::string const& str)
+{
+	std::string lowerStr = boost::algorithm::to_lower_copy(str);
+	return lowerStr == "1" || lowerStr == "true" || lowerStr == "yes";
 }
 
 flag128::flag128(uint32 p1, uint32 p2, uint32 p3, uint32 p4)

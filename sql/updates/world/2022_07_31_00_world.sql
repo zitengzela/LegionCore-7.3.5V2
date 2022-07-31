@@ -19,3 +19,8 @@ INSERT INTO `trinity_string` (`entry`, `content_default`) VALUES
 (1187, 'Game account %s is already linked with a battle.net account.'),
 (1188, 'Game account %s had its battle.net account link removed.'),
 (1189, 'Game account %s is not linked to any battle.net account.');
+
+DELETE FROM `trinity_string` WHERE `entry` IN (1032, 1033);
+INSERT INTO `trinity_string` (`entry`, `content_default`) VALUES
+(1032, 'Battle.net account created: %s with game account %s'),
+(1033, 'Battle.net account created: %s');

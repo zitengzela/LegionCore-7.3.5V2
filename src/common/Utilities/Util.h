@@ -160,6 +160,8 @@ uint32 GetPID();
 std::string ByteArrayToHexStr(uint8 const* bytes, uint32 length, bool reverse = false);
 void HexStrToByteArray(std::string const& str, uint8* out, bool reverse = false);
 
+bool StringToBool(std::string const& str);
+
 extern std::atomic<bool> m_stopEvent;
 extern bool m_worldCrashChecker;
 uint64 GetThreadID();
