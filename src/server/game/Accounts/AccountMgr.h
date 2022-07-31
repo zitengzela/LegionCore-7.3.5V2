@@ -31,6 +31,7 @@ enum class AccountOpResult : uint8
     AOR_NAME_ALREADY_EXIST,
     AOR_NAME_NOT_EXIST,
     AOR_DB_INTERNAL_ERROR,
+	AOR_ACCOUNT_BAD_LINK
 };
 
 #define MAX_PASS_STR 32
@@ -39,7 +40,7 @@ enum class AccountOpResult : uint8
 
 namespace AccountMgr
 {
-    AccountOpResult CreateAccount(std::string username, std::string password);
+    AccountOpResult CreateAccount(std::string username, std::string password, uint32 bnetAccountId = 0, uint8 bnetIndex = 0);
     AccountOpResult DeleteAccount(uint32 accountId);
     AccountOpResult ChangeUsername(uint32 accountId, std::string newUsername, std::string newPassword);
     AccountOpResult ChangePassword(uint32 accountId, std::string newPassword);

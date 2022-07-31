@@ -48,15 +48,18 @@ public:
         static ChatCommand accountCommandTable[] =
         {
             { "create",     SEC_ADMINISTRATOR,                                true, &HandleAccountCreateCommand, "", NULL },
+            { "gameaccountcreate", SEC_ADMINISTRATOR,                          true,  &HandleGameAccountCreateCommand, "", NULL                    },
             { "lock",       SEC_ADMINISTRATOR,                                false, NULL, "", accountLockCommandTable },
             { "set",        SEC_ADMINISTRATOR,                                true, NULL, "", accountSetCommandTable },
             { "password",   SEC_ADMINISTRATOR,                                false, &HandleAccountPasswordCommand, "", NULL },
+            { "link",              SEC_ADMINISTRATOR,                          true,  &HandleAccountLinkCommand,       "", NULL                    },
+            { "unlink",            SEC_ADMINISTRATOR,                          true,  &HandleAccountUnlinkCommand,     "", NULL                    },
             { NULL,         0,                                                false, NULL,                            "", NULL                    }
         };
 
         static ChatCommand commandTable[] =
         {
-            { "battlenetaccount", SEC_ADMINISTRATOR,                    true, NULL, "", accountCommandTable },
+            { "bnetaccount", SEC_ADMINISTRATOR,                          true, NULL, "", accountCommandTable },
             { NULL,               0,                                    false, NULL, "", NULL                }
         };
 
@@ -84,7 +87,7 @@ public:
             return false;
         }
 
-        switch (Battlenet::AccountMgr::CreateBattlenetAccount(std::string(accountName), std::string(password)))
+        switch (Battlenet::AccountMgrNet::CreateBattlenetAccount(std::string(accountName), std::string(password)))
         {
             case AccountOpResult::AOR_OK:
                 handler->PSendSysMessage(LANG_ACCOUNT_CREATED, accountName);
@@ -229,7 +232,7 @@ public:
         }
 
         // We compare the old, saved password to the entered old password - no chance for the unauthorized.
-        if (!Battlenet::AccountMgr::CheckPassword(handler->GetSession()->GetAccountId(), std::string(oldPassword)))
+        if (!Battlenet::AccountMgrNet::CheckPassword(handler->GetSession()->GetAccountId(), std::string(oldPassword)))
         {
             handler->SendSysMessage(LANG_COMMAND_WRONGOLDPASSWORD);
             handler->SetSentErrorMessage(true);
@@ -248,7 +251,7 @@ public:
         }
 
         // Changes password and prints result.
-        AccountOpResult result = Battlenet::AccountMgr::ChangePassword(handler->GetSession()->GetBattlenetAccountId(), std::string(newPassword));
+        AccountOpResult result = Battlenet::AccountMgrNet::ChangePassword(handler->GetSession()->GetBattlenetAccountId(), std::string(newPassword));
         switch (result)
         {
             case AccountOpResult::AOR_OK:
@@ -296,7 +299,7 @@ public:
             return false;
         }
 
-        uint32 targetAccountId = Battlenet::AccountMgr::GetId(accountName);
+        uint32 targetAccountId = Battlenet::AccountMgrNet::GetId(accountName);
         if (!targetAccountId)
         {
             handler->PSendSysMessage(LANG_ACCOUNT_NOT_EXIST, accountName.c_str());
@@ -311,7 +314,7 @@ public:
             return false;
         }
 
-        AccountOpResult result = Battlenet::AccountMgr::ChangePassword(targetAccountId, password);
+        AccountOpResult result = Battlenet::AccountMgrNet::ChangePassword(targetAccountId, password);
 
         switch (result)
         {
@@ -330,6 +333,121 @@ public:
                 break;
         }
         return true;
+    }
+    static bool HandleAccountLinkCommand(ChatHandler* handler, char const* args)
+    {
+        Tokenizer tokens(args, ' ', 2);
+        if (tokens.size() != 2)
+        {
+            handler->SendSysMessage(LANG_CMD_SYNTAX);
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
+
+        std::string bnetAccountName = tokens[0];
+        std::string gameAccountName = tokens[1];
+
+        switch (Battlenet::AccountMgrNet::LinkWithGameAccount(bnetAccountName, gameAccountName))
+        {
+            case AccountOpResult::AOR_OK:
+                handler->PSendSysMessage(LANG_ACCOUNT_BNET_LINKED, bnetAccountName.c_str(), gameAccountName.c_str());
+                break;
+            case AccountOpResult::AOR_NAME_NOT_EXIST:
+                handler->PSendSysMessage(LANG_ACCOUNT_OR_BNET_DOES_NOT_EXIST, bnetAccountName.c_str(), gameAccountName.c_str());
+                handler->SetSentErrorMessage(true);
+                break;
+            case AccountOpResult::AOR_ACCOUNT_BAD_LINK:
+                handler->PSendSysMessage(LANG_ACCOUNT_ALREADY_LINKED, gameAccountName.c_str());
+                handler->SetSentErrorMessage(true);
+                break;
+        }
+
+        return true;
+    }
+
+    static bool HandleAccountUnlinkCommand(ChatHandler* handler, char const* args)
+    {
+        if (!*args)
+        {
+            handler->SendSysMessage(LANG_CMD_SYNTAX);
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
+
+        std::string gameAccountName = args;
+
+        switch (Battlenet::AccountMgrNet::UnlinkGameAccount(gameAccountName))
+        {
+            case AccountOpResult::AOR_OK:
+                handler->PSendSysMessage(LANG_ACCOUNT_BNET_UNLINKED, gameAccountName.c_str());
+                break;
+            case AccountOpResult::AOR_NAME_NOT_EXIST:
+                handler->PSendSysMessage(LANG_ACCOUNT_NOT_EXIST, gameAccountName.c_str());
+                handler->SetSentErrorMessage(true);
+                break;
+            case AccountOpResult::AOR_ACCOUNT_BAD_LINK:
+                handler->PSendSysMessage(LANG_ACCOUNT_BNET_NOT_LINKED, gameAccountName.c_str());
+                handler->SetSentErrorMessage(true);
+                break;
+        }
+
+        return true;
+    }
+
+    static bool HandleGameAccountCreateCommand(ChatHandler* handler, char const* args)
+    {/* fix this later, now command not work
+        if (!*args)
+        {
+            handler->SendSysMessage(LANG_CMD_SYNTAX);
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
+
+        std::string bnetAccountName = args;
+        uint32 accountId = Battlenet::AccountMgrNet::GetId(bnetAccountName);
+        if (!accountId)
+        {
+            handler->PSendSysMessage(LANG_ACCOUNT_NOT_EXIST, bnetAccountName.c_str());
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
+
+        uint8 index = Battlenet::AccountMgrNet::GetMaxIndex(accountId) + 1;
+        std::string accountName = std::to_string(accountId) + '#' + std::to_string(uint32(index));
+		
+        switch (sAccountMgr->CreateAccount(accountName, "DUMMY", bnetAccountName, accountId, index))
+        {
+            case AccountOpResult::AOR_OK:
+                handler->PSendSysMessage(LANG_ACCOUNT_CREATED, accountName.c_str());
+                if (handler->GetSession())
+                {
+                    TC_LOG_INFO("entities.player.character", "Account: %u (IP: %s) Character:[%s] (%s) created Account %s (Email: '%s')",
+                        handler->GetSession()->GetAccountId(), handler->GetSession()->GetRemoteAddress().c_str(),
+                        handler->GetSession()->GetPlayer()->GetName().c_str(), handler->GetSession()->GetPlayer()->GetGUID().ToString().c_str(),
+                        accountName.c_str(), bnetAccountName.c_str());
+                }
+                break;
+            case AccountOpResult::AOR_NAME_TOO_LONG:
+                handler->SendSysMessage(LANG_ACCOUNT_TOO_LONG);
+                handler->SetSentErrorMessage(true);
+                return false;
+            case AccountOpResult::AOR_NAME_ALREADY_EXIST:
+                handler->SendSysMessage(LANG_ACCOUNT_ALREADY_EXIST);
+                handler->SetSentErrorMessage(true);
+                return false;
+            case AccountOpResult::AOR_DB_INTERNAL_ERROR:
+                handler->PSendSysMessage(LANG_ACCOUNT_NOT_CREATED_SQL_ERROR, accountName.c_str());
+                handler->SetSentErrorMessage(true);
+                return false;
+            default:
+                handler->PSendSysMessage(LANG_ACCOUNT_NOT_CREATED, accountName.c_str());
+                handler->SetSentErrorMessage(true);
+                return false; 
+        }
+
+        return true; */
+		// remove this when fix the command
+		return false;
     }
 };
 

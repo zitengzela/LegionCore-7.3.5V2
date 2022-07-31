@@ -26,7 +26,7 @@
 namespace AccountMgr
 {
 
-AccountOpResult CreateAccount(std::string username, std::string password)
+AccountOpResult CreateAccount(std::string username, std::string password, uint32 bnetAccountId /*= 0*/, uint8 bnetIndex /*= 0*/)
 {
     if (utf8length(username) > MAX_ACCOUNT_STR)
         return AccountOpResult::AOR_NAME_TOO_LONG;          // username's too long
@@ -41,6 +41,17 @@ AccountOpResult CreateAccount(std::string username, std::string password)
 
     stmt->setString(0, username);
     stmt->setString(1, CalculateShaPassHash(username, password));
+
+	if (bnetAccountId && bnetIndex)
+    {
+        stmt->setUInt32(2, bnetAccountId);
+        stmt->setUInt8(3, bnetIndex);
+    }
+    else
+    {
+        stmt->setNull(2);
+        stmt->setNull(3);
+    }
 
     LoginDatabase.Execute(stmt);
 

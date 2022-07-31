@@ -138,7 +138,7 @@ bool WorldPackets::Query::PlayerGuidLookupData::Initialize(ObjectGuid const& gui
         if (!characterInfo)
             return false;
 
-        ::Battlenet::AccountMgr::GetVoid();
+        ::Battlenet::AccountMgrNet::GetVoid();
 
         AccountID = ObjectGuid::Create<HighGuid::WowAccount>(characterInfo->AccountId);
         BnetAccountID = ObjectGuid::Create<HighGuid::BNetAccount>(characterInfo->BnetAccountId);
