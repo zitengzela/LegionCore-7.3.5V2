@@ -913,73 +913,80 @@ void WorldSession::HandleRequestWorldQuestUpdate(WorldPackets::Quest::RequestWor
     TC_LOG_DEBUG(LOG_FILTER_WORLD_QUEST, "HandleRequestWorldQuestUpdate");
 
     WorldPackets::Quest::WorldQuestUpdate response;
-    if (_player->getLevel() >= MAX_LEVEL && sWorld->getBoolConfig(CONFIG_WORLD_QUEST))
-    {
-        if (WorldQuestMap const* worldQuestInfo = sQuestDataStore->GetWorldQuestMap())
+	if (_player->HasWorldQuestEnabled())
+	{
+        if (_player->getLevel() >= MAX_LEVEL && sWorld->getBoolConfig(CONFIG_WORLD_QUEST))
         {
-            for (auto const& itr : *worldQuestInfo)
+            if (WorldQuestMap const* worldQuestInfo = sQuestDataStore->GetWorldQuestMap())
             {
-                for (auto const& iter : itr.second)
+                for (auto const& itr : *worldQuestInfo)
                 {
-                    WorldQuest const* worldQuest = &iter.second;
-                    if (!worldQuest || _player->WorldQuestCompleted(worldQuest->QuestID))
-                        continue;
-
-                    if (sQuestDataStore->WorldLegionInvasionZoneID && sQuestDataStore->WorldLegionInvasionZoneID == worldQuest->quest->QuestSortID && !worldQuest->worldQuest->PrimaryID && !worldQuest->quest->IsLegionInvasion())
-                        continue;
-
-                    if (QuestV2CliTaskEntry const* questTask = sQuestV2CliTaskStore.LookupEntry(worldQuest->QuestID))
+                    for (auto const& iter : itr.second)
                     {
-                        if (!sConditionMgr->IsPlayerMeetingCondition(_player, questTask->ConditionID))
+                        WorldQuest const* worldQuest = &iter.second;
+                        if (!worldQuest || _player->WorldQuestCompleted(worldQuest->QuestID))
                             continue;
-
-                        // if (questTask->WorldStateExpressionID)
-                        // {
-                            // auto expressionEntry = sWorldStateExpressionStore.LookupEntry(questTask->WorldStateExpressionID);
-                            // if (!expressionEntry || !expressionEntry->Eval(_player))
-                                // continue;
-                        // }
-
-                        if (questTask->FiltMinSkillID && _player->GetSkillValue(questTask->FiltMinSkillID) < questTask->FiltMinSkillValue)
+	    
+                        if (sQuestDataStore->WorldLegionInvasionZoneID && sQuestDataStore->WorldLegionInvasionZoneID == worldQuest->quest->QuestSortID && !worldQuest->worldQuest->PrimaryID && !worldQuest->quest->IsLegionInvasion())
                             continue;
-
-                        if (questTask->FiltMinLevel != -1 && _player->getLevel() < questTask->FiltMinLevel)
-                            continue;
-
-                        if (questTask->FiltMaxLevel != -1 && _player->getLevel() > questTask->FiltMaxLevel)
-                            continue;
-
-                        if (questTask->FiltRaces && (questTask->FiltRaces & _player->getRaceMask()) == 0)
-                            continue;
-
-                        if (questTask->FiltClasses && (questTask->FiltClasses & _player->getClassMask()) == 0)
-                            continue;
-
-                        bool needQuest = false;
-                        bool canStart = true;
-                        for (auto quest : questTask->FiltCompletedQuest)
-                            if (quest)
-                                needQuest = true;
-
-                        if (needQuest)
-                            for (auto slot : questTask->FiltCompletedQuest)
-                                if (slot && _player->GetQuestStatus(slot) != QUEST_STATUS_REWARDED)
-                                    canStart = false;
-
-                        //if (questTask->StartItem && !_player->HasAura(questTask->StartItem))
-                        //    continue;
-
-                        if (needQuest && !canStart)
-                            continue;
+	    
+	    				
+	    
+                        if (QuestV2CliTaskEntry const* questTask = sQuestV2CliTaskStore.LookupEntry(worldQuest->QuestID))
+                        {
+                            if (!sConditionMgr->IsPlayerMeetingCondition(_player, questTask->ConditionID))
+                                continue;
+	    
+                            // if (questTask->WorldStateExpressionID)
+                            // {
+                                // auto expressionEntry = sWorldStateExpressionStore.LookupEntry(questTask->WorldStateExpressionID);
+                                // if (!expressionEntry || !expressionEntry->Eval(_player))
+                                    // continue;
+                            // }
+	    
+                            if (questTask->FiltMinSkillID && _player->GetSkillValue(questTask->FiltMinSkillID) < questTask->FiltMinSkillValue)
+                                continue;
+	    
+                            if (questTask->FiltMinLevel != -1 && _player->getLevel() < questTask->FiltMinLevel)
+                                continue;
+	    
+                            if (questTask->FiltMaxLevel != -1 && _player->getLevel() > questTask->FiltMaxLevel)
+                                continue;
+	    
+                            if (questTask->FiltRaces && (questTask->FiltRaces & _player->getRaceMask()) == 0)
+                                continue;
+	    
+                            if (questTask->FiltClasses && (questTask->FiltClasses & _player->getClassMask()) == 0)
+                                continue;
+	    
+                            bool needQuest = false;
+                            bool canStart = true;
+                            for (auto quest : questTask->FiltCompletedQuest)
+                                if (quest)
+                                    needQuest = true;
+	    
+                            if (needQuest)
+                                for (auto slot : questTask->FiltCompletedQuest)
+                                    if (slot && _player->GetQuestStatus(slot) != QUEST_STATUS_REWARDED)
+                                        canStart = false;
+	    
+                            //if (questTask->StartItem && !_player->HasAura(questTask->StartItem))
+                            //    continue;
+	    
+                            if (needQuest && !canStart)
+                                continue;
+                        }
+	    
+                        response.WorldQuestUpdates.emplace_back(worldQuest->StartTime, worldQuest->QuestID, worldQuest->Timer, worldQuest->VariableID, worldQuest->Value);
                     }
-
-                    response.WorldQuestUpdates.emplace_back(worldQuest->StartTime, worldQuest->QuestID, worldQuest->Timer, worldQuest->VariableID, worldQuest->Value);
                 }
             }
         }
-    }
 
-    SendPacket(response.Write());
+		SendPacket(response.Write());
+	}
+	else
+		return;
 }
 
 void WorldSession::HandleRequestAreaPoiUpdate(WorldPackets::Quest::RequestAreaPoiUpdate& /*packet*/)

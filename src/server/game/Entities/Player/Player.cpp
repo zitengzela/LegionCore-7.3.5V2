@@ -19222,9 +19222,6 @@ void Player::RewardQuest(Quest const* quest, uint32 reward, Object* questGiver, 
     uint32 quest_id = quest->GetQuestId();
     Item* rewardItem = nullptr;
 
-
-
-
     for (QuestObjective const& obj : quest->GetObjectives())
     {
         switch (obj.Type)
@@ -38291,6 +38288,15 @@ void Player::ClearWorldQuest()
     // TC_LOG_DEBUG(LOG_FILTER_WORLD_QUEST, "Player::ClearWorldQuest()");
 
     m_worldquests.clear();
+}
+
+bool Player::HasWorldQuestEnabled() const
+{
+	// Uniting the Isles
+	if (GetQuestStatus(43341) == QUEST_STATUS_REWARDED)
+		return true;
+
+	return false;
 }
 
 uint32 Player::GetQuestForUnLockThirdSocket()

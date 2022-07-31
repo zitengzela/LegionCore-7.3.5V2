@@ -2036,6 +2036,7 @@ class Player : public Unit, public GridObject<Player>
         bool WorldQuestCompleted(uint32 QuestID) const;
         void ResetWorldQuest(uint32 QuestID = 0);
         void ClearWorldQuest();
+		bool HasWorldQuestEnabled() const;
 
         ObjectGuid GetDivider() { return m_divider; }
         void SetDivider(ObjectGuid guid) { m_divider = guid; }
