@@ -3,12 +3,14 @@
 ## The Broken Islands Scenario
 ######*/
 
+#include "CombatAI.h"
 #include "LFGMgr.h"
 #include "LFGQueue.h"
 #include "LFGPackets.h"
 #include "broken_islands.h"
 #include "DynamicObject.h"
 #include "ScriptedEscortAI.h"
+#include "ScriptedGossip.h"
 #include "CreatureTextMgr.h"
 #include "MiscPackets.h"
 #include "GameObjectAI.h"
@@ -245,248 +247,6 @@ class npc_q44281 : public npc_q42782
 public:
     npc_q44281() : npc_q42782("npc_q44281") { }
 };
-
-/*
-ClientToServer: CMSG_CLOSE_INTERACTION (0x348A) Length: 12 ConnIdx: 2 Time: 06/05/2016 08:13:31.801 Number: 23743
-Guid: Full: 0x20209000006A5E00001EB7000053DE11; HighType: Creature; Low: 5496337; Map: 0; Entry: 108920;
-
-ServerToClient: SMSG_LFG_UPDATE_STATUS (0x2A24) Length: 39 ConnIdx: 0 Time: 06/05/2016 08:13:31.802 Number: 23744
-(Ticket) RequesterGuid: Full: 0x080F28000000000000000000001C37E5; HighType: Player; Low: 1849317 Name: пњљпњљпњљпњљ; Map: 0
-(Ticket) Id: 76194
-(Ticket) Type: TICKET_TYPE_LFD_SYSTEM (2)
-(Ticket) Time: 06/05/2016 08:13:46
-SubType: LFG_SUBTYPE_SCENARIO (3)
-Reason: LFG_UPDATETYPE_REMOVED_FROM_QUEUE (25)
-SlotsCount: 1
-RequestedRoles: 8
-SuspendedPlayersCount: 0
-[0] Slots: 16778124
-IsParty: True
-NotifyUI: False
-Joined: True
-LfgJoined: True
-Queued: False
-
-ServerToClient: SMSG_LFG_UPDATE_STATUS (0x2A24) Length: 39 ConnIdx: 0 Time: 06/05/2016 08:13:31.805 Number: 23745
-(Ticket) RequesterGuid: Full: 0x080F28000000000000000000001C37E5; HighType: Player; Low: 1849317 Name: пњљпњљпњљпњљ; Map: 0
-(Ticket) Id: 76194
-(Ticket) Type: TICKET_TYPE_LFD_SYSTEM (2)
-(Ticket) Time: 06/05/2016 08:13:46
-SubType: LFG_SUBTYPE_SCENARIO (3)
-Reason: LFG_UPDATETYPE_ADDED_TO_QUEUE (13)
-SlotsCount: 1
-RequestedRoles: 8
-SuspendedPlayersCount: 0
-[0] Slots: 16778124
-IsParty: True
-NotifyUI: False
-Joined: True
-LfgJoined: True
-Queued: True
-
-ServerToClient: SMSG_LFG_JOIN_RESULT (0x2A1C) Length: 26 ConnIdx: 0 Time: 06/05/2016 08:13:31.807 Number: 23746
-(Ticket) RequesterGuid: Full: 0x080F28000000000000000000001C37E5; HighType: Player; Low: 1849317 Name: пњљпњљпњљпњљ; Map: 0
-(Ticket) Id: 76194
-(Ticket) Type: TICKET_TYPE_LFD_SYSTEM (2)
-(Ticket) Time: 06/05/2016 08:13:46
-Result: Ok (0)
-ResultDetail: 0
-BlackListCount: 0
-
-ServerToClient: SMSG_LFG_UPDATE_STATUS (0x2A24) Length: 39 ConnIdx: 0 Time: 06/05/2016 08:13:31.808 Number: 23747
-(Ticket) RequesterGuid: Full: 0x080F28000000000000000000001C37E5; HighType: Player; Low: 1849317 Name: пњљпњљпњљпњљ; Map: 0
-(Ticket) Id: 76194
-(Ticket) Type: TICKET_TYPE_LFD_SYSTEM (2)
-(Ticket) Time: 06/05/2016 08:13:46
-SubType: LFG_SUBTYPE_SCENARIO (3)
-Reason: LFG_UPDATETYPE_ADDED_TO_QUEUE (13)
-SlotsCount: 1
-RequestedRoles: 8
-SuspendedPlayersCount: 0
-[0] Slots: 16778124
-IsParty: True
-NotifyUI: False
-Joined: True
-LfgJoined: True
-Queued: True
-
----------------------------------->
-
-ServerToClient: SMSG_LFG_UPDATE_STATUS (0x2A24) Length: 39 ConnIdx: 0 Time: 06/05/2016 08:13:32.894 Number: 23809
-(Ticket) RequesterGuid: Full: 0x080F28000000000000000000001C37E5; HighType: Player; Low: 1849317 Name: пњљпњљпњљпњљ; Map: 0
-(Ticket) Id: 76194
-(Ticket) Type: TICKET_TYPE_LFD_SYSTEM (2)
-(Ticket) Time: 06/05/2016 08:13:46
-SubType: LFG_SUBTYPE_SCENARIO (3)
-Reason: LFG_UPDATETYPE_PROPOSAL_BEGIN (14)
-SlotsCount: 1
-RequestedRoles: 8
-SuspendedPlayersCount: 0
-[0] Slots: 16778124
-IsParty: True
-NotifyUI: False
-Joined: True
-LfgJoined: True
-Queued: False
-
-ServerToClient: SMSG_LFG_PROPOSAL_UPDATE (0x2A2D) Length: 61 ConnIdx: 0 Time: 06/05/2016 08:13:32.896 Number: 23810
-(Ticket) RequesterGuid: Full: 0x080F28000000000000000000001C37E5; HighType: Player; Low: 1849317 Name: пњљпњљпњљпњљ; Map: 0
-(Ticket) Id: 76194
-(Ticket) Type: TICKET_TYPE_LFD_SYSTEM (2)
-(Ticket) Time: 06/05/2016 08:13:46
-InstanceID: 2252081288682140542
-ProposalID: 8864
-Slot: 16778124
-State: Initiating (0)
-CompletedMask: 0
-PlayersCount: 3
-[0] Roles: 448
-[0] Me: False
-[0] SameParty: False
-[0] MyParty: False
-[0] Responded: False
-[0] Accepted: False
-[1] Roles: 24
-[1] Me: False
-[1] SameParty: False
-[1] MyParty: False
-[1] Responded: False
-[1] Accepted: False
-[2] Roles: 280
-[2] Me: False
-[2] SameParty: False
-[2] MyParty: False
-[2] Responded: False
-[2] Accepted: False
-ValidCompletedMask: True
-ProposalSilent: False
-
-ServerToClient: SMSG_LFG_PROPOSAL_UPDATE (0x2A2D) Length: 61 ConnIdx: 0 Time: 06/05/2016 08:13:32.898 Number: 23811
-(Ticket) RequesterGuid: Full: 0x080F28000000000000000000001C37E5; HighType: Player; Low: 1849317 Name: пњљпњљпњљпњљ; Map: 0
-(Ticket) Id: 76194
-(Ticket) Type: TICKET_TYPE_LFD_SYSTEM (2)
-(Ticket) Time: 06/05/2016 08:13:46
-InstanceID: 2252081288682140542
-ProposalID: 8864
-Slot: 16778124
-State: Success (2)
-CompletedMask: 0
-PlayersCount: 3
-[0] Roles: 448
-[0] Me: False
-[0] SameParty: False
-[0] MyParty: False
-[0] Responded: False
-[0] Accepted: False
-[1] Roles: 24
-[1] Me: False
-[1] SameParty: False
-[1] MyParty: False
-[1] Responded: False
-[1] Accepted: False
-[2] Roles: 280
-[2] Me: False
-[2] SameParty: False
-[2] MyParty: False
-[2] Responded: False
-[2] Accepted: False
-ValidCompletedMask: True
-ProposalSilent: False
-
-ServerToClient: SMSG_LFG_UPDATE_STATUS (0x2A24) Length: 39 ConnIdx: 0 Time: 06/05/2016 08:13:32.900 Number: 23812
-(Ticket) RequesterGuid: Full: 0x080F28000000000000000000001C37E5; HighType: Player; Low: 1849317 Name: пњљпњљпњљпњљ; Map: 0
-(Ticket) Id: 76194
-(Ticket) Type: TICKET_TYPE_LFD_SYSTEM (2)
-(Ticket) Time: 06/05/2016 08:13:46
-SubType: LFG_SUBTYPE_SCENARIO (3)
-Reason: LFG_UPDATETYPE_GROUP_FOUND (11)
-SlotsCount: 1
-RequestedRoles: 8
-SuspendedPlayersCount: 0
-[0] Slots: 16778124
-IsParty: True
-NotifyUI: False
-Joined: False
-LfgJoined: False
-Queued: False
-
-ServerToClient: SMSG_LFG_UPDATE_STATUS (0x2A24) Length: 39 ConnIdx: 0 Time: 06/05/2016 08:13:32.901 Number: 23813
-(Ticket) RequesterGuid: Full: 0x080F28000000000000000000001C37E5; HighType: Player; Low: 1849317 Name: пњљпњљпњљпњљ; Map: 0
-(Ticket) Id: 76194
-(Ticket) Type: TICKET_TYPE_LFD_SYSTEM (2)
-(Ticket) Time: 06/05/2016 08:13:46
-SubType: LFG_SUBTYPE_SCENARIO (3)
-Reason: LFG_UPDATETYPE_ADDED_TO_QUEUE (13)
-SlotsCount: 1
-RequestedRoles: 8
-SuspendedPlayersCount: 0
-[0] Slots: 16778124
-IsParty: True
-NotifyUI: True
-Joined: True
-LfgJoined: True
-Queued: True
-
-ServerToClient: SMSG_LFG_JOIN_RESULT (0x2A1C) Length: 26 ConnIdx: 0 Time: 06/05/2016 08:13:32.904 Number: 23814
-(Ticket) RequesterGuid: Full: 0x080F28000000000000000000001C37E5; HighType: Player; Low: 1849317 Name: пњљпњљпњљпњљ; Map: 0
-(Ticket) Id: 76194
-(Ticket) Type: TICKET_TYPE_LFD_SYSTEM (2)
-(Ticket) Time: 06/05/2016 08:13:46
-Result: Ok (0)
-ResultDetail: 0
-BlackListCount: 0
-
-ServerToClient: SMSG_LFG_UPDATE_STATUS (0x2A24) Length: 39 ConnIdx: 0 Time: 06/05/2016 08:13:32.905 Number: 23815
-(Ticket) RequesterGuid: Full: 0x080F28000000000000000000001C37E5; HighType: Player; Low: 1849317 Name: пњљпњљпњљпњљ; Map: 0
-(Ticket) Id: 76194
-(Ticket) Type: TICKET_TYPE_LFD_SYSTEM (2)
-(Ticket) Time: 06/05/2016 08:13:46
-SubType: LFG_SUBTYPE_SCENARIO (3)
-Reason: LFG_UPDATETYPE_ROLECHECK_ABORTED (6)
-SlotsCount: 1
-RequestedRoles: 8
-SuspendedPlayersCount: 0
-[0] Slots: 16778124
-IsParty: True
-NotifyUI: True
-Joined: True
-LfgJoined: True
-Queued: True
-
-ServerToClient: SMSG_PLAY_SCENE (0x264F) Length: 34 ConnIdx: 0 Time: 06/05/2016 08:13:32.907 Number: 23816
-SceneID: 1335
-PlaybackFlags: 26
-SceneInstanceID: 1
-SceneScriptPackageID: 1661
-TransportGUID: Full: 0x0
-Pos: X: -8336.28 Y: 1376.329 Z: 9.09365
-Facing: 3.868121
-
-ServerToClient: SMSG_AURA_UPDATE (0x2C21) Length: 44 ConnIdx: 0 Time: 06/05/2016 08:13:32.921 Number: 23817
-UpdateAll: False
-AurasCount: 1
-[0] Slot: 35
-[0] HasAura: True
-[0] CastGuid: Full: 0xBC20900000D34903001EB7000053DF3C; HighType: Spell; Low: 5496636; Map: 0; Entry: 216356;
-[0] SpellID: 216356 (216356)
-[0] SpellXSpellVisualID: 0
-[0] Flags: NoCaster, Positive (3)
-[0] ActiveFlags: 3
-[0] CastLevel: 100
-[0] Applications: 0
-[0] HasCastUnit: False
-[0] HasDuration: False
-[0] HasRemaining: False
-[0] hasUnkFloat: False
-[0] PointsSize: 0
-[0] EstimatedPointsSize: 0
-[0] HasPlayerStatsInfo: False
-UnitGUID: Full: 0x080F28000000000000000000001C37E5; HighType: Player; Low: 1849317 Name: пњљпњљпњљпњљ; Map: 0
-
-*/
-
-
-
 
 class npc_q42740 : public CreatureScript
 {
@@ -868,7 +628,7 @@ public:
             summons.DespawnAll();
         }
 
-        void MoveInLineOfSight(Unit* who) override  // пњљпњљпњљпњљпњљ пњљпњљ пњљпњљпњљпњљпњљпњљпњљпњљ пњљпњљпњљпњљпњљпњљ, пњљпњљпњљ пњљпњљпњљпњљпњљпњљпњљ.........
+        void MoveInLineOfSight(Unit* who) override
         {
             if (who->GetTypeId() != TYPEID_PLAYER)
                 return;
@@ -1043,7 +803,7 @@ public:
         {
             DoCast(224910);
             events.ScheduleEvent(EVENT_1, 7000); // 224907
-            events.ScheduleEvent(EVENT_2, 23000); // 224908 + пњљпњљпњљпњљ
+            events.ScheduleEvent(EVENT_2, 23000); // 224908
         }
 
         void MovementInform(uint32 moveType, uint32 pointId) override
@@ -1088,7 +848,7 @@ public:
 
                     case EVENT_2:
                         DoCast(224908);
-                        events.ScheduleEvent(EVENT_2, 23000); // 224908 + пњљпњљпњљпњљ
+                        events.ScheduleEvent(EVENT_2, 23000); // 224908
                         if (!checkconv)
                         {
                             DoCast(224909);
@@ -2692,7 +2452,7 @@ public:
 
         void UpdateAI(uint32 diff) override
         {
-            if (timer <= diff)  // пњљпњљпњљ пњљпњљпњљпњљ пњљпњљпњљпњљпњљ пњљпњљпњљпњљпњљпњљпњљпњљ пњљ 2, пњљ 3 пњљпњљпњљпњљ, пњљпњљпњљпњљпњљпњљпњљпњљ пњљпњљ пњљпњљпњљпњљпњљпњљ пњљ пњљпњљпњљпњљ пњљпњљ пњљпњљпњљпњљпњљпњљ
+            if (timer <= diff)
             {
                 m_player_for_event.clear();
                 timer = 60000;
@@ -2866,7 +2626,7 @@ public:
 
             if (me->GetEntry() == 100442)
             {
-                if (who->ToPlayer()->GetQuestStatus(40522) != QUEST_STATUS_NONE && who->ToPlayer()->GetQuestStatus(40522) == QUEST_STATUS_INCOMPLETE) // пњљпњљ пњљпњљпњљпњљпњљ пњљпњљпњљпњљпњљпњљпњљ
+                if (who->ToPlayer()->GetQuestStatus(40522) != QUEST_STATUS_NONE && who->ToPlayer()->GetQuestStatus(40522) == QUEST_STATUS_INCOMPLETE)
                 {
                     GuidSet::iterator itr = m_player_for_event.find(who->GetGUID());
                     if (itr != m_player_for_event.end())
@@ -2934,7 +2694,7 @@ public:
         {
             if (me->GetEntry() != 100442)
             {
-                if (timer <= diff)  // пњљпњљпњљ пњљпњљпњљпњљ пњљпњљпњљпњљпњљ пњљпњљпњљпњљпњљпњљпњљпњљ пњљ 2, пњљ 3 пњљпњљпњљпњљ, пњљпњљпњљпњљпњљпњљпњљпњљ пњљпњљ пњљпњљпњљпњљпњљпњљ пњљ пњљпњљпњљпњљ пњљпњљ пњљпњљпњљпњљпњљпњљ
+                if (timer <= diff)
                 {
                     m_player_for_event.clear();
                     timer = 60000;
@@ -3331,9 +3091,9 @@ public:
 
         void UpdateAI(uint32 diff) override
         {
-            if (me->GetEntry() == 90709) // пњљпњљпњљпњљпњљпњљпњљпњљ
+            if (me->GetEntry() == 90709)
             {
-                if (me->GetPositionZ() >= 135.23f) // пњљпњљпњљпњљпњљ пњљ пњљпњљпњљпњљпњљпњљпњљпњљпњљ пњљпњљпњљпњљпњљпњљпњљпњљпњљ
+                if (me->GetPositionZ() >= 135.23f)
                 {
                     if (timerforevent <= diff)
                     {
@@ -3421,32 +3181,29 @@ void AddSC_brokenIslands()
     new npc_q44281();
     new npc_q42740();
     new npc_q40518();
-    new spell_bi_enter_stage1();
-    new sceneTrigger_enterBrockenShores();
-    new spell_q42740();
-    new sceneTrigger_part1();
     new npc_bi_dread_commander();
     new npc_bi_felcommander_azgalor();
+	new npc_q44281_1();
+	new scenarion_bi_heroes();
+	new scenarion_bi_guards();
+	new scenario_bi_gualdan();
+	new npc_q40517_p1();
+	new sceneTrigger_part8();
+	new npc_q42782_1();
+	new npc_109494();
+	new npc_100395();
+	new scenarion_bi_heroes_horde();
 
+	new go_240535();
+
+	new spell_bi_enter_stage1();
+	new spell_q42740();
     new spell_scenarion_bi_step_6();
-    new sceneTrigger_part7();
-    new scenarion_bi_heroes();
-    new scenarion_bi_guards();
-    new sceneTrigger_part8();
-    new scenario_bi_gualdan();
 
-    new npc_q40517_p1();
-    new scene_bi_alliance_q40593();
-
-    new npc_q42782_1();
-    new npc_109494();
-    new go_240535();
-
-    new npc_100395();
-    new scenarion_bi_heroes_horde();
-
+	new sceneTrigger_enterBrockenShores();
+	new sceneTrigger_part1();
+	new sceneTrigger_part7();
+	new scene_bi_alliance_q40593();
     new scene_bi_horde_q40607();
-    new npc_q44281_1();
-
     new scene_jewelcraft_game();
 }

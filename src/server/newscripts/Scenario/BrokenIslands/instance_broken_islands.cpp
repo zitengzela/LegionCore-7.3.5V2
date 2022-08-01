@@ -25,6 +25,7 @@
 #include "QuestData.h"
 #include "MoveSplineInit.h"
 #include "PlayerDefines.h"
+#include "Vehicle.h"
 
 class instance_broken_islands : public InstanceMapScript
 {
@@ -371,7 +372,7 @@ public:
 
             // 950 1
             // 952 2
-            if (objective == 44077) // алики
+            if (objective == 44077)
             {
                 if (Creature* sayer = instance->GetCreature(GetGuidData(90717)))
                 {
@@ -390,7 +391,7 @@ public:
                 count_++;
             }
             
-            if (objective == 54114) // орда
+            if (objective == 54114)
             {
                 if (Creature* sayer = instance->GetCreature(GetGuidData(90708)))
                 {
@@ -565,7 +566,7 @@ public:
                     final_waves[6].push_back(creature->GetGUID());
                     prepareWaveCre(creature);
                     break;
-                case 101667: // иначе никак не хочет что-то..........
+                case 101667:
                     creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_REMOVE_CLIENT_CONTROL);
                     creature->SetReactState(REACT_PASSIVE);
                     break;
@@ -787,7 +788,7 @@ public:
 						GetCreatureListWithEntryInGrid(guards, sylv, 90708, 90.0f);
 						GetCreatureListWithEntryInGrid(guards, sylv, 90710, 90.0f);
 						if (!guards.empty())
-							for (std::list<Creature*>::iterator itr = guards.begin(); itr != guards.end(); ++itr) // те, кто остаются снизу и "дефают"
+							for (std::list<Creature*>::iterator itr = guards.begin(); itr != guards.end(); ++itr)
 							{
 								(*itr)->SetReactState(REACT_AGGRESSIVE);
 								(*itr)->GetMotionMaster()->Clear();
@@ -800,14 +801,14 @@ public:
 						std::list<Creature*> guardss;
 						GetCreatureListWithEntryInGrid(guardss, sylv, 112920, 90.0f);
 						if (!guardss.empty())
-							for (std::list<Creature*>::iterator itr = guardss.begin(); itr != guardss.end(); ++itr) // те, кто бегут с Сильвой и дефают верх
+							for (std::list<Creature*>::iterator itr = guardss.begin(); itr != guardss.end(); ++itr)
 							{
 								(*itr)->SetReactState(REACT_AGGRESSIVE);
 								(*itr)->GetMotionMaster()->Clear();
 								(*itr)->GetMotionMaster()->MovePath(439154, false, irand(-3, 3), irand(-3, 3));
 
 							}
-						sylv->GetMotionMaster()->MovePath(439154, false); // 5   те, кто бегут с Сильвой и дефают верх
+						sylv->GetMotionMaster()->MovePath(439154, false);
 						sylv->SetHomePosition(1612.035f, 1706.058f, 77.55668f, sylv->GetOrientation());
 					}
 				}
