@@ -23,6 +23,7 @@
 #include "SharedDefines.h"
 #include "ConditionMgr.h"
 #include "HashFuctor.h"
+#include "ObjectGuid.h"
 
 namespace WorldPackets
 {

@@ -15,19 +15,13 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-Name: ban_commandscript
-%Complete: 100
-Comment: All ban related commands
-Category: commandscripts
-EndScriptData */
-
 #include "ScriptMgr.h"
 #include "Chat.h"
 #include "AccountMgr.h"
 #include "ObjectAccessor.h"
 #include "ObjectMgr.h"
 #include "GlobalFunctional.h"
+#include "DatabaseEnv.h"
 
 class ban_commandscript : public CommandScript
 {

@@ -1,5 +1,8 @@
-
 #include "ScriptMgr.h"
+#include "Chat.h"
+#include "Areatrigger.h"
+#include "Vehicle.h"
+#include "EventObject.h"
 
 class test_commandscript : public CommandScript
 {

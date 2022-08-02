@@ -1,4 +1,5 @@
-#include "PrecompiledHeaders/ScriptPCH.h"
+#include "ScriptMgr.h"
+#include "ScriptedGossip.h"
 
 struct Location
 {

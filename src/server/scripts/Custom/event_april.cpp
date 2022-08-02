@@ -1,6 +1,4 @@
-﻿#include "PrecompiledHeaders/ScriptPCH.h"
-#include <ScriptMgr.h>
-
+﻿#include "ScriptMgr.h"
 #include "GameEventMgr.h"
 
 #define EVENT_APRIL             100

@@ -15,13 +15,6 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-Name: learn_commandscript
-%Complete: 100
-Comment: All learn related commands
-Category: commandscripts
-EndScriptData */
-
 #include "Chat.h"
 #include "ScriptMgr.h"
 #include "SpellMgr.h"

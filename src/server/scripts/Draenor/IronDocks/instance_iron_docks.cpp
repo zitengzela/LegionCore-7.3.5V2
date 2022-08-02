@@ -4,6 +4,8 @@
 */
 
 #include "iron_docks.h"
+#include "ScriptMgr.h"
+#include "InstanceScript.h"
 
 class instance_iron_docks : public InstanceMapScript
 {

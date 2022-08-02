@@ -4,6 +4,8 @@
 */
 
 #include "the_everbloom.h"
+#include "ScriptMgr.h"
+#include "InstanceScript.h"
 
 DoorData const doorData[] =
 {

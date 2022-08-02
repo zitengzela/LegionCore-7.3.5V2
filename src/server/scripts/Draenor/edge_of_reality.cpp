@@ -3,6 +3,8 @@
 */
 
 #include "LFGMgr.h"
+#include "ScriptMgr.h"
+#include "SpellScript.h"
 
 //179523
 class spell_launch_voidtalon_scenario : public SpellScript

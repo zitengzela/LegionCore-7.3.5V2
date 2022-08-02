@@ -21,6 +21,9 @@
 #include "Bracket.h"
 #include "Group.h"
 #include "SpectatorAddon.h"
+#include "ScriptMgr.h"
+#include "Chat.h"
+#include "ScriptedGossip.h"
 
 class arena_spectator_commands : public CommandScript
 {

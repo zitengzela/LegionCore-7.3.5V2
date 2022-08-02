@@ -23,6 +23,7 @@
 #include "GameObjectAI.h"
 #include "GossipDef.h"
 #include "QuestData.h"
+#include "ScriptedGossip.h"
 
 enum misc
 {

@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 # include "highmaul.hpp"
+#include "SpellAuraEffects.h"
 
 float const gorthenonFloor = 330.0f;
 float const circleToCenterDist = 30.0f;

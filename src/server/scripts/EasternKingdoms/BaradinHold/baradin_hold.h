@@ -1,3 +1,5 @@
+#include "CreatureAI.h"
+
 #ifndef DEF_BARADINHOLD_H
 #define DEF_BARADINHOLD_H
 

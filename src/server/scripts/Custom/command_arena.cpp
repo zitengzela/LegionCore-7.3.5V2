@@ -4,6 +4,7 @@
 #include "WordFilterMgr.h"
 #include "GuildMgr.h"
 #include "GlobalFunctional.h"
+#include "DatabaseEnv.h"
 
 class command_arena : public CommandScript
 {

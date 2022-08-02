@@ -4,6 +4,8 @@
 */
 
 #include "shadowmoon_burial_grounds.h"
+#include "ScriptMgr.h"
+#include "InstanceScript.h"
 
 DoorData const doorData[] =
 {

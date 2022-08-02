@@ -2,6 +2,7 @@
 #include "ObjectMgr.h"
 #include "Chat.h"
 #include "Player.h"
+#include "DatabaseEnv.h"
 
 class command_donate : public CommandScript
 {

@@ -5,6 +5,9 @@
 */
 
 #include "upper_blackrock_spire.h"
+#include "ScriptMgr.h"
+#include "ScriptedCreature.h"
+#include "SpellScript.h"
 
 enum Says
 {

@@ -10,6 +10,7 @@
 #include "ScriptedEscortAI.h"
 #include "CreatureTextMgr.h"
 #include "GameObjectAI.h"
+#include "Vehicle.h"
 
 class sceneTrigger_q33815 : public SceneTriggerScript
 {

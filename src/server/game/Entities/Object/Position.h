@@ -20,6 +20,7 @@
 #define Trinity_game_Position_h__
 
 #include "Common.h"
+#include "DBCEnums.h"
 #include <vector>
 
 class ByteBuffer;

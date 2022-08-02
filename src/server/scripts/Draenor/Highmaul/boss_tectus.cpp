@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 # include "highmaul.hpp"
+#include "SpellAuraEffects.h"
 
 uint8 GetEnergyGainFromHealth(float healthPct)
 {

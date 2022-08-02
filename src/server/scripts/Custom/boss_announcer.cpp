@@ -1,6 +1,3 @@
-//by SymbolixDEV
-//Fixed Error SymbolixDEV
-//release SymbolixDEV
 #include "ScriptMgr.h"
 #include "Config.h"
 #include <Player.h>

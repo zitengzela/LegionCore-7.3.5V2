@@ -1,4 +1,7 @@
+#include "ScriptMgr.h"
 #include "hellfire_citadel.h"
+#include "InstanceScript.h"
+
 
 class instance_hellfire_citadel : public InstanceMapScript
 {

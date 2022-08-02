@@ -9,6 +9,8 @@
 
 #include "ScriptedCreature.h"
 #include "auchindoun.hpp"
+#include "ScriptMgr.h"
+#include "SpellScript.h"
 
 enum eTerongorSpells
 {

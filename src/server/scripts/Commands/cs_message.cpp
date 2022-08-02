@@ -15,17 +15,11 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-Name: message_commandscript
-%Complete: 100
-Comment: All message related commands
-Category: commandscripts
-EndScriptData */
-
 #include "ScriptMgr.h"
 #include "Chat.h"
 #include "ChannelMgr.h"
 #include "Packets/ChatPackets.h"
+#include "DatabaseEnv.h"
 
 class message_commandscript : public CommandScript
 {

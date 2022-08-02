@@ -1,5 +1,5 @@
-
-#include "PrecompiledHeaders/ScriptPCH.h"
+#include "ScriptMgr.h"
+#include "ScriptedGossip.h"
 #include "Pet.h"
 
 class npc_beastmaster : public CreatureScript

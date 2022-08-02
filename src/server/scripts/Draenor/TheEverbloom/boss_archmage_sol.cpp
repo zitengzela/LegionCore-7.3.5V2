@@ -5,6 +5,9 @@
 */
 
 #include "the_everbloom.h"
+#include "ScriptMgr.h"
+#include "ScriptedCreature.h"
+#include "SpellScript.h"
 
 enum Says
 {

@@ -1,4 +1,6 @@
-#include "PrecompiledHeaders/ScriptPCH.h"
+#include "ScriptMgr.h"
+#include "ScriptedGossip.h"
+#include "Chat.h"
 #include "Language.h"
 #include "SpellPackets.h"
 

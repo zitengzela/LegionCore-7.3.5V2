@@ -15,16 +15,10 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-Name: achievement_commandscript
-%Complete: 100
-Comment: All achievement related commands
-Category: commandscripts
-EndScriptData */
-
 #include "ScriptMgr.h"
 #include "Chat.h"
 #include "AchievementMgr.h"
+#include "DatabaseEnv.h"
 
 class achievement_commandscript : public CommandScript
 {

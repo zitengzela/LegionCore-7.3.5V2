@@ -1,5 +1,5 @@
-
 #include "BattlePayMgr.h"
+#include "ScriptMgr.h"
 
 namespace BattlePay
 {

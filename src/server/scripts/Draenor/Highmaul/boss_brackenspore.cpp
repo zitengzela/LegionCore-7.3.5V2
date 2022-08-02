@@ -6,7 +6,9 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
+#include "ScriptMgr.h"
 #include "highmaul.hpp"
+#include "SpellAuraEffects.h"
 
 G3D::Vector3 creepingMossPo[MaxCreepingMoss] =
 {

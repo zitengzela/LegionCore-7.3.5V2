@@ -15,13 +15,6 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-Name: event_commandscript
-%Complete: 100
-Comment: All event related commands
-Category: commandscripts
-EndScriptData */
-
 #include "ScriptMgr.h"
 #include "GameEventMgr.h"
 #include "Chat.h"

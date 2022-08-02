@@ -1,10 +1,3 @@
-/*
-GOMove By Rochet2
-Original idea by Mordred
-
-http://rochet2.github.io/
-*/
-
 #ifndef GOMOVE_H
 #define GOMOVE_H
 

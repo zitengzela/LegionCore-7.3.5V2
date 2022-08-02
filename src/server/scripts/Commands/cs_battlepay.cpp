@@ -1,7 +1,7 @@
-
 #include "ScriptMgr.h"
 #include "BattlePayMgr.h"
 #include "BattlePayData.h"
+#include "Chat.h"
 
 class battlepay_commandscript : public CommandScript
 {

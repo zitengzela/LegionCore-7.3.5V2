@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 # include "highmaul.hpp"
+#include "SpellAuraEffects.h"
 
 Position const g_MaggotSpawnPos[MaxMaggotToKill] =
 {

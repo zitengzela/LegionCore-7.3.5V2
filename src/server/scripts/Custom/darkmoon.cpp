@@ -2,6 +2,11 @@
     UWoW.biz
 ================*/
 
+#include "ScriptMgr.h"
+#include "SpellScript.h"
+#include "ScriptedCreature.h"
+#include "ScriptedGossip.h"
+
 const Position mfPos[22] =
 {
     // Snarler spawn

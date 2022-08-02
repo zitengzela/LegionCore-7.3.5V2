@@ -18,6 +18,7 @@
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "bloodmaul_slag_mines.h"
+#include "SpellScript.h"
 #include "Map.h"
 
 enum BroadcastTexts

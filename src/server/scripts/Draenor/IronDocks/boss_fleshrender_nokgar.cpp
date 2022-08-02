@@ -5,6 +5,9 @@
 */
 
 #include "iron_docks.h"
+#include "ScriptMgr.h"
+#include "ScriptedCreature.h"
+#include "Vehicle.h"
 
 enum Says
 {

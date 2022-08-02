@@ -1,6 +1,7 @@
 #include "AchievementMgr.h"
 #include "AreaTriggerAI.h"
 #include "BrawlersGuild.h"
+#include "Vehicle.h"
 
 enum eSpells
 {

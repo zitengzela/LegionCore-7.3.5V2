@@ -1,4 +1,3 @@
-
 #include "OutdoorPvP.h"
 #include "OutdoorPvPMgr.h"
 #include "ScenarioMgr.h"
@@ -11,10 +10,10 @@
 // 107249 small vignette
 
 // Vignettes
-//1272	Портал
-//1273	Большой портал
-//1274	Строение Легиона
-// 1287	Лагерь Легиона ??
+//1272	
+//1273	
+//1274	
+// 1287	 ??
 std::vector<uint32> lowNps
 {
     104476,

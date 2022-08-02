@@ -16,14 +16,9 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Example_Escort
-SD%Complete: 100
-SDComment: Script used for testing escortAI
-SDCategory: Script Examples
-EndScriptData */
-
-#include "PrecompiledHeaders/ScriptPCH.h"
+#include "ScriptMgr.h"
+#include "ScriptedCreature.h"
+#include "ScriptedGossip.h"
 
 #define START            1
 

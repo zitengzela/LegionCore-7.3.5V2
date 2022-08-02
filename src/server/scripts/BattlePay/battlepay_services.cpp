@@ -1,5 +1,5 @@
-
 #include "BattlePayMgr.h"
+#include "ScriptMgr.h"
 
 template<uint32 t_Level> class BattlePay_Level : BattlePayProductScript
 {

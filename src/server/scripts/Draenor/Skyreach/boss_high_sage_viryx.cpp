@@ -5,6 +5,10 @@
 */
 
 #include "skyreach.h"
+#include "ScriptMgr.h"
+#include "ScriptedCreature.h"
+#include "SpellScript.h"
+#include "Vehicle.h"
 
 enum Says
 {

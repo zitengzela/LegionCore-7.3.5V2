@@ -5,6 +5,10 @@
 */
 
 #include "upper_blackrock_spire.h"
+#include "ScriptMgr.h"
+#include "ScriptedCreature.h"
+#include "Vehicle.h"
+#include "GameEventMgr.h"
 
 #define MIN_X 111.0f
 #define MAX_X 194.0f

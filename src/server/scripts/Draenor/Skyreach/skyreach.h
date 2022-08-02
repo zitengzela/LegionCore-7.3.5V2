@@ -3,6 +3,8 @@
     Dungeon : Skyreach 97 - 99
 */
 
+#include "Position.h"
+
 #ifndef UPPER_SKYREACH_H_
 #define UPPER_SKYREACH_H_
 

@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "highmaul.hpp"
+#include "SpellAuraEffects.h"
 
 Position const ghargFirstPos = {3466.11f, 7577.58f, 15.203f, 0.8954f};
 Position const ghargSecondPos = {3483.23f, 7598.67f, 10.65f, 0.8954f};

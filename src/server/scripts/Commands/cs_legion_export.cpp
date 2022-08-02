@@ -1,10 +1,3 @@
-/* ScriptData
-Name: arena_commandscript
-%Complete: 100
-Comment: All arena team related commands
-Category: commandscripts
-EndScriptData */
-
 #include "SpellMgr.h"
 #include "DatabaseEnv.h"
 #include "ScriptMgr.h"

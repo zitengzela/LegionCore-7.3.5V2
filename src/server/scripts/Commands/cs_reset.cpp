@@ -15,15 +15,9 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-Name: reset_commandscript
-%Complete: 100
-Comment: All reset related commands
-Category: commandscripts
-EndScriptData */
-
 #include "ScriptMgr.h"
 #include "Chat.h"
+#include "DatabaseEnv.h"
 
 class reset_commandscript : public CommandScript
 {

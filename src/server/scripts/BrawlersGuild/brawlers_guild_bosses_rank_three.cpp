@@ -1,5 +1,6 @@
 #include "AchievementMgr.h"
 #include "BrawlersGuild.h"
+#include "SpellScript.h"
 
 enum eSpells
 {

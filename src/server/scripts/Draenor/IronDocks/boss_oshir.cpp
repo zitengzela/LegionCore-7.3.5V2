@@ -5,6 +5,10 @@
 */
 
 #include "iron_docks.h"
+#include "ScriptMgr.h"
+#include "ScriptedCreature.h"
+#include "SpellAuraEffects.h"
+#include "GameEventMgr.h"
 
 enum Spells
 {

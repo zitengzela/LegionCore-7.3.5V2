@@ -1,10 +1,3 @@
-/*
-GOMove By Rochet2
-Original idea by Mordred
-
-http://rochet2.github.io/
-*/
-
 #include <math.h>
 #include "Cell.h"
 #include "Chat.h"

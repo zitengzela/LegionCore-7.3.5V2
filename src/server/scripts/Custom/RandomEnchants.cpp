@@ -1,7 +1,3 @@
-/*
-* Converted from the original LUA script to a module for Azerothcore(Sunwell) :D
-* Converted to Single Player Project - Legion server by Conan
-*/
 #include "ScriptMgr.h"
 #include "Player.h"
 #include "Configuration/Config.h"

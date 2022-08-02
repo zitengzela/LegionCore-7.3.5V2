@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 # include "highmaul.hpp"
+#include "SpellAuraEffects.h"
 
 Position const centerPos = {3903.39f, 8608.15f, 364.71f, 5.589f};
 

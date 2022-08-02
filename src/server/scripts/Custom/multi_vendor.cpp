@@ -1,5 +1,4 @@
 #include "GameTables.h"
-#include "PrecompiledHeaders/ScriptPCH.h"
 #include "ScriptedEscortAI.h"
 #include "Spell.h"
 #include "ObjectMgr.h"
@@ -10,6 +9,10 @@
 #include "GuildMgr.h"
 #include "CharacterData.h"
 #include "WordFilterMgr.h"
+#include "ScriptMgr.h"
+#include "ScriptedGossip.h"
+#include "DatabaseEnv.h"
+#include "Chat.h"
 
 // Options
 enum eEnums

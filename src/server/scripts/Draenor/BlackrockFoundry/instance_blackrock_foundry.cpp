@@ -1,4 +1,6 @@
+#include "ScriptMgr.h"
 #include "blackrock_foundry.h"
+#include "InstanceScript.h"
 
 class instance_blackrock_foundry : public InstanceMapScript
 {

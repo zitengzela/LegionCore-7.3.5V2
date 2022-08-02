@@ -10,6 +10,8 @@
 #include "Group.h"
 #include "ObjectMgr.h"
 #include "ScriptMgr.h"
+#include "ScriptedGossip.h"
+#include "Chat.h"
 
 enum Actions
 {

@@ -1,5 +1,8 @@
-
-#include "PrecompiledHeaders/ScriptPCH.h"
+#include "ScriptMgr.h"
+#include "ScriptedCreature.h"
+#include "ScriptedGossip.h"
+#include "DatabaseEnv.h"
+#include "GameEventMgr.h"
 
 #define GOSSIP_A_WRINKIE_IN_TIME "Yes, Anachronos. I am ready to witness your vision of the future."
 #define ACTION_A_WRINKIE_IN_TIME 1001

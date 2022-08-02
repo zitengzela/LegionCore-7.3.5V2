@@ -1,5 +1,4 @@
-
-#include "PrecompiledHeaders/ScriptPCH.h"
+#include "ScriptMgr.h"
 #include "SpellAuras.h"
 #include "SpellAuraEffects.h"
 #include "Spell.h"
@@ -46,7 +45,7 @@ class spell_fire_dancing : public SpellScriptLoader
         }
 };
 
-// spell 45693 - даем ачивку
+// spell 45693 -
 class spell_torches_caught : public SpellScriptLoader
 {
     public:

@@ -1,7 +1,6 @@
-
-#include "PrecompiledHeaders/ScriptPCH.h"
 #include "ScriptMgr.h"
 #include "Object.h"
+#include "Chat.h"
 
 enum DuelSpectateMode
 {

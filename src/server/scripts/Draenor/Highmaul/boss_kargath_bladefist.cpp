@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 # include "highmaul.hpp"
+#include "SpellAuraEffects.h"
 
 Position const trashsSpawnPos = {3427.1f, 7530.21f, 55.3383f, 0.965533f};
 Position const vulgorMovePos = {3449.81f, 7557.01f, 55.304f, 0.8995f};
