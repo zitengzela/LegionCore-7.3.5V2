@@ -6,7 +6,7 @@
 */
 
 #include "maw_of_souls.h"
-#include "PrecompiledHeaders/NewScriptPCH.h"
+#include "PrecompiledHeaders/ScriptPCH.h"
 
 enum Says
 {

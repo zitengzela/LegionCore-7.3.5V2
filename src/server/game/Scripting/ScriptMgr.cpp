@@ -267,7 +267,6 @@ ScriptMgr::ScriptMgr() : _scriptCount(0)
 {
     _scheduledScripts = 0;
     _script_loader_callback = nullptr;
-    _script_loader_callback2 = nullptr;
 }
 
 ScriptMgr::~ScriptMgr() = default;
@@ -285,9 +284,6 @@ void ScriptMgr::Initialize()
 
     ASSERT(_script_loader_callback, "Script loader callback wasn't registered!");
     _script_loader_callback();
-
-    ASSERT(_script_loader_callback2, "Script loader callback 2 wasn't registered!");
-    _script_loader_callback2();
 
 #ifdef SCRIPTS
     for (auto const& scriptName : UnusedScriptNames)

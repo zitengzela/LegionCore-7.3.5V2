@@ -36,5 +36,9 @@ void AddSC_AshranSpells();
 void AddSC_AshranAreaTrigger();
 void AddSC_AshranNPCNeutral();
 void AddSC_AshranQuest();
+void AddLegionScripts();
+void AddDraenorScripts();
+void AddEasternKingdomsScripts();
+void AddPandarieScripts();
 
 #endif

@@ -49,7 +49,6 @@
 #include "RASession.h"
 #include "RealmList.h"
 #include "ScriptLoader.h"
-#include "ScriptLoader2.h"
 #include "ScriptMgr.h"
 #include "segvcatch.h"
 #include "TCSoap.h"
@@ -216,7 +215,6 @@ extern int main(int argc, char **argv)
 
     // Initialize the World
     sScriptMgr->SetScriptLoader(AddScripts);
-    sScriptMgr->SetScriptLoader2(AddScripts2);
     sWorld->SetInitialWorldSettings();
 
     _lastMapChangeMsTime.resize(sMapMgr->_mapCount - 1, 0); // If mapID > 2000 change this

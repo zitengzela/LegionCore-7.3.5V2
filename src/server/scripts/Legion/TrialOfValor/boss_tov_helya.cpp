@@ -4,7 +4,7 @@
 
 #include "trial_of_valor.h"
 #include "AreaTriggerAI.h"
-#include "PrecompiledHeaders/NewScriptPCH.h"
+#include "PrecompiledHeaders/ScriptPCH.h"
 
 enum Says
 {

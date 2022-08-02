@@ -860,11 +860,6 @@ class ScriptMgr
             _script_loader_callback = script_loader_callback;
         }
 
-        void SetScriptLoader2(ScriptLoaderCallbackType script_loader_callback)
-        {
-            _script_loader_callback2 = script_loader_callback;
-        }
-
         /* Unloading */
         void Unload();
 
@@ -1072,7 +1067,6 @@ class ScriptMgr
         //atomic op counter for active scripts amount
         std::atomic_long _scheduledScripts;
         ScriptLoaderCallbackType _script_loader_callback;
-        ScriptLoaderCallbackType _script_loader_callback2;
         std::map<std::string, BattlePayProductScript*> _battlePayProductScripts;
 };
 

@@ -3,7 +3,7 @@
 */
 
 #include "trial_of_valor.h"
-#include "PrecompiledHeaders/NewScriptPCH.h"
+#include "PrecompiledHeaders/ScriptPCH.h"
 #include "WorldPacket.h"
 #include "InstancePackets.h"
 

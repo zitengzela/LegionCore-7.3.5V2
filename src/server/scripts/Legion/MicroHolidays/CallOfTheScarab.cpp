@@ -5,7 +5,7 @@
 #include "OutdoorPvP.h"
 #include "Packets/WorldStatePackets.h"
 #include "World.h"
-#include "PrecompiledHeaders/NewScriptPCH.h"
+#include "PrecompiledHeaders/ScriptPCH.h"
 
 enum Misc
 {

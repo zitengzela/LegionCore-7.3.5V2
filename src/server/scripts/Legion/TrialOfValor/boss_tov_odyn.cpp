@@ -5,7 +5,7 @@
 #include "trial_of_valor.h"
 #include "ScriptUtils.h"
 #include "AreaTriggerAI.h"
-#include "PrecompiledHeaders/NewScriptPCH.h"
+#include "PrecompiledHeaders/ScriptPCH.h"
 
 namespace
 {

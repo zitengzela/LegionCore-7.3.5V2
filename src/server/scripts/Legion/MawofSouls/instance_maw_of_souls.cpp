@@ -4,7 +4,7 @@
 */
 
 #include "maw_of_souls.h"
-#include "PrecompiledHeaders/NewScriptPCH.h"
+#include "PrecompiledHeaders/ScriptPCH.h"
 #include "WorldPacket.h"
 #include "InstancePackets.h"
 

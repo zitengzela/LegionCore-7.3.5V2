@@ -5,7 +5,7 @@
 #ifndef RETURN_TO_KARAZHAN_H_
 #define RETURN_TO_KARAZHAN_H_
 
-#include "PrecompiledHeaders/NewScriptPCH.h"
+#include "PrecompiledHeaders/ScriptPCH.h"
 
 enum eData
 {

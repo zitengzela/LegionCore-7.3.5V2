@@ -24,6 +24,7 @@ endmacro(PrepareScripts)
 
 PrepareScripts(Spells PRIVATE_SOURCES)
 PrepareScripts(Commands PRIVATE_SOURCES)
+PrepareScripts(BrawlersGuild PRIVATE_SOURCES)
 
 if(SCRIPTS)
   PrepareScripts(BattlePay PRIVATE_SOURCES)
@@ -35,6 +36,13 @@ if(SCRIPTS)
   PrepareScripts(Outland PRIVATE_SOURCES)
   PrepareScripts(PetBattle PRIVATE_SOURCES)
   PrepareScripts(World PRIVATE_SOURCES)
+  PrepareScripts(Draenor PRIVATE_SOURCES)
+  PrepareScripts(EasternKingdoms PRIVATE_SOURCES)
+  PrepareScripts(Legion PRIVATE_SOURCES)
+  PrepareScripts(Outland PRIVATE_SOURCES)
+  PrepareScripts(Pandaria PRIVATE_SOURCES)
+  PrepareScripts(Scenario PRIVATE_SOURCES)
+  PrepareScripts(Maelstrom PRIVATE_SOURCES)
 endif()
 
 list(APPEND PRIVATE_SOURCES

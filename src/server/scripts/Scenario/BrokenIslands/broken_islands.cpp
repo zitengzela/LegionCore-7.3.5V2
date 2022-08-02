@@ -16,7 +16,6 @@
 #include "GameObjectAI.h"
 #include "QuestData.h"
 #include "CreatureGroups.h"
-// #include "PrecompiledHeaders/NewScriptPCH.h"
 
 #define GOSSIP_ACCEPT_DUEL      "Let''s duel"
 #define EVENT_SPECIAL 20
