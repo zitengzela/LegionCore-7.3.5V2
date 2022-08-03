@@ -277,47 +277,6 @@ struct npc_underbelly_banquet : public ScriptedAI
 	}
 };
 
-// Zone 8392
-class OutdoorPVPDalaranUnderbelly : public OutdoorPvP
-{
-public:
-	OutdoorPVPDalaranUnderbelly()
-	{
-		m_TypeId = OUTDOOR_PVP_DALARAN_UNDERBELLY;
-	}
-
-    ~OutdoorPVPDalaranUnderbelly() = default;
-
-	bool SetupOutdoorPvP() override
-	{
-		RegisterZone(8392);
-		return true;
-	}
-
-	void HandlePlayerEnterZone(ObjectGuid guid, uint32 zone) override
-	{
-		if (Player * player = ObjectAccessor::GetObjectInMap(guid, m_map, (Player*)nullptr))
-			player->TeleportTo(1502, player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetOrientation(), TELE_TO_SEAMLESS);
-	}
-
-	void HandlePlayerLeaveZone(ObjectGuid guid, uint32 zone) override
-	{
-		if (Player * player = ObjectAccessor::GetObjectInMap(guid, m_map, (Player*)nullptr))
-			if (player->GetMapId() == 1502)
-				player->TeleportTo(1220, player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetOrientation(), TELE_TO_SEAMLESS);
-	}
-};
-
-class OutdoorPvP_DalaranUnderbelly : public OutdoorPvPScript
-{
-public:
-	OutdoorPvP_DalaranUnderbelly() : OutdoorPvPScript("outdoorpvp_dalaran_underbelly") {}
-
-    OutdoorPvP* GetOutdoorPvP() const override
-    {
-        return new OutdoorPVPDalaranUnderbelly();
-    }
-};
 void AddSC_Kloaka()
 {
 	new npc_kloaka_capitan();
@@ -327,6 +286,4 @@ void AddSC_Kloaka()
 
 	new Underbelly_pvp_kill();
 	new Underbelly_event_controller();
-
-	new OutdoorPvP_DalaranUnderbelly();
 };

@@ -196,5 +196,7 @@ INSERT INTO `game_event` (`eventEntry`, `start_time`, `end_time`, `occurence`, `
 
 
 DELETE FROM `outdoorpvp_template` WHERE `TypeId`=16;
-INSERT INTO `outdoorpvp_template` (`TypeId`, `ScriptName`, `ZoneList`, `MapList`, `comment`) VALUES 
-(16, 'outdoorpvp_dalaran_underbelly', '8392', '1502', 'Dalaran Underbelly');
+DELETE FROM `world_seamless_teleport` WHERE `ZoneID` in (8392,7502); 
+INSERT INTO `world_seamless_teleport` (`ZoneID`, `AreaID`, `FromMapID`, `ToMapID`, `comment`) VALUES 
+(8392, 0, 1220, 1502, 'From Dalaran to Kloaka'),
+(7502, 0, 1502, 1220, 'From Kloaka to Dalaran');
