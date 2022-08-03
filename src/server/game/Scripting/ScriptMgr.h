@@ -697,6 +697,9 @@ class PlayerScript : public ScriptObject
         // Called when a player switches to a new zone
         virtual void OnUpdateZone(Player* /*player*/, uint32 /*newZone*/, uint32 /*newArea*/) { }
 
+		// Called when a player switches to a new area
+		virtual void OnUpdateArea(Player* /*player*/, uint32 /*newArea*/) { }
+
         virtual void OnPetBattleFinish(Player* /*player*/) { }
 
         // Called when a player changes to a new map (after moving to new map)
@@ -1012,6 +1015,7 @@ class ScriptMgr
         void OnPlayerDelete(ObjectGuid const& guid);
         void OnPlayerBindToInstance(Player* player, Difficulty difficulty, uint32 mapid, bool permanent);
         void OnPlayerUpdateZone(Player* player, uint32 newZone, uint32 newArea);
+		void OnPlayerUpdateArea(Player* player, uint32 newArea);
         void OnPetBattleFinish(Player* player);
         void OnMovementInform(Player* player, uint32 moveType, uint32 ID);
         void OnUpdate(Player* player, uint32 diff);

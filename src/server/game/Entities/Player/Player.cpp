@@ -2125,7 +2125,7 @@ uint8 Player::GetChatTag() const
 
 bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientation, uint32 options, uint32 spellID/*=false*/)
 {
-    // TC_LOG_ERROR(LOG_FILTER_UWOW_CORE, "Player::TeleportTo mapid %u options %u spellID %u IsHasDelayedTeleport %u", mapid, options, spellID, IsHasDelayedTeleport());
+	TC_LOG_DEBUG(LOG_FILTER_UWOW_CORE, "Player::TeleportTo mapid %u options %u spellID %u IsHasDelayedTeleport %u", mapid, options, spellID, IsHasDelayedTeleport());
 
     if (!GetSession() || GetSession()->PlayerLogout())
         return true;
@@ -2191,7 +2191,7 @@ bool Player::SafeTeleport(uint32 mapid, float x, float y, float z, float orienta
     if (!GetSession() || !mEntry)
         return false;
 
-    // TC_LOG_ERROR(LOG_FILTER_UWOW_CORE, "SafeTeleport mapid %u IsHasDelayedTeleport %u m_Teleports %u", mapid, IsHasDelayedTeleport(), m_Teleports);
+	TC_LOG_DEBUG(LOG_FILTER_UWOW_CORE, "SafeTeleport mapid %u IsHasDelayedTeleport %u m_Teleports %u", mapid, IsHasDelayedTeleport(), m_Teleports);
 
     if (IsHasDelayedTeleport() && m_Teleports) // Not teleported if we relocate in zone
         return false;
@@ -2605,7 +2605,7 @@ void Player::ZoneTeleport(uint32 zoneId)
     if (GetInstanceId() == zoneId) // Allready in this zone
         return;
 
-    // TC_LOG_ERROR(LOG_FILTER_UWOW_CORE, "ZoneTeleport zoneId %u mapid %u IsHasDelayedTeleport %u IsHasGlobalTeleport %u", zoneId, GetMap()->GetId(), IsHasDelayedTeleport(), IsHasGlobalTeleport());
+	TC_LOG_DEBUG(LOG_FILTER_UWOW_CORE, "ZoneTeleport zoneId %u mapid %u IsHasDelayedTeleport %u IsHasGlobalTeleport %u", zoneId, GetMap()->GetId(), IsHasDelayedTeleport(), IsHasGlobalTeleport());
     if (IsHasDelayedTeleport() || IsHasGlobalTeleport()) // If teleport allready run, not zone teleport
         return;
 
@@ -10073,7 +10073,7 @@ void Player::UpdateArea(uint32 newArea)
         }
     }
 
-    ChaeckSeamlessTeleport(newArea, true);
+	CheckSeamlessTeleport(newArea, true);
 
     TC_LOG_DEBUG(LOG_FILTER_UWOW_CORE, "Player::UpdateArea m_areaId %i newArea %u m_zoneId %u", m_areaId, newArea, m_zoneId);
 
@@ -10171,6 +10171,8 @@ void Player::UpdateArea(uint32 newArea)
     {
         GetPhaseMgr().RemoveUpdateFlag(PHASE_UPDATE_FLAG_AREA_UPDATE);
     });
+
+	sScriptMgr->OnPlayerUpdateArea(this, newArea);
 }
 
 void Player::UpdateZone(uint32 newZone, uint32 newArea)
@@ -10190,7 +10192,7 @@ void Player::UpdateZone(uint32 newZone, uint32 newArea)
         GetPhaseMgr().AddUpdateFlag(PHASE_UPDATE_FLAG_ZONE_UPDATE);
     });
 
-    ChaeckSeamlessTeleport(newZone);
+	CheckSeamlessTeleport(newZone);
 
     if (m_zoneId != newZone)
     {
@@ -36958,9 +36960,9 @@ void Player::UnLockThirdSocketIfNeed(Item* item)
             item->AddBonuses(bonusID);
 }
 
-void Player::ChaeckSeamlessTeleport(uint32 newZoneOrArea, bool isArea)
+void Player::CheckSeamlessTeleport(uint32 newZoneOrArea, bool isArea)
 {
-    // TC_LOG_ERROR(LOG_FILTER_UWOW_CORE, "ChaeckSeamlessTeleport mapid %u newZoneOrArea %u m_zoneId %u m_oldZoneId %u isArea %u", GetMapId(), newZoneOrArea, m_zoneId, m_oldZoneId, isArea);
+	TC_LOG_DEBUG(LOG_FILTER_UWOW_CORE, "CheckSeamlessTeleport mapid %u newZoneOrArea %u m_zoneId %u m_oldZoneId %u isArea %u", GetMapId(), newZoneOrArea, m_zoneId, m_oldZoneId, isArea);
     if (!isArea && (m_zoneId ? m_zoneId : m_oldZoneId) != newZoneOrArea)
     {
         SeamlessTeleportData const* from = sObjectMgr->GetSeamlessTeleportZone(m_zoneId ? m_zoneId : m_oldZoneId);
@@ -36987,7 +36989,8 @@ void Player::ChaeckSeamlessTeleport(uint32 newZoneOrArea, bool isArea)
             }
         }
     }
-    // TC_LOG_ERROR(LOG_FILTER_UWOW_CORE, "ChaeckSeamlessTeleport mapid %u newZoneOrArea %u m_areaId %u", GetMapId(), newZoneOrArea, m_areaId);
+
+	TC_LOG_DEBUG(LOG_FILTER_UWOW_CORE, "CheckSeamlessTeleport mapid %u newZoneOrArea %u m_areaId %u", GetMapId(), newZoneOrArea, m_areaId);
     if (isArea && m_areaId != newZoneOrArea)
     {
         SeamlessTeleportData const* from = sObjectMgr->GetSeamlessTeleportArea(m_areaId);

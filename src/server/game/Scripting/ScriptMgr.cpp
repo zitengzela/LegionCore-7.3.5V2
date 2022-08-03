@@ -1343,6 +1343,11 @@ void ScriptMgr::OnPlayerUpdateZone(Player* player, uint32 newZone, uint32 newAre
     FOREACH_SCRIPT(PlayerScript)->OnUpdateZone(player, newZone, newArea);
 }
 
+void ScriptMgr::OnPlayerUpdateArea(Player* player, uint32 newArea)
+{
+	FOREACH_SCRIPT(PlayerScript)->OnUpdateArea(player, newArea);
+}
+
 void ScriptMgr::OnPetBattleFinish(Player* player)
 {
     FOREACH_SCRIPT(PlayerScript)->OnPetBattleFinish(player);
