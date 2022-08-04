@@ -36,5 +36,5 @@
 void AddSC_quest_scripts()
 {
     // Example
-	// new quest_speaker_of_the_horde;
+    //RegisterQuestScript(quest_speaker_of_the_horde);
 }

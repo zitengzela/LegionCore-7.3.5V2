@@ -1170,4 +1170,10 @@ public:
 };
 #define RegisterInstanceScript(ai_name, mapId) new GenericInstanceMapScript<ai_name>(#ai_name, mapId)
 
+#define RegisterSceneScript(script) new script()
+#define RegisterQuestScript(script) new script()
+#define RegisterConversationScript(script) new script()
+#define RegisterPlayerScript(script) new script()
+#define RegisterItemScript(script) new script()
+
 #endif
