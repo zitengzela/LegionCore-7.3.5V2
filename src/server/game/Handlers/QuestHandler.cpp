@@ -503,7 +503,10 @@ void WorldSession::HandleQuestLogRemoveQuest(WorldPackets::Quest::QuestLogRemove
         if (!player->TakeQuestSourceItem(questId, true))
             return;                                     // can't un-equip some items, reject quest cancel
 
-        if (Quest const* quest = sQuestDataStore->GetQuestTemplate(questId))
+        Quest const* quest = sQuestDataStore->GetQuestTemplate(questId);
+        QuestStatus oldStatus = _player->GetQuestStatus(questId);
+
+        if (quest)
         {
             if (quest->HasSpecialFlag(QUEST_SPECIAL_FLAGS_TIMED))
                 player->RemoveTimedQuest(questId);
@@ -522,6 +525,9 @@ void WorldSession::HandleQuestLogRemoveQuest(WorldPackets::Quest::QuestLogRemove
         player->GetAchievementMgr()->RemoveTimedAchievement(CRITERIA_TIMED_TYPE_ITEM, questId);
 
         TC_LOG_INFO(LOG_FILTER_NETWORKIO, "Player %u abandoned quest %u", player->GetGUIDLow(), questId);
+
+        if (quest)
+            sScriptMgr->OnQuestStatusChange(_player, quest, oldStatus, QUEST_STATUS_NONE);
     }
 
     _player->SetQuestSlot(packet.Entry, 0);

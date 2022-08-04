@@ -69,6 +69,7 @@ struct ConditionSourceInfo;
 struct Condition;
 struct ItemTemplate;
 struct OutdoorPvPData;
+struct QuestObjective;
 
 #define VISIBLE_RANGE       166.0f                          //MAX visible range (size of grid)
 
@@ -824,6 +825,23 @@ public:
     virtual void OnDelete(uint32 /*variableID*/, uint8 /*type*/) { }
 };
 
+class QuestScript : public ScriptObject
+{
+protected:
+
+    QuestScript(std::string name);
+
+public:
+
+    bool IsDatabaseBound() const override { return true; }
+
+    // Called when a quest status change
+    virtual void OnQuestStatusChange(Player* /*player*/, Quest const* /*quest*/, QuestStatus /*oldStatus*/, QuestStatus /*newStatus*/) { }
+
+    // Called when a quest objective data change
+    virtual void OnQuestObjectiveChange(Player* /*player*/, Quest const* /*quest*/, QuestObjective const* /*objective*/, int32 /*oldAmount*/, int32 /*newAmount*/) { }
+};
+
 // Placed here due to ScriptRegistry::AddScript dependency.
 #define sScriptMgr ScriptMgr::instance()
 
@@ -1064,6 +1082,11 @@ class ScriptMgr
         void OnBattlePayProductDelivery(WorldSession* session, Battlepay::Product const& product);
         bool BattlePayCanBuy(WorldSession* session, Battlepay::Product const& product, std::string& reason);
         std::string BattlePayGetCustomData(Battlepay::Product const& product);
+    
+        /* QuestScript */
+        void OnQuestStatusChange(Player* player, Quest const* quest, QuestStatus oldStatus, QuestStatus newStatus);
+        void OnQuestObjectiveChange(Player* player, Quest const* quest, QuestObjective const* objective, int32 oldAmount, int32 newAmount);
+
     private:
 
         uint32 _scriptCount;

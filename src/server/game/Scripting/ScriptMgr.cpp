@@ -327,6 +327,7 @@ void ScriptMgr::Unload()
     SCR_CLEAR(AchievementRewardScript);
     SCR_CLEAR(PlayerScript);
     SCR_CLEAR(SessionScript);
+    SCR_CLEAR(QuestScript);
     SCR_CLEAR(GuildScript);
     SCR_CLEAR(GroupScript);
     SCR_CLEAR(EventObjectScript);
@@ -1468,6 +1469,24 @@ void ScriptMgr::OnWorldStateDelete(uint32 variableID, uint8 type)
     FOREACH_SCRIPT(WorldStateScript)->OnDelete(variableID, type);
 }
 
+void ScriptMgr::OnQuestStatusChange(Player* player, Quest const* quest, QuestStatus oldStatus, QuestStatus newStatus)
+{
+    ASSERT(player);
+    ASSERT(quest);
+
+    GET_SCRIPT(QuestScript, quest->GetScriptId(), tmpscript);
+    tmpscript->OnQuestStatusChange(player, quest, oldStatus, newStatus);
+}
+
+void ScriptMgr::OnQuestObjectiveChange(Player* player, Quest const* quest, QuestObjective const* objective, int32 oldAmount, int32 newAmount)
+{
+    ASSERT(player);
+    ASSERT(quest);
+
+    GET_SCRIPT(QuestScript, quest->GetScriptId(), tmpscript);
+    tmpscript->OnQuestObjectiveChange(player, quest, objective, oldAmount, newAmount);
+}
+
 SpellScriptLoader::SpellScriptLoader(std::string name) : ScriptObject(name)
 {
     ScriptRegistry<SpellScriptLoader>::AddScript(this);
@@ -1653,6 +1672,11 @@ GroupScript::GroupScript(std::string name) : ScriptObject(name)
     ScriptRegistry<GroupScript>::AddScript(this);
 }
 
+QuestScript::QuestScript(std::string name) : ScriptObject(name)
+{
+    ScriptRegistry<QuestScript>::AddScript(this);
+}
+
 void ScriptMgr::OnLootItem(Player* player, Item* item, uint32 count)
 {
     FOREACH_SCRIPT(PlayerScript)->OnLootItem(player, item, count);
@@ -1702,6 +1726,7 @@ template class ScriptRegistry<WeatherScript>;
 template class ScriptRegistry<WorldMapScript>;
 template class ScriptRegistry<WorldScript>;
 template class ScriptRegistry<WorldStateScript>;
+template class ScriptRegistry<QuestScript>;
 
 // Undefine utility macros.
 #undef GET_SCRIPT_RET

@@ -19082,6 +19082,7 @@ void Player::AddQuest(Quest const* quest, Object* questGiver)
     // if not exist then created with set uState == NEW and rewarded=false
     QuestStatusData& status_q = m_QuestStatus[quest_id];
     (*m_QuestStatusVector)[quest_id] = &status_q;
+    QuestStatus oldStatus = status_q.Status;
 
     // check for repeatable quests status reset
     status_q.Status = QUEST_STATUS_INCOMPLETE;
@@ -19149,6 +19150,8 @@ void Player::AddQuest(Quest const* quest, Object* questGiver)
         GetPhaseMgr().NotifyConditionChanged(phaseUdateData);
         UpdateForQuestWorldObjects();
     });
+
+    sScriptMgr->OnQuestStatusChange(this, quest, oldStatus, status_q.Status);
 }
 
 void Player::CompleteQuest(uint32 quest_id)
@@ -19223,6 +19226,7 @@ void Player::RewardQuest(Quest const* quest, uint32 reward, Object* questGiver, 
 
     uint32 quest_id = quest->GetQuestId();
     Item* rewardItem = nullptr;
+    QuestStatus oldStatus = GetQuestStatus(quest_id);
 
     for (QuestObjective const& obj : quest->GetObjectives())
     {
@@ -19622,7 +19626,7 @@ void Player::RewardQuest(Quest const* quest, uint32 reward, Object* questGiver, 
     //lets remove flag for delayed teleports
     SetCanDelayTeleport(false);
 
-
+    sScriptMgr->OnQuestStatusChange(this, quest, oldStatus, QUEST_STATUS_REWARDED);
 }
 
 void Player::FailQuest(uint32 questId)
@@ -20221,12 +20225,15 @@ void Player::QuestObjectiveSatisfy(uint32 objectId, uint32 amount, QuestObjectiv
 
 void Player::SetQuestStatus(uint32 quest_id, QuestStatus status)
 {
-    if (sQuestDataStore->GetQuestTemplate(quest_id))
+    if (Quest const* quest = sQuestDataStore->GetQuestTemplate(quest_id))
     {
+        QuestStatus oldStatus = m_QuestStatus[quest_id].Status;
         QuestStatusData& q_status = (*m_QuestStatusVector)[quest_id] ? *(*m_QuestStatusVector)[quest_id] : m_QuestStatus[quest_id];
         q_status.Status = status;
         m_QuestStatusSave[quest_id] = QUEST_DEFAULT_SAVE_TYPE;
         (*m_QuestStatusVector)[quest_id] = &q_status;
+
+        sScriptMgr->OnQuestStatusChange(this, quest, oldStatus, status);
     }
 
     SetQuestUpdate(quest_id);
@@ -21145,8 +21152,12 @@ void Player::SetQuestObjectiveData(Quest const* quest, QuestObjective const* obj
                 data = m_achievementMgr->IsCompletedCriteriaTree(tree);
 
     // No change
-    if (status->ObjectiveData[obj->StorageIndex] == data)
+    int32 oldData = status->ObjectiveData[obj->StorageIndex];
+    if (oldData == data)
         return;
+
+    if (Quest const* quest = sQuestDataStore->GetQuestTemplate(obj->QuestID))
+        sScriptMgr->OnQuestObjectiveChange(this, quest, obj, oldData, data);
 
     // Set data
     status->ObjectiveData[obj->StorageIndex] = data;

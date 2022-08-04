@@ -123,6 +123,8 @@ public:
             return false;
         }
 
+        QuestStatus oldStatus = player->GetQuestStatus(entry);
+
         // remove all quest entries for 'entry' from quest log
         for (uint8 slot = 0; slot < MAX_QUEST_LOG_SIZE; ++slot)
         {
@@ -138,6 +140,8 @@ public:
 
         player->RemoveActiveQuest(entry);
         player->RemoveRewardedQuest(entry);
+
+        sScriptMgr->OnQuestStatusChange(player, quest, oldStatus, QUEST_STATUS_NONE);
 
         handler->SendSysMessage(LANG_COMMAND_QUEST_REMOVED);
         return true;

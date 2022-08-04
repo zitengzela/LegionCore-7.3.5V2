@@ -410,6 +410,7 @@ class Quest
         bool   IsAutoAccept() const;
         bool   IsAutoComplete() const;
         uint32 GetFlags() const { return Flags; }
+        uint32 GetScriptId() const { return ScriptId; }
         bool   IsDaily() const { return (Flags & QUEST_FLAGS_DAILY) != 0; }
         bool   IsWeekly() const { return (Flags & QUEST_FLAGS_WEEKLY) != 0; }
         bool   IsSeasonal() const { return (QuestSortID == -QUEST_SORT_SEASONAL || QuestSortID == -QUEST_SORT_SPECIAL || QuestSortID == -QUEST_SORT_LUNAR_FESTIVAL || QuestSortID == -QUEST_SORT_MIDSUMMER || QuestSortID == -QUEST_SORT_BREWFEST || QuestSortID == -QUEST_SORT_LOVE_IS_IN_THE_AIR || QuestSortID == -QUEST_SORT_NOBLEGARDEN) && !IsRepeatable(); }
@@ -536,6 +537,7 @@ class Quest
         uint32 SourceItemIdCount    = 0;
         uint32 SpecialFlags         = 0; // custom flags, not sniffed/WDB
         std::string RewardMailTitle;
+        uint32 ScriptId = 0;
 };
 
 typedef std::map<int32/*idx*/, int32/*data*/> QuestStatusDatas;

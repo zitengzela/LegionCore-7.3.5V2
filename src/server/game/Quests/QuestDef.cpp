@@ -22,6 +22,7 @@
 #include "QuestPackets.h"
 #include "DatabaseEnv.h"
 #include "GameTables.h"
+#include "ObjectMgr.h"
 
 bool QuestObjective::IsStoringFlag() const
 {
@@ -206,6 +207,7 @@ void Quest::LoadQuestTemplateAddon(Field* fields)
     SourceItemIdCount = fields[15].GetUInt8();
     SpecialFlags = fields[16].GetUInt8();
     RewardMailTitle = fields[17].GetString();
+    ScriptId = sObjectMgr->GetScriptId(fields[18].GetCString());
 
     if (SpecialFlags & QUEST_SPECIAL_FLAGS_AUTO_ACCEPT)
         Flags |= QUEST_FLAGS_AUTO_ACCEPT;
