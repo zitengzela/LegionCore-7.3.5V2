@@ -1663,6 +1663,7 @@ void World::SetInitialWorldSettings()
     MMAP::MMapManager* mmmgr = MMAP::MMapFactory::createOrGetMMapManager();
     mmmgr->InitializeThreadUnsafe(mapData);
 
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading SpellInfo store...");
     sSpellMgr->LoadSpellInfoStore();
 
     TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading TalentSpellInfo store....");
@@ -1671,6 +1672,7 @@ void World::SetInitialWorldSettings()
     TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading SkillLineAbilityMultiMap Data...");
     sSpellMgr->LoadSkillLineAbilityMap();
 
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading LoadSpellCustomAttr Data...");
     sSpellMgr->LoadSpellCustomAttr();
 
     TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading GameObject models...");
@@ -1784,6 +1786,7 @@ void World::SetInitialWorldSettings()
     TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Spell Phase Dbc Info...");
     sObjectMgr->LoadSpellPhaseInfo();
 
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading AreaTriggerForces...");
     sAreaTriggerDataStore->LoadAreaTriggerForces();
 
     TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading NPC Texts...");
@@ -1807,6 +1810,7 @@ void World::SetInitialWorldSettings()
     TC_LOG_INFO(LOG_FILTER_GENERAL, "Loading Item Scripts...");                 // must be after LoadItemPrototypes
     sObjectMgr->LoadItemScriptNames();
 
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading ConversationData...");
     sConversationDataStore->LoadConversationData();
 
     TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Creature Model Based Info Data...");
@@ -1821,8 +1825,13 @@ void World::SetInitialWorldSettings()
     TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Creature Texts...");
     sCreatureTextMgr->LoadCreatureTexts();
 
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading WDB Creature template...");
     sObjectMgr->LoadWDBCreatureTemplates();
+
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Creature template...");
     sObjectMgr->LoadCreatureTemplates();
+
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading EventObject Template...");
     sEventObjectDataStore->LoadEventObjectTemplates();
 
     TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Creature template addons...");
@@ -1840,6 +1849,7 @@ void World::SetInitialWorldSettings()
     TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Reputation Spillover Data...");
     sObjectMgr->LoadReputationSpilloverTemplate();
 
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Points Of Interest...");
     sQuestDataStore->LoadPointsOfInterest();
 
     TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Creature Base Stats...");
@@ -1848,8 +1858,10 @@ void World::SetInitialWorldSettings()
     TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Creature Data...");
     sObjectMgr->LoadCreatures();
 
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading EventObjects...");
     sEventObjectDataStore->LoadEventObjects();
 
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Conversations Data...");
     sConversationDataStore->LoadConversations();
 
     TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Temporary Summon Data...");
@@ -1863,6 +1875,8 @@ void World::SetInitialWorldSettings()
 
     TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Creature Addon Data...");
     sObjectMgr->LoadCreatureAddons();                            // must be after LoadCreatureTemplates() and LoadCreatures()
+
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Creature Action Data...");
     sObjectMgr->LoadCreatureActionData();
 
     TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Display Choice Data...");
@@ -1889,6 +1903,7 @@ void World::SetInitialWorldSettings()
     TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Weather Data...");
     WeatherMgr::LoadWeatherData();
 
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Quest Data...");
     sQuestDataStore->LoadQuests();  // must be loaded after DBCs, creature_template, item_template, gameobject tables
 
     TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Gameobject quest visual...");
@@ -1897,18 +1912,27 @@ void World::SetInitialWorldSettings()
     TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Checking Quest Disables");
     DisableMgr::CheckQuestDisables();                           // must be after loading quests
 
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Quest POI Data...");
     sQuestDataStore->LoadQuestPOI();
+
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading QuestRelations Data...");
     sQuestDataStore->LoadQuestRelations();                            // must be after quest load
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Scenario POI");
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Scenario POI...");
     sObjectMgr->LoadScenarioPOI();
 
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Initialize sWorldStateMgr...");
     sWorldStateMgr.Initialize();
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Initialize sContributionMgr...");
     sContributionMgr.Initialize();
 
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Initialize WorldQuest Hourly Reset Time...");
     InitWorldQuestHourlyResetTime();
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Initialize Init WorldQuest Daily Reset Time...");
     InitWorldQuestDailyResetTime();
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Initialize Invasion Point Reset Time...");
     InitInvasionPointResetTime();
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading WorldQuest Templates...");
     sQuestDataStore->LoadWorldQuestTemplates();
 
     TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Objects Pooling Data...");
@@ -1926,16 +1950,23 @@ void World::SetInitialWorldSettings()
     TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading SpellArea Data...");                // must be after quest load
     sSpellMgr->LoadSpellAreas();
 
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading AreaTrigger Teleports...");
     sAreaTriggerDataStore->LoadAreaTriggerTeleports();
 
     TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Access Requirements...");
     sObjectMgr->LoadAccessRequirements();                        // must be after item template load
 
+
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Quest AreaTriggers...");
     sAreaTriggerDataStore->LoadQuestAreaTriggers();     // must be after LoadQuests
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Tavern AreaTriggers...");
     sAreaTriggerDataStore->LoadTavernAreaTriggers();
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading AreaTrigger Actions And Data...");
     sAreaTriggerDataStore->LoadAreaTriggerActionsAndData();
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading AreaTrigger Scripts...");
     sAreaTriggerDataStore->LoadAreaTriggerScripts();
 
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Character Name Data...");
     LoadCharacterNameData();
 
     TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading LFG entrance positions..."); // Must be after areatriggers
@@ -1959,18 +1990,23 @@ void World::SetInitialWorldSettings()
     TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading enchant custom attributes...");
     sSpellMgr->LoadEnchantCustomAttr();
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading linked spells...");
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Spell Linked...");
     sSpellMgr->LoadSpellLinked();
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Talent Spell Linked...");
     sSpellMgr->LoadTalentSpellLinked();
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Spell Concatenate Aura...");
     sSpellMgr->LoadSpellConcatenateAura();
 
     TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Prco Check spells...");
     sSpellMgr->LoadSpellPrcoCheck();
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading triggered spells...");
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Spell Triggered...");
     sSpellMgr->LoadSpellTriggered();
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Spell Visual...");
     sSpellMgr->LoadSpellVisual();
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Spell Pending Cast...");
     sSpellMgr->LoadSpellPendingCast();
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Spell Scene...");
     sSpellMgr->LoadSpellScene();
 
     TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Player Create Data...");
@@ -1982,6 +2018,7 @@ void World::SetInitialWorldSettings()
     TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Pet Name Parts...");
     sObjectMgr->LoadPetNames();
 
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Execute Character Database Cleaner...");
     CharacterDatabaseCleaner::CleanDatabase();
 
     TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading the max pet number...");
@@ -1997,6 +2034,7 @@ void World::SetInitialWorldSettings()
     sObjectMgr->LoadMailLevelRewards();
 
     // Loot tables
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Loot Tables...");
     LoadLootTables();
 
     TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Skill Discovery Table...");
@@ -2047,23 +2085,30 @@ void World::SetInitialWorldSettings()
 
     TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Guild rewards...");
     sGuildMgr->LoadGuildRewards();
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Guild Challenge Reward Info...");
     sGuildMgr->LoadGuildChallengeRewardInfo();
 
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Guilds...");
     sGuildMgr->LoadGuilds();
 
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Execute sGuildFinderMgr->LoadFromDB...");
     sGuildFinderMgr->LoadFromDB();
 
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Characte rBrackets...");
     sBracketMgr->LoadCharacterBrackets();
 
     TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Groups...");
     sGroupMgr->LoadGroups();
 
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Reserved Players Names...");
     sCharacterDataStore->LoadReservedPlayersNames();
 
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading GameObject For Quests...");
     sQuestDataStore->LoadGameObjectForQuests();
 
     TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading BattleMasters...");
     sBattlegroundMgr->LoadBattleMastersEntry();
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Pvp Rewards...");
     sBattlegroundMgr->LoadPvpRewards();
 
     TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading GameTeleports...");
@@ -2081,6 +2126,7 @@ void World::SetInitialWorldSettings()
     TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Donate Vendors...");
     sObjectMgr->LoadDonateVendors(); 
     
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Execute m_timers[WUPDATE_DONATE_AND_SERVICES].SetInterval( 3 * HOUR * IN_MILLISECONDS);...");
     m_timers[WUPDATE_DONATE_AND_SERVICES].SetInterval( 3 * HOUR * IN_MILLISECONDS);
 
     TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Trainers...");
@@ -2110,12 +2156,18 @@ void World::SetInitialWorldSettings()
     TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Conditions...");
     sConditionMgr->LoadConditions();
 
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Faction Change Achievements...");
     sCharacterDataStore->LoadFactionChangeAchievements();
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Faction Change Spells...");
     sCharacterDataStore->LoadFactionChangeSpells();
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Faction Change Items...");
     sCharacterDataStore->LoadFactionChangeItems();
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Faction Change Items...");
     sCharacterDataStore->LoadFactionChangeReputations();
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Faction Change Reputations...");
     sCharacterDataStore->LoadFactionChangeTitles();
 
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Mount Definitions...");
     CollectionMgr::LoadMountDefinitions();
 
     TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading GM tickets...");
@@ -2154,6 +2206,7 @@ void World::SetInitialWorldSettings()
     sScriptMgr->Initialize();
     sScriptMgr->OnConfigLoad(false);                                // must be done after the ScriptMgr has been properly initialized
 
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Execute Validate Spell Scripts...");
     sScriptDataStore->ValidateSpellScripts();
 
     TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading SmartAI scripts...");
@@ -2211,6 +2264,7 @@ void World::SetInitialWorldSettings()
     m_timers[WUPDATE_EVENTS].SetInterval(nextGameEvent);    //depend on next event
 
     // Delete all characters which have been deleted X days before
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Execute Delete Old Characters...");
     Player::DeleteOldCharacters();
 
     TC_LOG_INFO(LOG_FILTER_AUCTIONHOUSE, "Initialize AuctionHouseBot...");
@@ -2222,6 +2276,7 @@ void World::SetInitialWorldSettings()
     TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Starting Arena Season...");
     sGameEventMgr->StartArenaSeason();
 
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Initialize Ticket system...");
     sTicketMgr->Initialize();
 
     TC_LOG_INFO(LOG_FILTER_SERVER_LOADING,"Initializing Mailbox queue system...");
@@ -2230,6 +2285,7 @@ void World::SetInitialWorldSettings()
     ///- Initialize Battlegrounds
     TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Starting Battleground System");
     sBattlegroundMgr->CreateInitialBattlegrounds();
+    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Initialize Brawl Data...");
     sBattlegroundMgr->InitializeBrawlData();
     CharacterDatabase.Execute("UPDATE `character_battleground_data` SET `team` = 0"); // Need update if crash server
 
