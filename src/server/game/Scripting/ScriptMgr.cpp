@@ -1349,6 +1349,11 @@ void ScriptMgr::OnPlayerUpdateArea(Player* player, uint32 newArea)
 	FOREACH_SCRIPT(PlayerScript)->OnUpdateArea(player, newArea);
 }
 
+void ScriptMgr::OnPlayerRepop(Player* player)
+{
+    FOREACH_SCRIPT(PlayerScript)->OnPlayerRepop(player);
+}
+
 void ScriptMgr::OnPetBattleFinish(Player* player)
 {
     FOREACH_SCRIPT(PlayerScript)->OnPetBattleFinish(player);

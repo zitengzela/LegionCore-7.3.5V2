@@ -7102,6 +7102,8 @@ void Player::BuildPlayerRepop()
 
     // set and clear other
     SetMiscStandValue(UNIT_BYTE1_FLAG_ALWAYS_STAND);
+
+    sScriptMgr->OnPlayerRepop(this);
 }
 
 void Player::ResurrectPlayer(float restore_percent, bool applySickness)

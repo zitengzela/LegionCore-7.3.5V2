@@ -290,6 +290,7 @@ class ItemScript : public ScriptObject
         // Called when the item expires (is destroyed).
         virtual bool OnExpire(Player* /*player*/, ItemTemplate const* /*proto*/) { return false; }
 
+        // Called when create the item 
         virtual bool OnCreate(Player* /*player*/, Item* /*item*/) { return false; }
 };
 
@@ -432,7 +433,10 @@ public:
 
     bool IsDatabaseBound() const override { return true; }
 
+    // Called when the EventObject by ?
     virtual bool IsTriggerMeets(Player* /*player*/, EventObject* /*trigger*/) { return true; }
+
+    // Called when the EventObject is activated by a player.
     virtual bool OnTrigger(Player* /*player*/, EventObject* /*trigger*/, bool /*enter*/) { return false; }
 };
 
@@ -701,23 +705,34 @@ class PlayerScript : public ScriptObject
 		// Called when a player switches to a new area
 		virtual void OnUpdateArea(Player* /*player*/, uint32 /*newArea*/) { }
 
+        // Called when a player presses release when he died
+        virtual void OnPlayerRepop(Player* /*player*/) { }
+
+        // Called when a player pet battle finish
         virtual void OnPetBattleFinish(Player* /*player*/) { }
 
         // Called when a player changes to a new map (after moving to new map)
         virtual void OnMapChanged(Player* /*player*/) { }
 
+        // Called when a player movement inform
         virtual void OnMovementInform(Player* /*player*/, uint32 /*moveType*/, uint32 /*ID*/) { }
 
+        // Called when a player Update
         virtual void OnUpdate(Player* /*player*/, uint32 /*diff*/) { }
 
+        // Called when a player learn spell
         virtual void OnSpellLearned(Player* /*player*/, uint32 /*spellID*/) { }
         
+        // Called when a player call who list
         virtual void OnWhoListCall(Player* /*player*/, const std::set<ObjectGuid>& /*players*/ ) { }
         
+        // Called when a player send mail
         virtual void OnSendMail(Player* /*player*/, std::string& subject, std::string& body, ObjectGuid receiver) {}
         
+        // Called when a player reward quest
         virtual void OnQuestReward(Player* player, Quest const* quest) {}
 
+        // Called when a player enter combat
         virtual void OnEnterCombat(Player* player, Unit* target) {}
 		
         //After looting item
@@ -821,7 +836,10 @@ public:
 
     bool IsDatabaseBound() const override { return false; }
 
+    // Called when a WorldState is create.
     virtual void OnCreate(uint32 /*variableID*/, uint32 /*value*/, uint8 /*type*/) { }
+
+    // Called when a WorldState is delete.
     virtual void OnDelete(uint32 /*variableID*/, uint8 /*type*/) { }
 };
 
@@ -1045,6 +1063,7 @@ class ScriptMgr
         void OnLootItem(Player* player, Item* item, uint32 count);
         void OnCreateItem(Player* player, Item* item, uint32 count);
         void OnQuestRewardItem(Player* player, Item* item, uint32 count);
+        void OnPlayerRepop(Player* player);
         
         /* SessionScript */
         void OnSessionLogin(WorldSession* session);
