@@ -1328,7 +1328,7 @@ bool Creature::Create(ObjectGuid::LowType guidlow, Map* map, uint32 phaseMask, u
         SetGender(minfo->gender);
     }
 
-    LastUsedScriptID = cinfo->ScriptID;
+    LastUsedScriptID = GetScriptId();
 
     // TODO: Replace with spell, handle from DB
     if (isSpiritHealer() || isSpiritGuide())
@@ -3488,6 +3488,9 @@ std::string Creature::GetScriptName() const
 
 uint32 Creature::GetScriptId() const
 {
+    if (CreatureData const* creatureData = GetCreatureData())
+        return creatureData->ScriptId;
+
     return sObjectMgr->GetCreatureTemplate(GetEntry())->ScriptID;
 }
 
