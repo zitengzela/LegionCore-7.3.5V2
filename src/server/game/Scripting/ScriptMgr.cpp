@@ -1228,6 +1228,11 @@ void ScriptMgr::OnPlayerKilledByCreature(Creature* killer, Player* killed)
     FOREACH_SCRIPT(PlayerScript)->OnPlayerKilledByCreature(killer, killed);
 }
 
+void ScriptMgr::OnPlayerDeath(Player* player)
+{
+    FOREACH_SCRIPT(PlayerScript)->OnDeath(player);
+}
+
 void ScriptMgr::OnPlayerLevelChanged(Player* player, uint8 oldLevel)
 {
     FOREACH_SCRIPT(PlayerScript)->OnLevelChanged(player, oldLevel);
@@ -1397,6 +1402,12 @@ void ScriptMgr::OnPlayerEnterCombat(Player* player, Unit* target)
 {
     FOREACH_SCRIPT(PlayerScript)->OnEnterCombat(player, target);
 }
+
+void ScriptMgr::OnMovieComplete(Player* player, uint32 movieId)
+{
+    FOREACH_SCRIPT(PlayerScript)->OnMovieComplete(player, movieId);
+}
+
 // Guild
 void ScriptMgr::OnGuildAddMember(Guild* guild, Player* player, uint8& plRank)
 {

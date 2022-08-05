@@ -643,6 +643,9 @@ class PlayerScript : public ScriptObject
         // Called when a player is killed by a creature
         virtual void OnPlayerKilledByCreature(Creature* /*killer*/, Player* /*killed*/) { }
 
+        // Called when a player die
+        virtual void OnDeath(Player* /*player*/) { }
+
         // Called when a player's level changes (right before the level is applied)
         virtual void OnLevelChanged(Player* /*player*/, uint8 /*newLevel*/) { }
 
@@ -749,6 +752,9 @@ class PlayerScript : public ScriptObject
 
         //After receiving item as a quest reward
         virtual void OnQuestRewardItem(Player* player, Item* item, uint32 count) { }
+
+        // Called when a player completes a movie
+        virtual void OnMovieComplete(Player* /*player*/, uint32 /*movieId*/) { }
 };
 
 class SessionScript : public ScriptObject
@@ -1036,6 +1042,7 @@ class ScriptMgr
         void OnPVPKill(Player* killer, Player* killed);
         void OnCreatureKill(Player* killer, Creature* killed);
         void OnPlayerKilledByCreature(Creature* killer, Player* killed);
+        void OnPlayerDeath(Player* player);
         void OnPlayerLevelChanged(Player* player, uint8 oldLevel);
         void OnPlayerFreeTalentPointsChanged(Player* player, uint32 newPoints);
         void OnPlayerTalentsReset(Player* player, bool noCost);
@@ -1072,6 +1079,7 @@ class ScriptMgr
         void OnCreateItem(Player* player, Item* item, uint32 count);
         void OnQuestRewardItem(Player* player, Item* item, uint32 count);
         void OnPlayerRepop(Player* player);
+        void OnMovieComplete(Player* player, uint32 movieId);
         
         /* SessionScript */
         void OnSessionLogin(WorldSession* session);

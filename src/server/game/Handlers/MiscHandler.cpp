@@ -24,6 +24,7 @@
 #include "Corpse.h"
 #include "InstancePackets.h"
 #include "LFGMgr.h"
+#include "MapManager.h"
 #include "MiscPackets.h"
 #include "ObjectMgr.h"
 #include "OutdoorPvP.h"
@@ -300,6 +301,13 @@ void WorldSession::HandleCompleteMovie(WorldPackets::Misc::CompleteMovie& /*pack
 
     player->setWatchinMovie(false);
     player->SetCanDelayTeleport(false);
+
+    uint32 movie = player->GetMovie();
+    if (!movie)
+        return;
+
+    player->SetMovie(0);
+    sScriptMgr->OnMovieComplete(player, movie);
 }
 
 void WorldSession::HandleFarSight(WorldPackets::Misc::FarSight& packet)

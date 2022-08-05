@@ -250,6 +250,8 @@ m_achievementMgr(sf::safe_ptr<AchievementMgr<Player>>(this))
 
     m_cinematic = 0;
 
+    m_movie = 0;
+
     PlayerTalkClass = new PlayerMenu(GetSession());
     m_currentBuybackSlot = BUYBACK_SLOT_START;
 
@@ -2055,6 +2057,8 @@ void Player::setDeathState(DeathState s)
         m_achievementMgr->ResetAchievementCriteria(CRITERIA_TYPE_BG_OBJECTIVE_CAPTURE, CRITERIA_CONDITION_NO_DEATH, 1);
         m_achievementMgr->ResetAchievementCriteria(CRITERIA_TYPE_HONORABLE_KILL, CRITERIA_CONDITION_NO_DEATH);
         m_achievementMgr->ResetAchievementCriteria(CRITERIA_TYPE_GET_KILLING_BLOWS, CRITERIA_CONDITION_NO_DEATH);
+
+        sScriptMgr->OnPlayerDeath(this);
     }
 
     Unit::setDeathState(s);
@@ -8735,6 +8739,7 @@ void Player::SendCinematicStart(uint32 CinematicSequenceId)
 
 void Player::SendMovieStart(uint32 MovieId)
 {
+    SetMovie(MovieId);
     WorldPackets::Misc::TriggerMovie packet;
     packet.MovieID = MovieId;
     SendDirectMessage(packet.Write());
@@ -11379,7 +11384,7 @@ void Player::CastItemCombatSpell(Unit* target, WeaponAttackType attType, uint32 
             else if (chance > 100.0f)
                 chance = GetWeaponProcChance();
 
-            if (roll_chance_f(chance) && sScriptMgr->OnCastItemCombatSpell(this, damageInfo.GetVictim(), spellInfo, item))
+            if (roll_chance_f(chance) && sScriptMgr->OnCastItemCombatSpell(this, target, spellInfo, item))
                 CastSpell(target, spellInfo->Id, true, item);
         }
     }
