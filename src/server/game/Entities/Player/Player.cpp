@@ -11379,7 +11379,7 @@ void Player::CastItemCombatSpell(Unit* target, WeaponAttackType attType, uint32 
             else if (chance > 100.0f)
                 chance = GetWeaponProcChance();
 
-            if (roll_chance_f(chance))
+            if (roll_chance_f(chance) && sScriptMgr->OnCastItemCombatSpell(this, damageInfo.GetVictim(), spellInfo, item))
                 CastSpell(target, spellInfo->Id, true, item);
         }
     }
@@ -16296,6 +16296,7 @@ void Player::DestroyItem(uint8 bag, uint8 slot, bool update)
                 RemoveAurasDueToSpell(effectData->SpellID);
 
         ItemRemovedQuestCheck(pItem->GetEntry(), pItem->GetCount());
+        sScriptMgr->OnItemRemove(this, pItem);
 
         if (bag == INVENTORY_SLOT_BAG_0)
         {

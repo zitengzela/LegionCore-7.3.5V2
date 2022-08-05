@@ -18,6 +18,20 @@ https://mega.nz/file/4SB2ECCJ#ztXHEFyDoiMoVgryySJdNcYYH64TnDzd3ApgHWa3DGc
 DATA LINK oficiales 26124
 https://www.mediafire.com/file/tbvzrzbda7xrnq6/data_7.3.5.7z/file
 
+Systems:
+- Garrison/Class Hall (WIP)
+- World Quests
+- Challenge Mode (Mythic+)
+- Mercenary battleground system
+- Rated Arenas
+- TimeWalkers (BC/WotLK/Cataclsym/MoP)
+- Personnal/Master loots
+
+
+Zones:
+Argus quest-line 3-3
+DH zones 2-2
+
 Legion scripts:
 
 Instances & dungeons & bosses
@@ -43,7 +57,6 @@ Legion
 - Violet Hold Legion
 - Invasion point Argus
 - Invasion point world bosses
-- Mardum
 - Sentinax
 - World bosses legion
 
@@ -85,6 +98,19 @@ Pandaria
 - Boss Oondasta
 - Boss Sha of Anger
 
+Artifact Scenarios:
+- Paladin
+- Druida
+- Hunter
+- Warrior
+- Sacerdote 
+- Brujo
+- Dh
+- Picaro
+- DK
+- Chaman 
+- Brujo Fuego verde
+
 Scenarios
 - A Brewing Storm
 - A Little Patience
@@ -113,32 +139,3 @@ Scenarios
 - The Thunder Forge
 - Troves of the Thunder King
 - Unga Ingoo
-
-Class spells 
-- DK
-- druid
-- hunter
-- mage
-- monk
-- paladin
-- priest
-- rogue
-- shaman
-- warlock
-- warrior
-- dh
-
-Gestas funcionando
-- Paladin
-- Druida
-- Hunter
-- Warrior
-- Sacerdote 
-- Brujo
-- Dh
-- Picaro
-- DK
-- Chaman 
-- Bujo Fuego verde
-
-

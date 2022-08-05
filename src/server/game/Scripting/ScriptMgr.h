@@ -290,8 +290,14 @@ class ItemScript : public ScriptObject
         // Called when the item expires (is destroyed).
         virtual bool OnExpire(Player* /*player*/, ItemTemplate const* /*proto*/) { return false; }
 
+        // Called when the item is destroyed.
+        virtual bool OnRemove(Player* /*player*/, Item* /*item*/) { return false; }
+
         // Called when create the item 
         virtual bool OnCreate(Player* /*player*/, Item* /*item*/) { return false; }
+
+        // Called before casting a combat spell from this item (chance on hit spells of item template, can be used to prevent cast if returning false)
+        virtual bool OnCastItemCombatSpell(Player* /*player*/, Unit* /*victim*/, SpellInfo const* /*spellInfo*/, Item* /*item*/) { return true; }
 };
 
 class CreatureScript : public ScriptObject, public UpdatableScript<Creature>
@@ -941,7 +947,9 @@ class ScriptMgr
         bool OnQuestAccept(Player* player, Item* item, Quest const* quest);
         bool OnItemUse(Player* player, Item* item, SpellCastTargets const& targets);
         bool OnItemExpire(Player* player, ItemTemplate const* proto);
+        bool OnItemRemove(Player* player, Item* item);
         bool OnItemCreate(Player* player, ItemTemplate const* proto, Item* item);
+        bool OnCastItemCombatSpell(Player* player, Unit* victim, SpellInfo const* spellInfo, Item* item);
 
         /* CreatureScript */
         bool OnDummyEffect(Unit* caster, uint32 spellId, SpellEffIndex effIndex, Creature* target);
