@@ -567,6 +567,9 @@ void AddSC_Kloaka();
 void AddSC_chat_log();
 
 //legion
+void AddSC_zone_krokuun();
+void AddSC_zone_macaree();
+void AddSC_zone_antoran_wastes();
 void AddSC_Mardum();
 void AddSC_warden_prison();
 void AddSC_world_bossess_legion();
@@ -1917,6 +1920,9 @@ void AddCustomScripts()
 void AddLegionScripts()
 {
 #ifdef SCRIPTS
+    AddSC_zone_krokuun();
+    AddSC_zone_macaree();
+    AddSC_zone_antoran_wastes();
     AddSC_Mardum();
     AddSC_warden_prison();
     AddSC_world_bossess_legion();

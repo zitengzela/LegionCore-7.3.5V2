@@ -18,4 +18,20 @@
 #include "ScriptMgr.h"
 #include "QuestData.h"
 
-void AddSC_quest_scripts() { }
+// 47890
+struct quest_visions_of_torment : public QuestScript
+{
+    quest_visions_of_torment() : QuestScript("quest_visions_of_torment") { }
+
+    void OnQuestStatusChange(Player* player, Quest const* /*quest*/, QuestStatus oldStatus, QuestStatus /*newStatus*/) override
+    {
+        if (oldStatus == QUEST_STATUS_NONE)
+            if (player->GetQuestStatus(47890) == QUEST_STATUS_INCOMPLETE)
+                player->SummonCreature(124595, Position(983.268f, 1665.89f, 525.221f, 2.56006f), TEMPSUMMON_TIMED_DESPAWN, 50000, 0, player->GetGUID());
+    }
+};
+
+void AddSC_zone_krokuun()
+{
+    RegisterQuestScript(quest_visions_of_torment);
+}

@@ -15,7 +15,7 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ScriptMgr.h"
-#include "QuestData.h"
 
-void AddSC_quest_scripts() { }
+#include "ScriptMgr.h"
+
+void AddSC_zone_antoran_wastes() { }
