@@ -957,6 +957,121 @@ public:
         {
             std::ostringstream ss_flags;
 
+            if (uint32 unitFlag2 = target->GetUInt32Value(UNIT_FIELD_FLAGS_2))
+            {
+                ss_flags << unitFlag2 << " : ";
+                // fix this
+                if (unitFlag2 & UNIT_FLAG2_FEIGN_DEATH)
+                    ss_flags << "FeignDeath ";
+                if (unitFlag2 & UNIT_FLAG2_UNK1)
+                    ss_flags << "UNK1 ";
+                if (unitFlag2 & UNIT_FLAG2_IGNORE_REPUTATION)
+                    ss_flags << "IgnoreReputation ";
+                if (unitFlag2 & UNIT_FLAG2_COMPREHEND_LANG)
+                    ss_flags << "ComprehendLang ";
+                if (unitFlag2 & UNIT_FLAG2_MIRROR_IMAGE)
+                    ss_flags << "MirrorImage ";
+                if (unitFlag2 & UNIT_FLAG2_INSTANTLY_APPEAR_MODEL)
+                    ss_flags << "InstantlyAppearModel ";
+                if (unitFlag2 & UNIT_FLAG2_FORCE_MOVEMENT)
+                    ss_flags << "ForceMovement ";
+                if (unitFlag2 & UNIT_FLAG2_DISARM_OFFHAND)
+                    ss_flags << "DisarmOffhand ";
+                if (unitFlag2 & UNIT_FLAG2_DISABLE_PRED_STATS)
+                    ss_flags << "DisablePredStats ";
+                if (unitFlag2 & UNIT_FLAG2_ALLOW_CHANGING_TALENTS)
+                    ss_flags << "AllowChangingTalents ";
+                if (unitFlag2 & UNIT_FLAG2_DISARM_RANGED)
+                    ss_flags << "DisarmRanged ";
+                if (unitFlag2 & UNIT_FLAG2_REGENERATE_POWER)
+                    ss_flags << "RegeneratePower ";
+                if (unitFlag2 & UNIT_FLAG2_RESTRICT_PARTY_INTERACTION)
+                    ss_flags << "RestrictPartyInteraction ";
+                if (unitFlag2 & UNIT_FLAG2_PREVENT_SPELL_CLICK)
+                    ss_flags << "PreventSpellClick ";
+                if (unitFlag2 & UNIT_FLAG2_ALLOW_ENEMY_INTERACT)
+                    ss_flags << "AllowEnemyInteract ";
+                if (unitFlag2 & UNIT_FLAG2_DISABLE_TURN)
+                    ss_flags << "DisableTurn ";
+                if (unitFlag2 & UNIT_FLAG2_UNK2)
+                    ss_flags << "UNK2 ";
+                if (unitFlag2 & UNIT_FLAG2_PLAY_DEATH_ANIM)
+                    ss_flags << "OkayDeathAnim ";
+                if (unitFlag2 & UNIT_FLAG2_ALLOW_CHEAT_SPELLS)
+                    ss_flags << "AllowCheatSpells ";
+                if (unitFlag2 & UNIT_FLAG2_UNK3)
+                    ss_flags << "UNK3 ";
+                if (unitFlag2 & UNIT_FLAG2_UNK4)
+                    ss_flags << "UNK4 ";
+                if (unitFlag2 & UNIT_FLAG2_UNK5)
+                    ss_flags << "UNK5 ";
+                if (unitFlag2 & UNIT_FLAG2_UNK6)
+                    ss_flags << "UNK6 ";
+                if (unitFlag2 & UNIT_FLAG2_NO_ACTIONS)
+                    ss_flags << "NoActions ";
+                if (unitFlag2 & UNIT_FLAG2_SWIM_PREVENT)
+                    ss_flags << "SwimPrevent ";
+                if (unitFlag2 & UNIT_FLAG2_HIDE_IN_COMBAT_LOG)
+                    ss_flags << "HideInCombatLog ";
+                if (unitFlag2 & UNIT_FLAG2_PREVENT_SELECT_NPC)
+                    ss_flags << "PreventSelectNpc ";
+                if (unitFlag2 & UNOT_FLAG2_IGNORE_SPELL_MIN_RANGE_RESTRICTIONS)
+                    ss_flags << "IgnoreSpellMinRangeRestrictions ";
+                if (unitFlag2 & UNIT_FLAG2_UNK7)
+                    ss_flags << "UNK7 ";
+            }
+            else
+                ss_flags << "0";
+
+            handler->PSendSysMessage("UnitFlags2: %s", ss_flags.str().c_str());
+        }
+
+        {
+            std::ostringstream ss_flags;
+
+            if (uint32 unitFlag3 = target->GetUInt32Value(UNIT_FIELD_FLAGS_3))
+            {
+                ss_flags << unitFlag3 << " : ";
+                // fix this
+                if (unitFlag3 & UNIT_FLAG3_UNK0)
+                    ss_flags << "UNK0 ";
+                if (unitFlag3 & UNIT_FLAG3_UNK1)
+                    ss_flags << "UNK1 ";
+                if (unitFlag3 & UNIT_FLAG3_NOT_CHECK_MOUNT)
+                    ss_flags << "NotCheckMount ";
+                if (unitFlag3 & UNIT_FLAG3_UNK3)
+                    ss_flags << "UNK3 ";
+                if (unitFlag3 & UNIT_FLAG3_UNK4)
+                    ss_flags << "UNK4 ";
+                if (unitFlag3 & UNIT_FLAG3_UNK5)
+                    ss_flags << "UNK5 ";
+                if (unitFlag3 & UNIT_FLAG3_UNK6)
+                    ss_flags << "UNK6 ";
+                if (unitFlag3 & UNIT_FLAG3_UNK7)
+                    ss_flags << "UNK7 ";
+                if (unitFlag3 & UNIT_FLAG3_UNK8)
+                    ss_flags << "UNK8 ";
+                if (unitFlag3 & UNIT_FLAG3_UNK9)
+                    ss_flags << "UNK9 ";
+                if (unitFlag3 & UNIT_FLAG3_UNK10)
+                    ss_flags << "UNK10 ";
+                if (unitFlag3 & UNIT_FLAG3_UNK11)
+                    ss_flags << "UNK11 ";
+                if (unitFlag3 & UNIT_FLAG3_UNK12)
+                    ss_flags << "UNK12 ";
+                if (unitFlag3 & UNIT_FLAG3_FEIGN_DEATH)
+                    ss_flags << "FeignDeath ";
+                
+            }
+            else
+                ss_flags << "0";
+
+            handler->PSendSysMessage("UnitFlags3: %s", ss_flags.str().c_str());
+        }
+
+        {
+            std::ostringstream ss_flags;
+
             if (uint32 dynamicFlags = target->GetUInt32Value(OBJECT_FIELD_DYNAMIC_FLAGS))
             {
                 ss_flags << dynamicFlags << " : ";
