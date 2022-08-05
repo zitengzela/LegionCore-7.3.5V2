@@ -18,4 +18,19 @@
 #include "ScriptMgr.h"
 #include "QuestData.h"
 
-void AddSC_quest_scripts() { }
+// 44663 44184
+struct quest_blink_of_an_eye : public QuestScript
+{
+    quest_blink_of_an_eye() : QuestScript("quest_blink_of_an_eye") { }
+
+    void OnQuestStatusChange(Player* player, Quest const* /*quest*/, QuestStatus oldStatus, QuestStatus /*newStatus*/) override
+    {
+        if (oldStatus == QUEST_STATUS_NONE)
+            player->CreateConversation(3827);
+    }
+};
+
+void AddSC_quest_scripts() 
+{
+    RegisterQuestScript(quest_blink_of_an_eye);
+}

@@ -1,0 +1,1 @@
+UPDATE `quest_template_addon` SET `ScriptName`= 'quest_blink_of_an_eye' WHERE `id` in (44663,44184);
