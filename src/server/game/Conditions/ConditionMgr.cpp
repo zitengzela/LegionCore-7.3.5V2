@@ -307,10 +307,27 @@ bool Condition::Meets(ConditionSourceInfo& sourceInfo)
             condMeets = GetClosestGameObjectWithEntry(object, ConditionValue1, static_cast<float>(ConditionValue2)) ? true : false;
             break;
         }
-        case CONDITION_OBJECT_ENTRY:
+        case CONDITION_OBJECT_ENTRY_GUID:
         {
             if (uint32(object->GetTypeId()) == ConditionValue1)
+            {
                 condMeets = !ConditionValue2 || (object->GetEntry() == ConditionValue2);
+
+                if (ConditionValue3)
+                {
+                    switch (object->GetTypeId())
+                    {
+                    case TYPEID_UNIT:
+                        condMeets &= object->ToCreature()->GetDBTableGUIDLow() == ConditionValue3;
+                        break;
+                    case TYPEID_GAMEOBJECT:
+                        condMeets &= object->ToGameObject()->GetDBTableGUIDLow() == ConditionValue3;
+                        break;
+                    default:
+                        break;
+                    }
+                }
+            }
             break;
         }
         case CONDITION_TYPE_MASK:
@@ -393,9 +410,9 @@ bool Condition::Meets(ConditionSourceInfo& sourceInfo)
             condMeets = ConditionValue2 == sWorld->getWorldState(ConditionValue1);
             break;
         }
-        case CONDITION_PHASEMASK:
+        case CONDITION_PHASEID:
         {
-            condMeets = (object->GetPhaseMask() & ConditionValue1) != 0;
+            condMeets = object->HasPhaseId(ConditionValue1);
             break;
         }
         case CONDITION_TITLE:
@@ -674,6 +691,47 @@ bool Condition::Meets(ConditionSourceInfo& sourceInfo)
                 condMeets = ConditionValue2 & (1 << player->GetQuestStatus(ConditionValue1));
             break;
         }
+        case CONDITION_UNIT_STATE:
+        {
+            if (Unit* unit = object->ToUnit())
+                condMeets = unit->HasUnitState(ConditionValue1);
+            break;
+        }
+        case CONDITION_CREATURE_TYPE:
+        {
+            if (Creature* creature = object->ToCreature())
+                condMeets = creature->GetCreatureTemplate()->Type == ConditionValue1;
+            break;
+        }
+        case CONDITION_DIFFICULTY_ID:
+        {
+            condMeets = object->GetMap()->GetDifficultyID() == ConditionValue1;
+            break;
+        }
+        case CONDITION_HAS_GROUP:
+        {
+            if (Player* player = object->ToPlayer())
+            {
+                Group* group = player->GetGroup();
+                condMeets = group ? true : false;
+            }
+            break;
+        }
+        case CONDITION_WEEKLY_QUEST_DONE:
+        {
+            if (Player* player = object->ToPlayer())
+                condMeets = player->IsWeeklyQuestDone(ConditionValue1);
+            break;
+        }
+        case CONDITION_REPUTATION_VALUE:
+        {
+            if (Player* player = object->ToPlayer())
+            {
+                if (FactionEntry const* faction = sFactionStore.LookupEntry(ConditionValue1))
+                    condMeets = (ConditionValue2 && player->GetReputationMgr().GetReputation(faction) >= int32(ConditionValue2));
+            }
+            break;
+        }
         default:
             condMeets = false;
             break;
@@ -774,7 +832,8 @@ uint32 Condition::GetSearcherTypeMaskForCondition()
         case CONDITION_NEAR_GAMEOBJECT:
             mask |= GRID_MAP_TYPE_MASK_ALL;
             break;
-        case CONDITION_OBJECT_ENTRY:
+        case CONDITION_OBJECT_ENTRY_GUID:
+        {
             switch (ConditionValue1)
             {
                 case TYPEID_UNIT:
@@ -792,16 +851,13 @@ uint32 Condition::GetSearcherTypeMaskForCondition()
                 case TYPEID_AREATRIGGER:
                     mask |= GRID_MAP_TYPE_MASK_AREATRIGGER;
                     break;
-                case TYPEID_CONVERSATION:
-                    mask |= GRID_MAP_TYPE_MASK_CONVERSATION;
-                    break;
-                case TYPEID_EVENTOBJECT:
-                    mask |= GRID_MAP_TYPE_MASK_EVENTOBJECT;
-                    break;
                 default:
                     break;
             }
+            break;
+        }
         case CONDITION_TYPE_MASK:
+        {
             if (ConditionValue1 & TYPEMASK_UNIT)
                 mask |= GRID_MAP_TYPE_MASK_CREATURE | GRID_MAP_TYPE_MASK_PLAYER;
             if (ConditionValue1 & TYPEMASK_PLAYER)
@@ -817,6 +873,7 @@ uint32 Condition::GetSearcherTypeMaskForCondition()
             if (ConditionValue1 & TYPEMASK_EVENTOBJECT)
                 mask |= GRID_MAP_TYPE_MASK_EVENTOBJECT;
             break;
+        }
         case CONDITION_RELATION_TO:
             mask |= GRID_MAP_TYPE_MASK_CREATURE | GRID_MAP_TYPE_MASK_PLAYER;
             break;
@@ -838,7 +895,7 @@ uint32 Condition::GetSearcherTypeMaskForCondition()
         case CONDITION_WORLD_STATE:
             mask |= GRID_MAP_TYPE_MASK_ALL;
             break;
-        case CONDITION_PHASEMASK:
+        case CONDITION_PHASEID:
             mask |= GRID_MAP_TYPE_MASK_ALL;
             break;
         case CONDITION_ON_TRANSPORT:
@@ -892,6 +949,24 @@ uint32 Condition::GetSearcherTypeMaskForCondition()
             mask |= GRID_MAP_TYPE_MASK_PLAYER;
             break;
         case CONDITION_QUESTSTATE:
+            mask |= GRID_MAP_TYPE_MASK_PLAYER;
+            break;
+        case CONDITION_UNIT_STATE:
+            mask |= GRID_MAP_TYPE_MASK_CREATURE | GRID_MAP_TYPE_MASK_PLAYER;
+            break;
+        case CONDITION_CREATURE_TYPE:
+            mask |= GRID_MAP_TYPE_MASK_CREATURE;
+            break;
+        case CONDITION_DIFFICULTY_ID:
+            mask |= GRID_MAP_TYPE_MASK_ALL;
+            break;
+        case CONDITION_HAS_GROUP:
+            mask |= GRID_MAP_TYPE_MASK_PLAYER;
+            break;
+        case CONDITION_WEEKLY_QUEST_DONE:
+            mask |= GRID_MAP_TYPE_MASK_PLAYER;
+            break;
+        case CONDITION_REPUTATION_VALUE:
             mask |= GRID_MAP_TYPE_MASK_PLAYER;
             break;
         default:
@@ -2192,6 +2267,7 @@ bool ConditionMgr::isConditionTypeValid(Condition* cond)
             break;
         }
         case CONDITION_REPUTATION_RANK:
+        case CONDITION_REPUTATION_VALUE:
         {
             FactionEntry const* factionEntry = sFactionStore.LookupEntry(cond->ConditionValue1);
             if (!factionEntry)
@@ -2249,6 +2325,7 @@ bool ConditionMgr::isConditionTypeValid(Condition* cond)
         case CONDITION_WORLD_QUEST:
         case CONDITION_ACOUNT_QUEST:
         case CONDITION_DAILY_QUEST_DONE:
+        case CONDITION_WEEKLY_QUEST_DONE:
         {
             if (!sQuestDataStore->GetQuestTemplate(cond->ConditionValue1))
             {
@@ -2450,24 +2527,60 @@ bool ConditionMgr::isConditionTypeValid(Condition* cond)
                 TC_LOG_ERROR(LOG_FILTER_SQL, "NearGameObject condition has useless data in value3 (%u)!", cond->ConditionValue3);
             break;
         }
-        case CONDITION_OBJECT_ENTRY:
+        case CONDITION_OBJECT_ENTRY_GUID:
         {
             switch (cond->ConditionValue1)
             {
                 case TYPEID_UNIT:
+                {
                     if (cond->ConditionValue2 && !sObjectMgr->GetCreatureTemplate(cond->ConditionValue2))
                     {
-                        TC_LOG_ERROR(LOG_FILTER_SQL, "ObjectEntry condition has non existing creature template entry  (%u), skipped", cond->ConditionValue2);
+                        TC_LOG_ERROR(LOG_FILTER_SQL, "%s has non existing creature template entry (%u), skipped.", cond->ConditionValue2);
                         return false;
                     }
+                    if (cond->ConditionValue3)
+                    {
+                        if (CreatureData const* creatureData = sObjectMgr->GetCreatureData(cond->ConditionValue3))
+                        {
+                            if (cond->ConditionValue2 && creatureData->id != cond->ConditionValue2)
+                            {
+                                TC_LOG_ERROR(LOG_FILTER_SQL, "%s has guid %u set but does not match creature entry (%u), skipped.", cond->ConditionValue3, cond->ConditionValue2);
+                                return false;
+                            }
+                        }
+                        else
+                        {
+                            TC_LOG_ERROR(LOG_FILTER_SQL, "%s has non existing creature guid (%u), skipped.", cond->ConditionValue3);
+                            return false;
+                        }
+                    }
                     break;
+                }
                 case TYPEID_GAMEOBJECT:
+                {
                     if (cond->ConditionValue2 && !sObjectMgr->GetGameObjectTemplate(cond->ConditionValue2))
                     {
-                        TC_LOG_ERROR(LOG_FILTER_SQL, "ObjectEntry condition has non existing game object template entry  (%u), skipped", cond->ConditionValue2);
+                        TC_LOG_ERROR(LOG_FILTER_SQL, "%s has non existing gameobject template entry (%u), skipped.", cond->ConditionValue2);
                         return false;
                     }
-                    break;
+                    if (cond->ConditionValue3)
+                    {
+                        if (GameObjectData const* goData = sObjectMgr->GetGOData(cond->ConditionValue3))
+                        {
+                            if (cond->ConditionValue2 && goData->id != cond->ConditionValue2)
+                            {
+                                TC_LOG_ERROR(LOG_FILTER_SQL, "%s has guid %u set but does not match gameobject entry (%u), skipped.", cond->ConditionValue3, cond->ConditionValue2);
+                                return false;
+                            }
+                        }
+                        else
+                        {
+                            TC_LOG_ERROR(LOG_FILTER_SQL, "%s has non existing gameobject guid (%u), skipped.", cond->ConditionValue3);
+                            return false;
+                        }
+                    }
+                break;
+                }
                 case TYPEID_PLAYER:
                 case TYPEID_CORPSE:
                     if (cond->ConditionValue2)
@@ -2604,12 +2717,13 @@ bool ConditionMgr::isConditionTypeValid(Condition* cond)
                 TC_LOG_ERROR(LOG_FILTER_SQL, "World state condition has useless data in value3 (%u)!", cond->ConditionValue3);
             break;
         }
-        case CONDITION_PHASEMASK:
+        case CONDITION_PHASEID:
         {
-            if (cond->ConditionValue2)
-                TC_LOG_ERROR(LOG_FILTER_SQL, "Phasemask condition has useless data in value2 (%u)!", cond->ConditionValue2);
-            if (cond->ConditionValue3)
-                TC_LOG_ERROR(LOG_FILTER_SQL, "Phasemask condition has useless data in value3 (%u)!", cond->ConditionValue3);
+            if (!sPhaseStore.LookupEntry(cond->ConditionValue1))
+            {
+                TC_LOG_ERROR(LOG_FILTER_SQL, "%s has nonexistent phaseid in value1 (%u), skipped", cond->ConditionValue1);
+                return false;
+            }
             break;
         }
         case CONDITION_TITLE:
@@ -2631,12 +2745,6 @@ bool ConditionMgr::isConditionTypeValid(Condition* cond)
                 }
                 break;
             }
-        case CONDITION_UNUSED_21:
-            TC_LOG_ERROR(LOG_FILTER_SQL, "Found ConditionTypeOrReference = CONDITION_UNUSED_21 in `conditions` table - ignoring");
-            return false;
-        case CONDITION_UNUSED_24:
-            TC_LOG_ERROR(LOG_FILTER_SQL, "Found ConditionTypeOrReference = CONDITION_UNUSED_24 in `conditions` table - ignoring");
-            return false;
         case CONDITION_REALM_ACHIEVEMENT:
         {
             AchievementEntry const* achievement = sAchievementStore.LookupEntry(cond->ConditionValue1);
@@ -2650,6 +2758,7 @@ bool ConditionMgr::isConditionTypeValid(Condition* cond)
         case CONDITION_IN_WATER:
         case CONDITION_CHARMED:
         case CONDITION_TAXI:
+        case CONDITION_HAS_GROUP:
             break;
         case CONDITION_STAND_STATE:
         {
@@ -2718,6 +2827,33 @@ bool ConditionMgr::isConditionTypeValid(Condition* cond)
             if (cond->ConditionValue1 >= (1 << MAX_PET_TYPE))
             {
                 TC_LOG_ERROR(LOG_FILTER_SQL, "%s has non-existing pet type %u, skipped.", cond->ConditionValue1);
+                return false;
+            }
+            break;
+        }
+        case CONDITION_UNIT_STATE:
+        {
+            if (!(cond->ConditionValue1 & UNIT_STATE_ALL_STATE_SUPPORTED))
+            {
+                TC_LOG_ERROR(LOG_FILTER_SQL, "%s has non existing UnitState in value1 (%u), skipped.", cond->ConditionValue1);
+                return false;
+            }
+            break;
+        }
+        case CONDITION_CREATURE_TYPE:
+        {
+            if (!cond->ConditionValue1 || cond->ConditionValue1 > CREATURE_TYPE_GAS_CLOUD)
+            {
+                TC_LOG_ERROR(LOG_FILTER_SQL, "%s has non existing CreatureType in value1 (%u), skipped.", cond->ConditionValue1);
+                return false;
+            }
+            break;
+        }
+        case CONDITION_DIFFICULTY_ID:
+        {
+            if (!sDifficultyStore.LookupEntry(cond->ConditionValue1))
+            {
+                TC_LOG_ERROR(LOG_FILTER_SQL, "%s has non existing difficulty in value1 (%u), skipped.", cond->ConditionValue1);
                 return false;
             }
             break;

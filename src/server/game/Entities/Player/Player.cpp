@@ -30541,6 +30541,18 @@ bool Player::IsDailyQuestDone(uint32 quest_id)
     return found;
 }
 
+bool Player::IsWeeklyQuestDone(uint32 quest_id) const
+{
+    if (!sQuestDataStore->GetQuestTemplate(quest_id))
+        return false;
+
+    for (auto&& weeklyQuestId : m_weeklyquests)
+        if (weeklyQuestId == quest_id)
+            return true;
+
+    return false;
+}
+
 void Player::SetWeeklyQuestStatus(uint32 quest_id)
 {
     m_weeklyquests.insert(quest_id);

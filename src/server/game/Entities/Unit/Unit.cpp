@@ -23392,31 +23392,34 @@ void Unit::SetPhaseId(std::set<uint32> const& newPhase, bool update)
             return;
     }
 
-    // if (IsPlayer())
-    // {
-        // std::ostringstream ss;
-        // ss << "newPhase: ";
-        // for (auto phaseID : newPhase)
-            // ss << phaseID << " " << HasPhaseId(phaseID) << " ";
-        // ss << "\nGetPhases: ";
-        // for (auto phaseID : GetPhases())
-            // ss << phaseID << " " << HasPhaseId(phaseID) << " ";
-        // TC_LOG_DEBUG(LOG_FILTER_UWOW_CORE, "SetPhaseId 0 %s", ss.str().c_str());
-    // }
+    if (IsPlayer())
+    {
+        std::ostringstream ss;
+        ss << "GetPhases: ";
+
+        for (auto phaseID : GetPhases())
+            ss << phaseID << " " << HasPhaseId(phaseID) << " ";
+
+        TC_LOG_DEBUG(LOG_FILTER_UWOW_CORE, "HasPhaseId %s", ss.str().c_str());
+    }
 
     WorldObject::SetPhaseId(newPhase, false);
 
-    // if (IsPlayer())
-    // {
-        // std::ostringstream ss;
-        // ss << "newPhase: ";
-        // for (auto phaseID : newPhase)
-            // ss << phaseID << " " << HasPhaseId(phaseID) << " ";
-        // ss << "\nGetPhases: ";
-        // for (auto phaseID : GetPhases())
-            // ss << phaseID << " " << HasPhaseId(phaseID) << " ";
-        // TC_LOG_DEBUG(LOG_FILTER_UWOW_CORE, "SetPhaseId 1 %s", ss.str().c_str());
-    // }
+    if (IsPlayer())
+    {
+        std::ostringstream ss;
+        ss << "newPhase: ";
+
+        for (auto phaseID : newPhase)
+            ss << phaseID << " " << HasPhaseId(phaseID) << " ";
+        
+        ss << "\nGetPhases: ";
+
+        for (auto phaseID : GetPhases())
+            ss << phaseID << " " << HasPhaseId(phaseID) << " ";
+
+        TC_LOG_DEBUG(LOG_FILTER_UWOW_CORE, "SetPhaseId %s", ss.str().c_str());
+    }
 
     if (IsInWorld())
     {

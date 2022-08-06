@@ -1975,12 +1975,13 @@ class Player : public Unit, public GridObject<Player>
         void RemoveRewardedQuest(uint32 quest_id);
 
         void SetDailyQuestStatus(uint32 quest_id);
-        bool IsDailyQuestDone(uint32 quest_id);
         void SetWeeklyQuestStatus(uint32 quest_id);
         void SetSeasonalQuestStatus(uint32 quest_id);
         void DailyReset();
         void ResetWeeklyQuestStatus();
         void ResetSeasonalQuestStatus(uint16 event_id);
+        bool IsDailyQuestDone(uint32 quest_id);
+        bool IsWeeklyQuestDone(uint32 quest_id) const;
 
         uint16 FindQuestSlot(uint32 quest_id) const;
         uint32 GetQuestSlotQuestId(uint16 slot) const;

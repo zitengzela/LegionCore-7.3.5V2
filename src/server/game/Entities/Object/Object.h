@@ -484,25 +484,28 @@ class WorldObject : public Object, public WorldLocation
         uint32 GetInstanceId() const { return m_InstanceId; }
         bool InInstance() const { return m_currMap && m_currMap->Instanceable(); }
 
+        // Phase and PhaseMask Rare System
         virtual void SetPhaseMask(uint32 newPhaseMask, bool update);
         uint32 GetPhaseMask() const { return m_phaseMask; }
-        bool RemovePhase(uint32 PhaseID);
-        bool InSamePhase(WorldObject const* obj) const;
         bool InSamePhase(uint32 phasemask) const { return (GetPhaseMask() & phasemask) != 0; }
+        bool InSamePhase(WorldObject const* obj) const;
 
         virtual void SetPhaseId(std::set<uint32> const& newPhaseId, bool update);
+        bool RemovePhase(uint32 PhaseID);
         bool HasPhaseId(uint32 PhaseID) const;
         std::set<uint32> const& GetPhases() const;
         bool InSamePhaseId(WorldObject const* obj) const;
         bool InSamePhaseId(std::set<uint32> const& phase) const;
+
+        void setIgnorePhaseIdCheck(bool apply) { m_ignorePhaseIdCheck = apply; }
+        bool IgnorePhaseId() const { return m_ignorePhaseIdCheck; }
+
+        // This methods it s emptly, terrain swamp add in phase_definition only
         void RebuildTerrainSwaps();
         void RebuildWorldMapAreaSwaps();
         std::set<uint32> const& GetTerrainSwaps() const { return _terrainSwaps; }
         std::set<uint32> const& GetWorldMapAreaSwaps() const { return _worldMapAreaSwaps; }
         bool IsInTerrainSwap(uint32 terrainSwap) const { return _terrainSwaps.find(terrainSwap) != _terrainSwaps.end(); }
-
-        void setIgnorePhaseIdCheck(bool apply)  { m_ignorePhaseIdCheck = apply; }
-        bool IgnorePhaseId() const { return m_ignorePhaseIdCheck; }
 
         bool m_zoneForce;
         uint32 m_zoneId;
