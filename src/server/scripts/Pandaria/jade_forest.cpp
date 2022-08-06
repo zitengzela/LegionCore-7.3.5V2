@@ -2428,6 +2428,22 @@ public:
 	};
 };
 
+class player_pandaria_quest_intro : public PlayerScript
+{
+public:
+    player_pandaria_quest_intro() : PlayerScript("player_pandaria_quest_intro") {}
+
+	void OnUpdateArea(Player* player, uint32 NewArea) override
+	{
+		if (NewArea == 5853 && player->GetQuestStatus(29548) == QUEST_STATUS_INCOMPLETE && player->GetTeam() == ALLIANCE)
+		{
+            Position pos;
+            player->GetPosition(&pos);
+            player->KilledMonsterCredit(66292);
+            player->SendSpellScene(94, nullptr, true, &pos);
+		}
+	}
+};
 
 void AddSC_jade_forest()
 {
@@ -2465,4 +2481,6 @@ void AddSC_jade_forest()
 	new npc_general_nazim_jadeforest_ship();
 	new npc_gunship_fire_bunny();
 	new npc_anduin_jadeforest();
+
+    RegisterPlayerScript(player_pandaria_quest_intro);
 }

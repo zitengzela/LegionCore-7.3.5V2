@@ -9,8 +9,6 @@
 #include "ScriptedGossip.h"
 #include "SpellScript.h"
 #include "GameEventMgr.h"
-#include "OutdoorPvP.h"
-
 
 enum Spells
 {
@@ -43,6 +41,8 @@ public:
 
 	bool OnGossipHello(Player* player, Creature* creature)
 	{
+		player->KilledMonsterCredit(97359);
+
 		if (creature->isQuestGiver())
 			player->PrepareQuestMenu(creature->GetGUID());
 
@@ -153,58 +153,47 @@ public:
 };
 
 // 220260 220265 220266 220253 220021 220236
-class spell_kloaka_call_some_adds : public SpellScriptLoader
+class spell_kloaka_call_some_adds : public SpellScript
 {
-public:
-	spell_kloaka_call_some_adds() : SpellScriptLoader("spell_kloaka_call_some_adds") { }
+	PrepareSpellScript(spell_kloaka_call_some_adds);
 
-	class spell_kloaka_call_some_adds_SpellScript : public SpellScript
+	void HandleAfterCast()
 	{
-		PrepareSpellScript(spell_kloaka_call_some_adds_SpellScript);
-
-		void HandleAfterCast()
+		uint32 eventid = 0;
+		switch (GetSpellInfo()->Id)
 		{
-			uint32 eventid = 0;
-			switch (GetSpellInfo()->Id)
-			{
-			case SCREECHER_WHISTLE:
-				eventid = 82;
-				break;
-			case IMP_BINDING_CONTRACT:
-				eventid = 83;
-				break;
-			case WIDOWSISTER_CONTRACT:
-				eventid = 84;
-				break;
-			case CROC_FLUSHER:
-				eventid = 85;
-				break;
-			case UNDERBELLY_BANQUET:
-				eventid = 200;
-				break;
-			case YOUNG_MUTANT_WARTURTLES:
-				eventid = 201;
-				break;
-			case FEL_CHUM:
-				eventid = 202;
-				break;
-			default:
-				break;
-			}
-
-			if (eventid)
-				sGameEventMgr->StartEvent(eventid, true);
+		case SCREECHER_WHISTLE:
+			eventid = 82;
+			break;
+		case IMP_BINDING_CONTRACT:
+			eventid = 83;
+			break;
+		case WIDOWSISTER_CONTRACT:
+			eventid = 84;
+			break;
+		case CROC_FLUSHER:
+			eventid = 85;
+			break;
+		case UNDERBELLY_BANQUET:
+			eventid = 200;
+			break;
+		case YOUNG_MUTANT_WARTURTLES:
+			eventid = 201;
+			break;
+		case FEL_CHUM:
+			eventid = 202;
+			break;
+		default:
+			break;
 		}
 
-		void Register() override
-		{
-			AfterCast += SpellCastFn(spell_kloaka_call_some_adds_SpellScript::HandleAfterCast);
-		}
-	};
+		if (eventid)
+			sGameEventMgr->StartEvent(eventid, true);
+	}
 
-	SpellScript* GetSpellScript() const override
+	void Register() override
 	{
-		return new spell_kloaka_call_some_adds_SpellScript();
+		AfterCast += SpellCastFn(spell_kloaka_call_some_adds::HandleAfterCast);
 	}
 };
 
@@ -282,8 +271,8 @@ void AddSC_Kloaka()
 	new npc_kloaka_capitan();
 	RegisterCreatureAI(npc_underbelly_banquet);
 
-	new spell_kloaka_call_some_adds();
+	RegisterSpellScript(spell_kloaka_call_some_adds);
 
-	new Underbelly_pvp_kill();
-	new Underbelly_event_controller();
+	RegisterPlayerScript(Underbelly_pvp_kill);
+	RegisterPlayerScript(Underbelly_event_controller);
 };
