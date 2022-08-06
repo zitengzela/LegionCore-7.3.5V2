@@ -99,7 +99,12 @@ enum ConditionTypes
     CONDITION_GET_AMOUNT_STACK_AURA = 65,                   // spell_id         stack          0                  true if player (or target) has aura of spell_id with stack amount 
     CONDITION_TIMEWALKING           = 66,                   // 0                0              0                  true if player is in timewalking.
     CONDITION_ACOUNT_QUEST          = 67,                   // quest_id         0              0                  true if quest_id was rewarded on any char account
-    CONDITION_MAX                   = 68                    // MAX
+    CONDITION_DAILY_QUEST_DONE      = 68,                   // quest id         0              0                  true if daily quest has been completed for the day
+    CONDITION_CHARMED               = 69,                   // 0                0              0                  true if unit is currently charmed
+    CONDITION_PET_TYPE              = 70,                   // mask             0              0                  true if player has a pet of given type(s)
+    CONDITION_TAXI                  = 71,                   // 0                0              0                  true if player is on taxi
+    CONDITION_QUESTSTATE            = 72,                   // quest_id         state_mask     0                  true if player is in any of the provided quest states for the quest (1 = not taken, 2 = completed, 8 = in progress, 32 = failed, 64 = rewarded)
+    CONDITION_MAX                   = 73                    // MAX
 };
 
 /*! Documentation on implementing a new ConditionSourceType:

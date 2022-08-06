@@ -643,6 +643,37 @@ bool Condition::Meets(ConditionSourceInfo& sourceInfo)
                 condMeets = player->HasAccountQuest(ConditionValue1);
             break;
         }
+        case CONDITION_DAILY_QUEST_DONE:
+        {
+            if (Player* player = object->ToPlayer())
+                condMeets = player->IsDailyQuestDone(ConditionValue1);
+            break;
+        }
+        case CONDITION_CHARMED:
+        {
+            if (Unit* unit = object->ToUnit())
+                condMeets = unit->isCharmed();
+            break;
+        }
+        case CONDITION_PET_TYPE:
+        {
+            if (Player* player = object->ToPlayer())
+                if (Pet* pet = player->GetPet())
+                    condMeets = (((1 << pet->getPetType()) & ConditionValue1) != 0);
+            break;
+        }
+        case CONDITION_TAXI:
+        {
+            if (Player* player = object->ToPlayer())
+                condMeets = player->isInFlight();
+            break;
+        }
+        case CONDITION_QUESTSTATE:
+        {
+            if (Player* player = object->ToPlayer())
+                condMeets = ConditionValue2 & (1 << player->GetQuestStatus(ConditionValue1));
+            break;
+        }
         default:
             condMeets = false;
             break;
@@ -846,6 +877,21 @@ uint32 Condition::GetSearcherTypeMaskForCondition()
         case CONDITION_CURRENCY_ON_WEEK:
         case CONDITION_WORLD_QUEST:
         case CONDITION_ACOUNT_QUEST:
+            mask |= GRID_MAP_TYPE_MASK_PLAYER;
+            break;
+        case CONDITION_DAILY_QUEST_DONE:
+            mask |= GRID_MAP_TYPE_MASK_PLAYER;
+            break;
+        case CONDITION_CHARMED:
+            mask |= GRID_MAP_TYPE_MASK_CREATURE | GRID_MAP_TYPE_MASK_PLAYER;
+            break;
+        case CONDITION_PET_TYPE:
+            mask |= GRID_MAP_TYPE_MASK_PLAYER;
+            break;
+        case CONDITION_TAXI:
+            mask |= GRID_MAP_TYPE_MASK_PLAYER;
+            break;
+        case CONDITION_QUESTSTATE:
             mask |= GRID_MAP_TYPE_MASK_PLAYER;
             break;
         default:
@@ -2189,12 +2235,20 @@ bool ConditionMgr::isConditionTypeValid(Condition* cond)
                 TC_LOG_ERROR(LOG_FILTER_SQL, "Skill condition has useless data in value3 (%u)!", cond->ConditionValue3);
             break;
         }
+        case CONDITION_QUESTSTATE:
+            if (cond->ConditionValue2 >= (1 << MAX_QUEST_STATUS))
+            {
+                TC_LOG_ERROR(LOG_FILTER_SQL, "%s has invalid state mask (%u), skipped.", cond->ConditionValue2);
+                return false;
+            }
+            /* fallthrough */
         case CONDITION_QUESTREWARDED:
         case CONDITION_QUESTTAKEN:
         case CONDITION_QUEST_NONE:
         case CONDITION_QUEST_COMPLETE:
         case CONDITION_WORLD_QUEST:
         case CONDITION_ACOUNT_QUEST:
+        case CONDITION_DAILY_QUEST_DONE:
         {
             if (!sQuestDataStore->GetQuestTemplate(cond->ConditionValue1))
             {
@@ -2594,6 +2648,8 @@ bool ConditionMgr::isConditionTypeValid(Condition* cond)
             break;
         }
         case CONDITION_IN_WATER:
+        case CONDITION_CHARMED:
+        case CONDITION_TAXI:
             break;
         case CONDITION_STAND_STATE:
         {
@@ -2653,6 +2709,15 @@ bool ConditionMgr::isConditionTypeValid(Condition* cond)
             if (!sSpellMgr->GetSpellInfo(cond->ConditionValue1))
             {
                 TC_LOG_ERROR(LOG_FILTER_SQL, "Aura (CONDITION_GET_AMOUNT_STACK_AURA) condition has non existing spell (Id: %d), skipped", cond->ConditionValue1);
+                return false;
+            }
+            break;
+        }
+        case CONDITION_PET_TYPE:
+        {
+            if (cond->ConditionValue1 >= (1 << MAX_PET_TYPE))
+            {
+                TC_LOG_ERROR(LOG_FILTER_SQL, "%s has non-existing pet type %u, skipped.", cond->ConditionValue1);
                 return false;
             }
             break;
