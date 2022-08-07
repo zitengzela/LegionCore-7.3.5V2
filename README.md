@@ -13,8 +13,6 @@ Descarga cliente completo desde FTP: ftp://10.97.1.12/Clientes%20de%20WOW/Legion
 Descargar rund and play http://www.mediafire.com/file/fpsbts93ka2q0g5/Rund_and_play_BlackCore.rar/file
 Este cliente se va descargando mientras se juega.
 
-db world al 04/06/2020 solo agregar hotfix de tienda
-https://mega.nz/file/4SB2ECCJ#ztXHEFyDoiMoVgryySJdNcYYH64TnDzd3ApgHWa3DGc
 DATA LINK oficiales 26124
 https://www.mediafire.com/file/tbvzrzbda7xrnq6/data_7.3.5.7z/file
 
@@ -29,8 +27,9 @@ Systems:
 
 
 Zones:
-Argus quest-line 3-3
-DH zones 2-2
+Argus quest-line 3-3 (tested player alliance)
+Azsuna quest-line 5-5 (tested player alliance)
+DH zones 2-2 (tested player alliance)
 
 Legion scripts:
 
