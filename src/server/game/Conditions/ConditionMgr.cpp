@@ -2314,7 +2314,7 @@ bool ConditionMgr::isConditionTypeValid(Condition* cond)
         case CONDITION_QUESTSTATE:
             if (cond->ConditionValue2 >= (1 << MAX_QUEST_STATUS))
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "%s has invalid state mask (%u), skipped.", cond->ConditionValue2);
+                TC_LOG_ERROR(LOG_FILTER_SQL, "Invalid state mask (%u), skipped.", cond->ConditionValue2);
                 return false;
             }
             /* fallthrough */
@@ -2535,7 +2535,7 @@ bool ConditionMgr::isConditionTypeValid(Condition* cond)
                 {
                     if (cond->ConditionValue2 && !sObjectMgr->GetCreatureTemplate(cond->ConditionValue2))
                     {
-                        TC_LOG_ERROR(LOG_FILTER_SQL, "%s has non existing creature template entry (%u), skipped.", cond->ConditionValue2);
+                        TC_LOG_ERROR(LOG_FILTER_SQL, "Non-existing creature template entry (%u), skipped.", cond->ConditionValue2);
                         return false;
                     }
                     if (cond->ConditionValue3)
@@ -2544,13 +2544,13 @@ bool ConditionMgr::isConditionTypeValid(Condition* cond)
                         {
                             if (cond->ConditionValue2 && creatureData->id != cond->ConditionValue2)
                             {
-                                TC_LOG_ERROR(LOG_FILTER_SQL, "%s has guid %u set but does not match creature entry (%u), skipped.", cond->ConditionValue3, cond->ConditionValue2);
+                                TC_LOG_ERROR(LOG_FILTER_SQL, "Guid %u set but does not match creature entry (%u), skipped.", cond->ConditionValue3, cond->ConditionValue2);
                                 return false;
                             }
                         }
                         else
                         {
-                            TC_LOG_ERROR(LOG_FILTER_SQL, "%s has non existing creature guid (%u), skipped.", cond->ConditionValue3);
+                            TC_LOG_ERROR(LOG_FILTER_SQL, "Non-existing creature guid (%u), skipped.", cond->ConditionValue3);
                             return false;
                         }
                     }
@@ -2560,7 +2560,7 @@ bool ConditionMgr::isConditionTypeValid(Condition* cond)
                 {
                     if (cond->ConditionValue2 && !sObjectMgr->GetGameObjectTemplate(cond->ConditionValue2))
                     {
-                        TC_LOG_ERROR(LOG_FILTER_SQL, "%s has non existing gameobject template entry (%u), skipped.", cond->ConditionValue2);
+                        TC_LOG_ERROR(LOG_FILTER_SQL, "Non-existing gameobject template entry (%u), skipped.", cond->ConditionValue2);
                         return false;
                     }
                     if (cond->ConditionValue3)
@@ -2569,13 +2569,13 @@ bool ConditionMgr::isConditionTypeValid(Condition* cond)
                         {
                             if (cond->ConditionValue2 && goData->id != cond->ConditionValue2)
                             {
-                                TC_LOG_ERROR(LOG_FILTER_SQL, "%s has guid %u set but does not match gameobject entry (%u), skipped.", cond->ConditionValue3, cond->ConditionValue2);
+                                TC_LOG_ERROR(LOG_FILTER_SQL, "Guid %u set but does not match gameobject entry (%u), skipped.", cond->ConditionValue3, cond->ConditionValue2);
                                 return false;
                             }
                         }
                         else
                         {
-                            TC_LOG_ERROR(LOG_FILTER_SQL, "%s has non existing gameobject guid (%u), skipped.", cond->ConditionValue3);
+                            TC_LOG_ERROR(LOG_FILTER_SQL, "Non-existing gameobject guid (%u), skipped.", cond->ConditionValue3);
                             return false;
                         }
                     }
@@ -2721,7 +2721,7 @@ bool ConditionMgr::isConditionTypeValid(Condition* cond)
         {
             if (!sPhaseStore.LookupEntry(cond->ConditionValue1))
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "%s has nonexistent phaseid in value1 (%u), skipped", cond->ConditionValue1);
+                TC_LOG_ERROR(LOG_FILTER_SQL, "Non-existent phaseid in value1 (%u), skipped", cond->ConditionValue1);
                 return false;
             }
             break;
@@ -2826,7 +2826,7 @@ bool ConditionMgr::isConditionTypeValid(Condition* cond)
         {
             if (cond->ConditionValue1 >= (1 << MAX_PET_TYPE))
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "%s has non-existing pet type %u, skipped.", cond->ConditionValue1);
+                TC_LOG_ERROR(LOG_FILTER_SQL, "Non-existing pet type %u, skipped.", cond->ConditionValue1);
                 return false;
             }
             break;
@@ -2835,7 +2835,7 @@ bool ConditionMgr::isConditionTypeValid(Condition* cond)
         {
             if (!(cond->ConditionValue1 & UNIT_STATE_ALL_STATE_SUPPORTED))
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "%s has non existing UnitState in value1 (%u), skipped.", cond->ConditionValue1);
+                TC_LOG_ERROR(LOG_FILTER_SQL, "Non-existing UnitState in value1 (%u), skipped.", cond->ConditionValue1);
                 return false;
             }
             break;
@@ -2844,7 +2844,7 @@ bool ConditionMgr::isConditionTypeValid(Condition* cond)
         {
             if (!cond->ConditionValue1 || cond->ConditionValue1 > CREATURE_TYPE_GAS_CLOUD)
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "%s has non existing CreatureType in value1 (%u), skipped.", cond->ConditionValue1);
+                TC_LOG_ERROR(LOG_FILTER_SQL, "Non-existing CreatureType in value1 (%u), skipped.", cond->ConditionValue1);
                 return false;
             }
             break;
@@ -2853,7 +2853,7 @@ bool ConditionMgr::isConditionTypeValid(Condition* cond)
         {
             if (!sDifficultyStore.LookupEntry(cond->ConditionValue1))
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "%s has non existing difficulty in value1 (%u), skipped.", cond->ConditionValue1);
+                TC_LOG_ERROR(LOG_FILTER_SQL, "Non-existing difficulty in value1 (%u), skipped.", cond->ConditionValue1);
                 return false;
             }
             break;
