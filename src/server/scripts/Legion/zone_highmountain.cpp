@@ -16,6 +16,5 @@
  */
 
 #include "ScriptMgr.h"
-#include "QuestData.h"
 
-void AddSC_quest_scripts() { }
+void AddSC_zone_highmountain() { }

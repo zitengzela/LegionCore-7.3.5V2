@@ -567,6 +567,13 @@ void AddSC_Kloaka();
 void AddSC_chat_log();
 
 //legion
+void AddSC_zone_azsuna();
+void AddSC_zone_broken_shore();
+void AddSC_zone_dalaran_legion();
+void AddSC_zone_highmountain();
+void AddSC_zone_stormheim();
+void AddSC_zone_suramar();
+void AddSC_zone_valsharah();
 void AddSC_zone_krokuun();
 void AddSC_zone_macaree();
 void AddSC_zone_antoran_wastes();
@@ -1920,6 +1927,13 @@ void AddCustomScripts()
 void AddLegionScripts()
 {
 #ifdef SCRIPTS
+    AddSC_zone_azsuna();
+    AddSC_zone_broken_shore();
+    AddSC_zone_dalaran_legion();
+    AddSC_zone_highmountain();
+    AddSC_zone_stormheim();
+    AddSC_zone_suramar();
+    AddSC_zone_valsharah();
     AddSC_zone_krokuun();
     AddSC_zone_macaree();
     AddSC_zone_antoran_wastes();
