@@ -93,6 +93,11 @@ bool PetAI::_needToStop()
     if (me->isCharmed() && me->getVictim() == me->GetCharmer())
         return true;
 
+    // dont allow pets to follow targets far away from owner
+    if (Unit* owner = me->GetCharmerOrOwner())
+        if (owner->GetExactDist(me) >= (owner->GetVisibilityRange() - 10.0f))
+            return true;
+
     return !me->IsValidAttackTarget(me->getVictim());
 }
 
