@@ -15,9 +15,10 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "QuestData.h"
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
-#include "QuestData.h"
+#include "SpellScript.h"
 
  // 44663 44184
 struct quest_blink_of_an_eye : public QuestScript
@@ -96,9 +97,38 @@ struct npc_emissary_auldbridge : public ScriptedAI
     }
 };
 
+// 192465 
+class spell_teleport_the_skyfire : public SpellScript
+{
+    PrepareSpellScript(spell_teleport_the_skyfire);
+
+    SpellCastResult CheckRequirement()
+    {
+        if (Player* player = GetCaster()->ToPlayer())
+            if (player->GetQuestObjectiveData(38035, 96644))
+                return SPELL_CAST_OK;
+
+        return SPELL_FAILED_BAD_TARGETS;
+    }
+    
+    void HandleOnCast()
+    {
+        if (Unit* caster = GetCaster())
+            caster->ToPlayer()->KilledMonsterCredit(92122);
+    }
+    
+    void Register() override
+    {
+        OnCheckCast += SpellCheckCastFn(spell_teleport_the_skyfire::CheckRequirement);
+        OnCast += SpellCastFn(spell_teleport_the_skyfire::HandleOnCast);
+    }
+};
+
 void AddSC_zone_dalaran_legion() 
 {
     RegisterCreatureAI(npc_emissary_auldbridge);
+
+    RegisterSpellScript(spell_teleport_the_skyfire);
 
     RegisterQuestScript(quest_blink_of_an_eye);
 }

@@ -31,6 +31,7 @@ Argus quest-line 3-3 (tested player alliance)
 Azsuna quest-line 5-5 (tested player alliance)
 Val shara quest-line 7-7 (tested player alliance)
 Highmountain quest-line 7-7 (tested player alliance)
+Stormheim quest-line 8-8 (tested player alliance)
 DH zones 2-2 (tested player alliance)
 
 Legion scripts:
