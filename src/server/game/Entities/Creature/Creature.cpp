@@ -1260,6 +1260,9 @@ bool Creature::Create(ObjectGuid::LowType guidlow, Map* map, uint32 phaseMask, u
 
     switch (cinfo->Classification)
     {
+        case CONFIG_CORPSE_DECAY_NORMAL:
+            m_corpseDelay = isInstance ? sWorld->getIntConfig(CONFIG_CORPSE_DECAY_NORMAL) : 60;
+            break;
         case CREATURE_CLASSIFICATION_RARE:
             m_corpseDelay = isInstance ? sWorld->getIntConfig(CONFIG_CORPSE_DECAY_RARE) : 120;
             break;
@@ -1271,6 +1274,12 @@ bool Creature::Create(ObjectGuid::LowType guidlow, Map* map, uint32 phaseMask, u
             break;
         case CREATURE_CLASSIFICATION_WORLDBOSS:
             m_corpseDelay = isInstance ? sWorld->getIntConfig(CONFIG_CORPSE_DECAY_WORLDBOSS) : 120;
+            break;
+        case CREATURE_CLASSIFICATION_MINUS:
+            m_corpseDelay = isInstance ? sWorld->getIntConfig(CONFIG_CORPSE_DECAY_MINUS) : 60;
+            break;
+        case CREATURE_CLASSIFICATION_TRIVIAL:
+            m_corpseDelay = isInstance ? sWorld->getIntConfig(CONFIG_CORPSE_DECAY_TRIVIAL) : 60;
             break;
         default:
             m_corpseDelay = sWorld->getIntConfig(CONFIG_CORPSE_DECAY_NORMAL);
@@ -1824,7 +1833,9 @@ void Creature::SelectLevel(const CreatureTemplate* cInfo)
     if (GetMap() && GetMap()->GetDifficultyID() == DIFFICULTY_MYTHIC_KEYSTONE)
         maxDmgMod = 1.2f;
 
-    float basedamage = stats->GenerateBaseDamage(cInfo) * _GetDamageModForDiff();
+    float basedamage = stats->GenerateBaseDamage(cInfo) * _GetDamageMod(rank);
+    if (!diffStats)
+        basedamage *= _GetDamageModForDiff();
 
     float weaponBaseMinDamage = basedamage;
     float weaponBaseMaxDamage = basedamage * maxDmgMod;
@@ -1884,7 +1895,9 @@ void Creature::GenerateScaleLevelStat(const CreatureTemplate* cInfo)
         uint32 mana = stats->GenerateMana(cInfo);
 
         //damage
-        float basedamage = stats->GenerateBaseDamage(cInfo) * _GetDamageModForDiff();
+        float basedamage = stats->GenerateBaseDamage(cInfo) * _GetDamageMod(rank);
+        if (!diffStats)
+            basedamage *= _GetDamageModForDiff();
 
         //armor
         uint32 armor = stats->GenerateArmor(cInfo);
@@ -1926,8 +1939,12 @@ float Creature::_GetHealthMod(int32 Rank)
             return sWorld->getRate(RATE_CREATURE_ELITE_WORLDBOSS_HP);
         case CREATURE_CLASSIFICATION_RARE:
             return sWorld->getRate(RATE_CREATURE_ELITE_RARE_HP);
+        case CREATURE_CLASSIFICATION_MINUS:
+            return sWorld->getRate(RATE_CREATURE_MINUS_HP);
+        case CREATURE_CLASSIFICATION_TRIVIAL:
+            return sWorld->getRate(RATE_CREATURE_TRIVIAL_HP);
         default:
-            return sWorld->getRate(RATE_CREATURE_ELITE_ELITE_HP);
+            return sWorld->getRate(RATE_CREATURE_NORMAL_HP);
     }
 }
 
@@ -2001,6 +2018,8 @@ float Creature::_GetHealthModPersonal(uint32 &count)
         case CREATURE_CLASSIFICATION_ELITE:
         case CREATURE_CLASSIFICATION_RARE_ELITE:
         case CREATURE_CLASSIFICATION_RARE:
+        case CREATURE_CLASSIFICATION_MINUS:
+        case CREATURE_CLASSIFICATION_TRIVIAL:
         {
             if (GetCreatureTemplate()->RequiredExpansion < EXPANSION_WARLORDS_OF_DRAENOR)
                 break;
@@ -2037,7 +2056,7 @@ float Creature::_GetHealthModPersonal(uint32 &count)
 
 float Creature::_GetDamageMod(int32 Rank)
 {
-    switch (Rank)                                           // define rates for each elite rank
+    switch (Rank)
     {
         case CREATURE_CLASSIFICATION_NORMAL:
             return sWorld->getRate(RATE_CREATURE_NORMAL_DAMAGE);
@@ -2049,14 +2068,18 @@ float Creature::_GetDamageMod(int32 Rank)
             return sWorld->getRate(RATE_CREATURE_ELITE_WORLDBOSS_DAMAGE);
         case CREATURE_CLASSIFICATION_RARE:
             return sWorld->getRate(RATE_CREATURE_ELITE_RARE_DAMAGE);
+        case CREATURE_CLASSIFICATION_MINUS:
+            return sWorld->getRate(RATE_CREATURE_MINUS_DAMAGE);
+        case CREATURE_CLASSIFICATION_TRIVIAL:
+            return sWorld->getRate(RATE_CREATURE_TRIVIAL_DAMAGE);
         default:
-            return sWorld->getRate(RATE_CREATURE_ELITE_ELITE_DAMAGE);
+            return sWorld->getRate(RATE_CREATURE_NORMAL_DAMAGE);
     }
 }
 
 float Creature::GetSpellDamageMod(int32 Rank)
 {
-    switch (Rank)                                           // define rates for each elite rank
+    switch (Rank)
     {
         case CREATURE_CLASSIFICATION_NORMAL:
             return sWorld->getRate(RATE_CREATURE_NORMAL_SPELLDAMAGE);
@@ -2068,8 +2091,12 @@ float Creature::GetSpellDamageMod(int32 Rank)
             return sWorld->getRate(RATE_CREATURE_ELITE_WORLDBOSS_SPELLDAMAGE);
         case CREATURE_CLASSIFICATION_RARE:
             return sWorld->getRate(RATE_CREATURE_ELITE_RARE_SPELLDAMAGE);
+        case CREATURE_CLASSIFICATION_MINUS:
+            return sWorld->getRate(RATE_CREATURE_MINUS_SPELLDAMAGE);
+        case CREATURE_CLASSIFICATION_TRIVIAL:
+            return sWorld->getRate(RATE_CREATURE_TRIVIAL_SPELLDAMAGE);
         default:
-            return sWorld->getRate(RATE_CREATURE_ELITE_ELITE_SPELLDAMAGE);
+            return sWorld->getRate(RATE_CREATURE_NORMAL_SPELLDAMAGE);
     }
 }
 
