@@ -474,7 +474,6 @@ enum SMART_ACTION
     SMART_ACTION_SET_INVINCIBILITY_HP_LEVEL         = 42,     // MinHpValue(+pct, -flat)
     SMART_ACTION_MOUNT_TO_ENTRY_OR_MODEL            = 43,     // Creature_template entry(param1) OR ModelId (param2) (or 0 for both to dismount)
     SMART_ACTION_SET_INGAME_PHASE_MASK              = 44,     // mask
-
     SMART_ACTION_SET_DATA                           = 45,     // Field, Data (only creature TODO)
     SMART_ACTION_MOVE_FORWARD                       = 46,     // distance
     SMART_ACTION_SET_VISIBILITY                     = 47,     // on/off
@@ -497,7 +496,6 @@ enum SMART_ACTION
     SMART_ACTION_STORE_TARGET_LIST                  = 64,     // varID,
     SMART_ACTION_WP_RESUME                          = 65,     // none
     SMART_ACTION_SET_ORIENTATION                    = 66,     //
-
     SMART_ACTION_CREATE_TIMED_EVENT                 = 67,     // id, InitialMin, InitialMax, RepeatMin(only if it repeats), RepeatMax(only if it repeats), chance
     SMART_ACTION_PLAYMOVIE                          = 68,     // entry
     SMART_ACTION_MOVE_TO_POS                        = 69,     // PointId, xyz
@@ -546,9 +544,21 @@ enum SMART_ACTION
     SMART_ACTION_GAME_EVENT_START                   = 112,    // GameEventId
     SMART_ACTION_START_CLOSEST_WAYPOINT             = 113,    // wp1, wp2, wp3, wp4, wp5, wp6, wp7
     SMART_ACTION_RISE_UP                            = 114,    // distance
+    SMART_ACTION_SET_CORPSE_DELAY                   = 116,    // timer
     SMART_ACTION_DISABLE_EVADE                      = 117,    // 0/1 (1 = disabled, 0 = enabled)
+    SMART_ACTION_GO_SET_GO_STATE                    = 118,    // state
     SMART_ACTION_SET_CAN_FLY                        = 119,    // 0/1 (0 = disabled, 1 = enabled)
+    SMART_ACTION_REMOVE_AURAS_BY_TYPE               = 120,    // type
+    SMART_ACTION_SET_SIGHT_DIST                     = 121,    // sightDistance
+    SMART_ACTION_FLEE                               = 122,    // fleeTime
+    SMART_ACTION_ADD_THREAT                         = 123,    // +threat, -threat
+    SMART_ACTION_LOAD_EQUIPMENT                     = 124,    // id
+    SMART_ACTION_TRIGGER_RANDOM_TIMED_EVENT         = 125,    // id min range, id max range
+    SMART_ACTION_REMOVE_ALL_GAMEOBJECTS             = 126,
+    SMART_ACTION_STOP_MOTION                        = 127,    // stopMoving, movementExpired
     SMART_ACTION_PLAY_ANIMKIT                       = 128,    // id, type (0 = oneShot, 1 = aiAnim, 2 = meleeAnim, 3 = movementAnim)
+
+    // Core Actions
     SMART_ACTION_BOSS_EVADE                         = 200,    // No Params
     SMART_ACTION_BOSS_ANOUNCE                       = 201,    // TextId from trinity_ctring
     SMART_ACTION_MOVE_Z                             = 202,    // TextId from trinity_ctring
@@ -574,7 +584,15 @@ enum SMART_ACTION
     SMART_ACTION_SEND_GO_VISUAL_ID                  = 222,    // Visual ID
     SMART_ACTION_COMPLETE_QUEST                     = 223,    // Complete quest by ID (misc1, misc2 ...)
     SMART_ACTION_SET_HEALTH_IN_PERCENT              = 224,    // Set hp in percent
-    SMART_ACTION_END                                = 225,
+    SMART_ACTION_MODIFY_THREAT                      = 225,    // increase, decrease
+    SMART_ACTION_SET_OVERRIDE_ZONE_MUSIC            = 226,    // zone Id, music Id.
+    SMART_ACTION_SET_POWER_TYPE                     = 227,    // Power Type. See enum in Unit.h
+    SMART_ACTION_SET_MAX_POWER                      = 228,    // Power Type, value
+    SMART_ACTION_ADD_FLYING_MOVEMENT_FLAG           = 229,    // Variation
+    SMART_ACTION_REMOVE_FLYING_MOVEMENT_FLAG        = 230,    // Variation
+    SMART_ACTION_CAST_SPELL_OFFSET                  = 231,    // SpellId, triggered if value = 1.
+
+    SMART_ACTION_END                                = 232,
 };
 
 struct SmartAction
@@ -1009,7 +1027,7 @@ struct SmartAction
         struct
         {
             uint32 withEmote;
-        } flee;
+        } fleeAssist;
 
         struct
         {
@@ -1052,9 +1070,6 @@ struct SmartAction
         {
             uint32 root;
         } setRoot;
-
-        //! Note for any new future actions
-        //! All parameters must have type uint32
 
         struct
         {
@@ -1211,6 +1226,79 @@ struct SmartAction
         struct {
             uint32 ignore;
         } ignorePathfinding;
+
+        struct
+        {
+            uint32 timer;
+        } corpseDelay;
+
+        struct
+        {
+            uint32 state;
+        } goState;
+
+        struct
+        {
+            uint32 type;
+        } auraType;
+
+        struct
+        {
+            uint32 dist;
+        } sightDistance;
+
+        struct
+        {
+            uint32 fleeTime;
+        } flee;
+
+        struct
+        {
+            uint32 id;
+            uint32 force;
+        } loadEquipment;
+
+        struct
+        {
+            uint32 minId;
+            uint32 maxId;
+        } randomTimedEvent;
+
+        struct
+        {
+            uint32 stopMovement;
+            uint32 movementExpired;
+        } stopMotion;
+
+        struct {
+            uint32 increase;
+            uint32 decrease;
+        } modifyThreat;
+
+        struct
+        {
+            uint32 zoneId;
+            uint32 musicId;
+        } setOverrideZoneMusic;
+
+        struct
+        {
+            uint32 powerType;
+        } powerType;
+
+        struct
+        {
+            uint32 variationMovementFlags;
+        } SetMovementFlags;
+
+        struct
+        {
+            uint32 spellId;
+            uint32 triggered;
+        } castOffSet;
+
+        //! Note for any new future actions
+        //! All parameters must have type uint32
     };
 };
 

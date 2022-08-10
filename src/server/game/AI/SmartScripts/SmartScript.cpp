@@ -941,7 +941,7 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
                 break;
 
             me->DoFleeToGetAssistance();
-            if (e.action.flee.withEmote)
+            if (e.action.fleeAssist.withEmote)
             {
                 Trinity::BroadcastTextBuilder builder(me, CHAT_MSG_MONSTER_EMOTE, BROADCAST_TEXT_FLEE_FOR_ASSIST);
                 CreatureTextMgr::SendChatPacket(me, builder, CHAT_MSG_MONSTER_EMOTE);
@@ -2722,7 +2722,266 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
             delete targets;
             break;
         }
+        case SMART_ACTION_SET_CORPSE_DELAY:
+        {
+            ObjectList* targets = GetTargets(e, unit);
+            if (!targets)
+                break;
 
+            for (ObjectList::const_iterator itr = targets->begin(); itr != targets->end(); ++itr)
+            {
+                if (IsCreature(*itr))
+                    (*itr)->ToCreature()->SetCorpseDelay(e.action.corpseDelay.timer);
+            }
+
+            delete targets;
+            break;
+        }
+        case SMART_ACTION_GO_SET_GO_STATE:
+        {
+            ObjectList* targets = GetTargets(e, unit);
+
+            if (!targets)
+                break;
+
+            for (ObjectList::const_iterator itr = targets->begin(); itr != targets->end(); ++itr)
+                if (IsGameObject(*itr))
+                    (*itr)->ToGameObject()->SetGoState((GOState)e.action.goState.state);
+
+            delete targets;
+            break;
+        }
+        case SMART_ACTION_REMOVE_AURAS_BY_TYPE: // can be used to exit vehicle for example
+        {
+            ObjectList* targets = GetTargets(e, unit);
+            if (!targets)
+                break;
+
+            for (ObjectList::const_iterator itr = targets->begin(); itr != targets->end(); ++itr)
+                if (IsUnit(*itr))
+                    (*itr)->ToUnit()->RemoveAurasByType((AuraType)e.action.auraType.type);
+
+            delete targets;
+            break;
+        }
+        case SMART_ACTION_SET_SIGHT_DIST:
+        {
+            ObjectList* targets = GetTargets(e, unit);
+            if (!targets)
+                break;
+
+            for (ObjectList::const_iterator itr = targets->begin(); itr != targets->end(); ++itr)
+                if (IsCreature(*itr))
+                    (*itr)->ToCreature()->m_SightDistance = e.action.sightDistance.dist;
+
+            delete targets;
+            break;
+        }
+        case SMART_ACTION_FLEE:
+        {
+            ObjectList* targets = GetTargets(e, unit);
+            if (!targets)
+                break;
+
+            for (ObjectList::const_iterator itr = targets->begin(); itr != targets->end(); ++itr)
+                if (IsCreature(*itr))
+                    (*itr)->ToCreature()->GetMotionMaster()->MoveFleeing(me, e.action.flee.fleeTime);
+
+            delete targets;
+            break;
+        }
+        case SMART_ACTION_ADD_THREAT:
+        {
+            ObjectList* targets = GetTargets(e, unit);
+            if (!targets)
+                break;
+
+            for (ObjectList::const_iterator itr = targets->begin(); itr != targets->end(); ++itr)
+                if (IsUnit(*itr))
+                    me->AddThreat((*itr)->ToUnit(), (float)e.action.threatPCT.threatINC - (float)e.action.threatPCT.threatDEC);
+
+            delete targets;
+            break;
+        }
+        case SMART_ACTION_LOAD_EQUIPMENT:
+        {
+            ObjectList* targets = GetTargets(e, unit);
+            if (!targets)
+                break;
+
+            for (ObjectList::const_iterator itr = targets->begin(); itr != targets->end(); ++itr)
+                if (IsCreature(*itr))
+                    (*itr)->ToCreature()->LoadEquipment(e.action.loadEquipment.id, e.action.loadEquipment.force != 0);
+
+            delete targets;
+            break;
+        }
+        case SMART_ACTION_TRIGGER_RANDOM_TIMED_EVENT:
+        {
+            uint32 eventId = urand(e.action.randomTimedEvent.minId, e.action.randomTimedEvent.maxId);
+            ProcessEventsFor((SMART_EVENT)SMART_EVENT_TIMED_EVENT_TRIGGERED, NULL, eventId);
+            break;
+        }
+        case SMART_ACTION_REMOVE_ALL_GAMEOBJECTS:
+        {
+            ObjectList* targets = GetTargets(e, unit);
+            if (!targets)
+                break;
+
+            for (ObjectList::const_iterator itr = targets->begin(); itr != targets->end(); ++itr)
+                if (IsUnit(*itr))
+                    (*itr)->ToUnit()->RemoveAllGameObjects();
+
+            delete targets;
+            break;
+        }
+        case SMART_ACTION_STOP_MOTION:
+        {
+            ObjectList* targets = GetTargets(e, unit);
+            if (!targets)
+                break;
+
+            for (ObjectList::const_iterator itr = targets->begin(); itr != targets->end(); ++itr)
+                if (IsUnit(*itr))
+                {
+                    if (e.action.stopMotion.stopMovement)
+                        (*itr)->ToUnit()->StopMoving();
+                    if (e.action.stopMotion.movementExpired)
+                        (*itr)->ToUnit()->GetMotionMaster()->MovementExpired();
+                }
+
+            delete targets;
+            break;
+        }
+        case SMART_ACTION_MODIFY_THREAT:
+        {
+            ObjectList* targets = GetTargets(e, unit);
+            if (!targets)
+                break;
+
+            if (me)
+            {
+                for (WorldObject* target : *targets)
+                {
+                    if (Unit* unitTarget = target->ToUnit())
+                    {
+                        float threat = e.action.modifyThreat.increase ? e.action.modifyThreat.increase : -int32(e.action.modifyThreat.decrease);
+                        me->getThreatManager().addThreat(unitTarget, threat);
+                    }
+                }
+            }
+
+            delete targets;
+            break;
+        }
+        case SMART_ACTION_SET_OVERRIDE_ZONE_MUSIC:
+        {
+            if (me)
+                me->GetMap()->SetZoneMusic(e.action.setOverrideZoneMusic.zoneId, e.action.setOverrideZoneMusic.musicId);
+            break;
+        }
+        case SMART_ACTION_SET_POWER_TYPE:
+        {
+            ObjectList* targets = GetTargets(e, unit);
+
+            if (targets)
+                for (ObjectList::const_iterator itr = targets->begin(); itr != targets->end(); ++itr)
+                    if (IsUnit(*itr))
+                        (*itr)->ToUnit()->SetFieldPowerType(Powers(e.action.powerType.powerType));
+
+            delete targets;
+            break;
+        }
+        case SMART_ACTION_SET_MAX_POWER:
+        {
+            ObjectList* targets = GetTargets(e, unit);
+
+            if (targets)
+                for (ObjectList::const_iterator itr = targets->begin(); itr != targets->end(); ++itr)
+                    if (IsUnit(*itr))
+                        (*itr)->ToUnit()->SetMaxPower(Powers(e.action.power.powerType), e.action.power.newPower);
+
+            delete targets;
+            break;
+        }
+        case SMART_ACTION_ADD_FLYING_MOVEMENT_FLAG:
+        {
+            ObjectList* targets = GetTargets(e, unit);
+
+            if (targets)
+                for (ObjectList::const_iterator itr = targets->begin(); itr != targets->end(); ++itr)
+                    if (IsUnit(*itr))
+                    {
+                        switch (e.action.SetMovementFlags.variationMovementFlags)
+                        {
+                        case 0:
+                            (*itr)->ToUnit()->AddUnitMovementFlag(MOVEMENTFLAG_FLYING);
+                            break;
+                        case 1:
+                            (*itr)->ToUnit()->AddUnitMovementFlag(MOVEMENTFLAG_CAN_FLY);
+                            break;
+                        case 2:
+                            (*itr)->ToUnit()->AddUnitMovementFlag(MOVEMENTFLAG_HOVER);
+                            break;
+                        }
+                    }
+
+            delete targets;
+            break;
+        }
+        case SMART_ACTION_REMOVE_FLYING_MOVEMENT_FLAG:
+        {
+            ObjectList* targets = GetTargets(e, unit);
+
+            if (targets)
+                for (ObjectList::const_iterator itr = targets->begin(); itr != targets->end(); ++itr)
+                    if (IsUnit(*itr))
+                    {
+                        switch (e.action.SetMovementFlags.variationMovementFlags)
+                        {
+                        case 0:
+                            (*itr)->ToUnit()->RemoveUnitMovementFlag(MOVEMENTFLAG_FLYING);
+                            break;
+                        case 1:
+                            (*itr)->ToUnit()->RemoveUnitMovementFlag(MOVEMENTFLAG_CAN_FLY);
+                            break;
+                        case 2:
+                            (*itr)->ToUnit()->RemoveUnitMovementFlag(MOVEMENTFLAG_HOVER);
+                            break;
+                        }
+                    }
+
+            delete targets;
+            break;
+        }
+        case SMART_ACTION_CAST_SPELL_OFFSET:
+        {
+            if (ObjectList* targets = GetTargets(e, unit))
+            {
+                for (ObjectList::const_iterator itr = targets->begin(); itr != targets->end(); ++itr)
+                {
+                    if (!IsUnit(*itr))
+                        continue;
+
+                    Position pos = (*itr)->GetPosition();
+
+                    // Use forward/backward/left/right cartesian plane movement
+                    float x, y, z, o;
+                    o = pos.GetOrientation();
+                    x = pos.GetPositionX() + (std::cos(o - (M_PI / 2)) * e.target.x) + (std::cos(o) * e.target.y);
+                    y = pos.GetPositionY() + (std::sin(o - (M_PI / 2)) * e.target.x) + (std::sin(o) * e.target.y);
+                    z = pos.GetPositionZ() + e.target.z;
+
+                    if (e.action.castOffSet.triggered)
+                        (*itr)->ToUnit()->CastSpell(x, y, z, e.action.castOffSet.spellId, true);
+                    else
+                        (*itr)->ToUnit()->CastSpell(x, y, z, e.action.castOffSet.spellId, false);
+                }
+
+                delete targets;
+            }
+            break;
+        }
         default:
             TC_LOG_ERROR(LOG_FILTER_SQL, "SmartScript::ProcessAction: Entry %d SourceType %u, Event %u, Unhandled Action type %u", e.entryOrGuid, e.GetScriptType(), e.event_id, e.GetActionType());
             break;

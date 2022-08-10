@@ -1008,6 +1008,30 @@ bool SmartAIMgr::IsEventValid(SmartScriptHolder& e)
 
             break;
         }
+        case SMART_ACTION_REMOVE_AURAS_BY_TYPE:
+        {
+            if (e.action.auraType.type >= TOTAL_AURAS)
+            {
+                TC_LOG_ERROR(LOG_FILTER_SQL, "Entry " SI64FMTD " SourceType %u Event %u Action %u uses invalid data type %u (value range 0-TOTAL_AURAS), skipped.", e.entryOrGuid, e.GetScriptType(), e.event_id, e.GetActionType(), e.action.auraType.type);
+                return false;
+            }
+            break;
+        }
+        case SMART_ACTION_MODIFY_THREAT:
+        {
+            if (e.action.modifyThreat.increase == 0 && e.action.modifyThreat.decrease == 0)
+            {
+                TC_LOG_ERROR(LOG_FILTER_SQL, "SmartScript: SMART_ACTION_MODIFY_THREAT have neither increase or decrease param set for creature " SI64FMTD ", skipped", e.entryOrGuid);
+                return false;
+            }
+
+            if (e.action.modifyThreat.increase != 0 && e.action.modifyThreat.decrease != 0)
+            {
+                TC_LOG_ERROR(LOG_FILTER_SQL, "SmartScript: SMART_ACTION_MODIFY_THREAT have both increase and decrease param set for creature " SI64FMTD ", decrease skipped", e.entryOrGuid);
+            }
+
+            break;
+        }
         case SMART_ACTION_FOLLOW:
         case SMART_ACTION_SET_ORIENTATION:
         case SMART_ACTION_STORE_TARGET_LIST:
@@ -1102,6 +1126,21 @@ bool SmartAIMgr::IsEventValid(SmartScriptHolder& e)
         case SMART_ACTION_START_TIMED_ACHIEVEMENT:
         case SMART_ACTION_SEND_GO_VISUAL_ID:
         case SMART_ACTION_SET_HEALTH_IN_PERCENT:
+        case SMART_ACTION_SET_CORPSE_DELAY:
+        case SMART_ACTION_GO_SET_GO_STATE:
+        case SMART_ACTION_SET_SIGHT_DIST:
+        case SMART_ACTION_FLEE:
+        case SMART_ACTION_ADD_THREAT:
+        case SMART_ACTION_LOAD_EQUIPMENT:
+        case SMART_ACTION_TRIGGER_RANDOM_TIMED_EVENT:
+        case SMART_ACTION_REMOVE_ALL_GAMEOBJECTS:
+        case SMART_ACTION_STOP_MOTION:
+        case SMART_ACTION_SET_OVERRIDE_ZONE_MUSIC:
+        case SMART_ACTION_SET_POWER_TYPE:
+        case SMART_ACTION_SET_MAX_POWER:
+        case SMART_ACTION_ADD_FLYING_MOVEMENT_FLAG:
+        case SMART_ACTION_REMOVE_FLYING_MOVEMENT_FLAG:
+        case SMART_ACTION_CAST_SPELL_OFFSET:
             break;
         default:
             TC_LOG_ERROR(LOG_FILTER_SQL, "SmartAIMgr: Not handled action_type(%u), event_type(%u), Entry %d SourceType %u Event %u, skipped.", e.GetActionType(), e.GetEventType(), e.entryOrGuid, e.GetScriptType(), e.event_id);
