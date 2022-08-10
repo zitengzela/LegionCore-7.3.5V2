@@ -154,13 +154,14 @@ enum SMART_EVENT
     SMART_EVENT_GO_EVENT_INFORM          = 71,      // eventId
     SMART_EVENT_ACTION_DONE              = 72,      // eventId (SharedDefines.EventId)
     SMART_EVENT_ON_SPELLCLICK            = 73,      // clicker (unit), cooldown min, cooldown max
+	SMART_EVENT_DISTANCE_CREATURE        = 79,      // guid, entry, distance, repeat
+    SMART_EVENT_COUNTER_SET              = 80,      // id, value, cooldownMin, cooldownMax
 
     SMART_EVENT_CHECK_DIST_TO_HOME       = 74,      // clicker (unit)
     SMART_EVENT_EVENTOBJECT_ONTRIGGER    = 75,      // EventObject(0 any), CooldownMin, CooldownMax
     SMART_EVENT_ON_TAXIPATHTO            = 76,      // clicker (unit)
     SMART_EVENT_EVENTOBJECT_OFFTRIGGER   = 77,      // EventObject(0 any), CooldownMin, CooldownMax
-    SMART_EVENT_ON_APPLY_OR_REMOVE_AURA  = 78,      // SpellId, Mode, ApplyOrRemove(1/0), Cooldown
-	SMART_EVENT_DISTANCE_CREATURE        = 79,      // guid, entry, distance, repeat
+    SMART_EVENT_ON_APPLY_OR_REMOVE_AURA  = 78,      // SpellId, Mode, ApplyOrRemove(1/0), Cooldown    
 
     SMART_EVENT_END                      = 80
 };
@@ -416,6 +417,13 @@ struct SmartEvent
 			uint32 repeat;
 		} distance;
 
+        struct
+        {
+            uint32 id;
+            uint32 value;
+            uint32 cooldownMin;
+            uint32 cooldownMax;
+        } counter;
     };
 };
 
@@ -430,7 +438,7 @@ enum SMART_SCRIPT_RESPAWN_CONDITION
 enum SMART_ACTION
 {
     SMART_ACTION_NONE                               = 0,      // No action
-    SMART_ACTION_TALK                               = 1,      // groupID from creature_text, duration to wait before TEXT_OVER event is triggered
+    SMART_ACTION_TALK                               = 1,      // groupID from creature_text, duration to wait before TEXT_OVER event is triggered, useTalkTarget (0/1) - use target as talk target
     SMART_ACTION_SET_FACTION                        = 2,      // FactionId (or 0 for default)
     SMART_ACTION_MORPH_TO_ENTRY_OR_MODEL            = 3,      // Creature_template entry(param1) OR ModelId (param2) (or 0 for both to demorph)
     SMART_ACTION_SOUND                              = 4,      // SoundId, TextRange
@@ -456,7 +464,7 @@ enum SMART_ACTION
     SMART_ACTION_EVADE                              = 24,     // No Params
     SMART_ACTION_FLEE_FOR_ASSIST                    = 25,     // With Emote
     SMART_ACTION_CALL_GROUPEVENTHAPPENS             = 26,     // QuestID
-    SMART_ACTION_PLAY_SPELL_VISUAL_KIT              = 27,     // KitType
+    SMART_ACTION_COMBAT_STOP                        = 27,     //
     SMART_ACTION_REMOVEAURASFROMSPELL               = 28,     // Spellid, 0 removes all auras
     SMART_ACTION_FOLLOW                             = 29,     // Distance (0 = default), Angle (0 = default), EndCreatureEntry, credit, creditType (0monsterkill, 1event)
     SMART_ACTION_RANDOM_PHASE                       = 30,     // PhaseId1, PhaseId2, PhaseId3...
@@ -492,7 +500,7 @@ enum SMART_ACTION
     SMART_ACTION_SET_FLY                            = 60,     // 0/1
     SMART_ACTION_SET_SWIM                           = 61,     // 0/1
     SMART_ACTION_TELEPORT                           = 62,     // mapID,
-    SMART_ACTION_STORE_VARIABLE_DECIMAL             = 63,     // varID, number
+    SMART_ACTION_SET_COUNTER                        = 63,     // id, value, reset (0/1)
     SMART_ACTION_STORE_TARGET_LIST                  = 64,     // varID,
     SMART_ACTION_WP_RESUME                          = 65,     // none
     SMART_ACTION_SET_ORIENTATION                    = 66,     //
@@ -591,8 +599,10 @@ enum SMART_ACTION
     SMART_ACTION_ADD_FLYING_MOVEMENT_FLAG           = 229,    // Variation
     SMART_ACTION_REMOVE_FLYING_MOVEMENT_FLAG        = 230,    // Variation
     SMART_ACTION_CAST_SPELL_OFFSET                  = 231,    // SpellId, triggered if value = 1.
+    SMART_ACTION_STORE_VARIABLE_DECIMAL             = 232,     // varID, number
+    SMART_ACTION_PLAY_SPELL_VISUAL_KIT              = 233,     // KitType
 
-    SMART_ACTION_END                                = 232,
+    SMART_ACTION_END                                = 234,
 };
 
 struct SmartAction
@@ -605,6 +615,7 @@ struct SmartAction
         {
             uint32 textGroupID;
             uint32 duration;
+            uint32 useTalkTarget;
         } talk;
 
         struct
@@ -932,6 +943,13 @@ struct SmartAction
         {
             uint32 mapID;
         } teleport;
+
+        struct
+        {
+            uint32 counterId;
+            uint32 value;
+            uint32 reset;
+        } setCounter;
 
         struct
         {
