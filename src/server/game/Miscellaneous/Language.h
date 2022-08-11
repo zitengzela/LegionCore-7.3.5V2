@@ -774,8 +774,9 @@ enum TrinityStrings
     LANG_MOVIE_NOT_EXIST                = 1201,
     LANG_DEBUG_AREATRIGGER_ON           = 1202,
     LANG_DEBUG_AREATRIGGER_OFF          = 1203,
-    LANG_DEBUG_AREATRIGGER_REACHED      = 1204,
-    // Room for more debug                1205-1299 not used
+    LANG_DEBUG_AREATRIGGER_ENTERED      = 1204,
+    LANG_DEBUG_AREATRIGGER_LEFT         = 1205,
+    // Room for more debug                1206-1299 not used
 
     // AV
     LANG_BG_AV_ALLY                     = 1300,

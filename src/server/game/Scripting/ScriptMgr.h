@@ -409,7 +409,7 @@ class AreaTriggerScript : public ScriptObject
         bool IsDatabaseBound() const override { return true; }
 
         // Called when the area trigger is activated by a player.
-        virtual bool OnTrigger(Player* /*player*/, AreaTriggerEntry const* /*trigger*/, bool /*enter*/) { return false; }
+        virtual bool OnTrigger(Player* /*player*/, AreaTriggerEntry const* /*trigger*/, bool /*entered*/) { return false; }
 
         // Called when a AreaTriggerAI object is needed for the areatrigger.
         virtual AreaTriggerAI* GetAI(AreaTrigger* /*at*/) const { return nullptr; }
