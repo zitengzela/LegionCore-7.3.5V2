@@ -1183,6 +1183,25 @@ namespace WorldPackets
 
             void Read() override { }
         };
+
+        class ConversationLineStarted final : public ClientPacket
+        {
+        public:
+            ConversationLineStarted(WorldPacket&& packet) : ClientPacket(CMSG_CONVERSATION_LINE_STARTED, std::move(packet)) { }
+
+            void Read() override;
+
+            ObjectGuid unkObjectGuid;
+            int32 unkint32 = 0;
+        };
+
+        class CheckRAFEmailEnabled final : public ClientPacket
+        {
+        public:
+            CheckRAFEmailEnabled(WorldPacket&& packet) : ClientPacket(CMSG_CHECK_RAF_EMAIL_ENABLED, std::move(packet)) { }
+
+            void Read() override { }
+        };
     }
 }
 

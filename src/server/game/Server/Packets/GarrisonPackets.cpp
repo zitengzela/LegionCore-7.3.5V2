@@ -918,3 +918,21 @@ WorldPacket const* WorldPackets::Garrison::GarrisonScoutingMapResult::Write()
 
     return &_worldPacket;
 }
+
+void WorldPackets::Garrison::GarrisonGetMissionReward::Read()
+{
+    _worldPacket >> unkint64;
+    _worldPacket >> unkint32;
+}
+
+void WorldPackets::Garrison::GarrisonSetBuildingActive::Read()
+{
+    _worldPacket >> unkint32;
+}
+
+void WorldPackets::Garrison::GarrisonSetFollowerFavorite::Read()
+{
+    _worldPacket >> unkint64;
+    _worldPacket.WriteBit(unkbool);
+    _worldPacket.FlushBits();
+}

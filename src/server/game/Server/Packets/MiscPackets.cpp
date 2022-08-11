@@ -868,3 +868,9 @@ WorldPacket const* WorldPackets::Misc::ContributionResponse::Write()
 
     return &_worldPacket;
 }
+
+void WorldPackets::Misc::ConversationLineStarted::Read()
+{
+    _worldPacket >> unkObjectGuid;
+    _worldPacket >> unkint32;
+}

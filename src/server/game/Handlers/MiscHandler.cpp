@@ -716,3 +716,9 @@ void WorldSession::HandleContributionCollectorContribute(WorldPackets::Misc::Con
 
     sContributionMgr.Contribute(GetPlayer(), packet.OrderIndex);
 }
+
+void WorldSession::HandleConversationLineStarted(WorldPackets::Misc::ConversationLineStarted& /*packet*/)
+{ }
+
+void WorldSession::HandleCheckRAFEmailEnabled(WorldPackets::Misc::CheckRAFEmailEnabled& /*packet*/)
+{ }

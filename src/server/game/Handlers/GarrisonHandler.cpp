@@ -335,3 +335,12 @@ void WorldSession::HandleGarrisonRenameFollower(WorldPackets::Garrison::Garrison
 
 void WorldSession::HandleGarrisonSetRecruitmentPreferences(WorldPackets::Garrison::GarrisonSetRecruitmentPreferences& /*packet*/)
 { }
+
+void WorldSession::HandleGarrisonGetMissionReward(WorldPackets::Garrison::GarrisonGetMissionReward& /*packet*/)
+{ }
+
+void WorldSession::HandleGarrisonSetBuildingActive(WorldPackets::Garrison::GarrisonSetBuildingActive& /*packet*/)
+{ }
+
+void WorldSession::HandleGarrisonSetFollowerFavorite(WorldPackets::Garrison::GarrisonSetFollowerFavorite& /*packet*/)
+{ }

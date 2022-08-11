@@ -375,6 +375,8 @@ namespace WorldPackets
         class TwitterConnect;
         class TwitterDisconnect;
         class ResetChallengeModeCheat;
+        class ConversationLineStarted;
+        class CheckRAFEmailEnabled;
     }
 
     namespace Movement
@@ -842,6 +844,9 @@ namespace WorldPackets
         class GarrisonGenerateRecruits;
         class GarrisonRemoveFollower;
         class GarrisonRequestScoutingMap;
+        class GarrisonGetMissionReward;
+        class GarrisonSetBuildingActive;
+        class GarrisonSetFollowerFavorite;
     }
     
     namespace Taxi
@@ -1931,6 +1936,9 @@ class WorldSession
         void HandleGarrisonRemoveFollower(WorldPackets::Garrison::GarrisonRemoveFollower& packet);
         void HandleGarrisonRenameFollower(WorldPackets::Garrison::GarrisonRenameFollower& packet);
         void HandleGarrisonSetRecruitmentPreferences(WorldPackets::Garrison::GarrisonSetRecruitmentPreferences& packet);
+        void HandleGarrisonGetMissionReward(WorldPackets::Garrison::GarrisonGetMissionReward& packet);
+        void HandleGarrisonSetBuildingActive(WorldPackets::Garrison::GarrisonSetBuildingActive& packet);
+        void HandleGarrisonSetFollowerFavorite(WorldPackets::Garrison::GarrisonSetFollowerFavorite& packet);
 
         void HandleAddToy(WorldPackets::Toy::AddToy& packet);
         void HandleUseToy(WorldPackets::Toy::UseToy& packet);
@@ -1967,6 +1975,8 @@ class WorldSession
         void HandleContributionCollectorContribute(WorldPackets::Misc::ContributionCollectorContribute& packet);
         void HandleContributionGetState(WorldPackets::Misc::ContributionGetState& packet);
         void HandleHotfixRequest(WorldPackets::Hotfix::HotfixRequest& packet);
+        void HandleConversationLineStarted(WorldPackets::Misc::ConversationLineStarted& packet);
+        void HandleCheckRAFEmailEnabled(WorldPackets::Misc::CheckRAFEmailEnabled& packet);
 
         // Battle Pay
         AuthFlags GetAF() const { return atAuthFlag;  }
