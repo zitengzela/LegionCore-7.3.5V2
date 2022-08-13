@@ -100,22 +100,6 @@ public:
                 return;
 
             player->CastSpell(player, 240155);
-
-            player->AddDelayedEvent(5000, [player]() -> void
-            {
-                player->CastSpell(player, 243303); // summon
-
-                std::list<Creature*> trash;
-                GetCreatureListWithEntryInGrid(trash, player, 118412, 50.0f);
-                for (std::list<Creature*>::iterator itr = trash.begin(); itr != trash.end(); ++itr)
-                    (*itr)->CastSpell(*itr, 243303); // summon
-
-                player->AddDelayedEvent(4000, [player]() -> void
-                {
-                    player->RemoveAura(240188);
-                    player->CreateConversation(4526);
-                });
-            });
         }
 
         void updateCriteriaForPlayers(uint32 objective)
@@ -287,6 +271,7 @@ public:
                             player->AddDelayedEvent(4000, [player]() -> void
                             {
                                 player->CreateConversation(4892);
+                                player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 58013);
                                 player->CompleteQuest(46734);
                             });
 
