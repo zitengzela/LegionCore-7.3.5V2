@@ -32,13 +32,12 @@ Azsuna quest-line 5-5 (tested player alliance)
 Val shara quest-line 7-7 (tested player alliance)
 Highmountain quest-line 7-7 (tested player alliance)
 Stormheim quest-line 8-8 (tested player alliance)
+Suramar quest-line 11-11 (tested player alliance)
+Broken Shore quest-line: ? (not tested)
 DH zones 2-2 (tested player alliance)
 
 Legion scripts:
-
-Instances & dungeons & bosses
-Legion
-- Antorus The Burning Throne
+Dungeons:
 - Black Rook Hold Dungeon
 - Cathedral of Eternal Night
 - Court of Stars
@@ -46,21 +45,24 @@ Legion
 - Eye of Azshara
 - Halls of Valor
 - Maw of Souls
-- Micro Holidays
 - Neltharions Lair
 - Return To Karazhan
 - The Arcway
-- The Emerald Nightmare
-- The Nighthold
 - The Seat of The Triumvirate
-- Tomb of Sargeras
-- Trial of Valor
 - Vault of the Wardens
 - Violet Hold Legion
+Raids:
+- Antorus The Burning Throne
+- Tomb of Sargeras
+- Trial of Valor
+- The Nighthold
+- The Emerald Nightmare
+Misc:
 - Invasion point Argus
 - Invasion point world bosses
-- Sentinax
 - World bosses legion
+- Micro Holidays
+
 
 Draenor
 - Auchindoun
@@ -119,13 +121,13 @@ Scenarios
 - Arena of Annihilation
 - Army Training
 - Artifacts
-- Assault on Broken Shore
+- Assault on Broken Shore (tested player alliance)
 - Assault on Zan'vess
 - Battle on the High Seas
 - Battle Pet Instance
 - Blood in the Snow
 - Brewmoon Festival
-- Broken Islands
+- Broken Islands (Work alliance and horde)
 - The Celestial Tournament
 - Crypt of Forgotten Kings
 - Dagger in the Dark
