@@ -1244,6 +1244,7 @@ void AddSC_invasion_point_world_bosses()
     RegisterCreatureAI(npc_fiery_trickster);
     RegisterCreatureAI(npc_felblaze_maniacr);
     RegisterCreatureAI(npc_slumbering_gasp);
+
     RegisterSpellScript(spell_beguiling_charm);
     RegisterSpellScript(spell_eye_sore);
     RegisterSpellScript(spell_soul_cleave);
@@ -1254,5 +1255,6 @@ void AddSC_invasion_point_world_bosses()
     RegisterAuraScript(spell_infected_claws);
     RegisterAuraScript(spell_folnuna_nausea);
     RegisterAuraScript(spell_slimbering_gasp);
+
     RegisterAreaTriggerAI(at_seeds_of_chaos);
 }

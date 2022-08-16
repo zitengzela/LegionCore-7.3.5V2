@@ -6,6 +6,12 @@
 */
 
 #include "black_rook_hold_dungeon.h"
+#include "ScriptMgr.h"
+#include "ScriptedCreature.h"
+#include "ScriptedGossip.h"
+#include "SpellScript.h"
+#include "GameEventMgr.h"
+#include "GridNotifiers.h"
 
 enum Says
 {
@@ -803,8 +809,10 @@ void AddSC_boss_illysanna_ravencrest()
     RegisterCreatureAI(npc_illysanna_trash_generic);
     RegisterCreatureAI(npc_brh_boulder);
     RegisterCreatureAI(npc_brh_wyrmtongue_scavenger);
+
     RegisterAuraScript(spell_illysanna_periodic_energize);
     RegisterAuraScript(spell_illysanna_eye_beams);
     RegisterSpellScript(spell_illysanna_dark_rush);
-    new achievement_adds_more_like_bads();
+
+    RegisterAchievementScript(achievement_adds_more_like_bads);
 }

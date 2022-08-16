@@ -4,6 +4,12 @@
 
 #include "antorus.h"
 #include "AreaTriggerAI.h"
+#include "ScriptMgr.h"
+#include "ScriptedCreature.h"
+#include "ScriptedGossip.h"
+#include "SpellScript.h"
+#include "SpellAuraEffects.h"
+#include "GridNotifiers.h"
 
 enum Says
 {
@@ -1427,6 +1433,7 @@ void AddSC_boss_felhounds()
 {
     RegisterCreatureAI(npc_felhounds_shatug);
     RegisterCreatureAI(npc_felhounds_fharg);
+
     RegisterSpellScript(spell_felhounds_destroyers_boon_energy_type);
     RegisterSpellScript(spell_felhounds_consuming_sphere);
     RegisterSpellScript(spell_felhounds_desolate_path);
@@ -1444,6 +1451,7 @@ void AddSC_boss_felhounds()
     RegisterAuraScript(spell_felhounds_destroyers_boon_energize);
     RegisterAuraScript(spell_felhounds_sargeras_blessing);
     RegisterAuraScript(spell_felhounds_decay_or_smouldering);
+
     RegisterAreaTriggerAI(at_felhounds_weight_of_darkness);
     RegisterAreaTriggerAI(at_felhounds_consuming_sphere);
 }

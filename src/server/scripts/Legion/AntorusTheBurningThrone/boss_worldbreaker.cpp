@@ -4,6 +4,11 @@
 
 #include "AreaTriggerAI.h"
 #include "antorus.h"
+#include "ScriptMgr.h"
+#include "ScriptedCreature.h"
+#include "ScriptedGossip.h"
+#include "SpellScript.h"
+#include "SpellAuraEffects.h"
 
 enum Says
 {
@@ -1050,6 +1055,7 @@ void AddSC_boss_worldbreaker()
     RegisterCreatureAI(npc_worldbreaker_annihilation_trigger);
     RegisterCreatureAI(npc_worldbreaker_surging_fel_trigger);
     RegisterCreatureAI(npc_atbt_annihilator);
+
     RegisterSpellScript(spell_worldbreaker_annihilation_dmg);
     RegisterSpellScript(spell_worldbreaker_eradication);
     RegisterSpellScript(spell_worldbreaker_decimation_filter);
@@ -1057,5 +1063,6 @@ void AddSC_boss_worldbreaker()
     RegisterAuraScript(spell_worldbreaker_fel_bombardment);
     RegisterAuraScript(spell_worldbreaker_apocalypse_drive);
     RegisterAuraScript(spell_worldbreaker_carnage);
+
     RegisterAreaTriggerAI(at_worldbreaker_annihilation);
 }

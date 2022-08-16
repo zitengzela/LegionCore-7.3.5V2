@@ -3,6 +3,13 @@
 */
 
 #include "antorus.h"
+#include "ScriptMgr.h"
+#include "ScriptedCreature.h"
+#include "ScriptedGossip.h"
+#include "SpellScript.h"
+#include "SpellAuraEffects.h"
+#include "Vehicle.h"
+#include "CombatAI.h"
 
 enum eSays
 {
@@ -1441,6 +1448,7 @@ void AddSC_boss_antoran()
     RegisterCreatureAI(npc_command_felshield_emitter);
     RegisterCreatureAI(npc_command_disruptor_beacon);
     RegisterCreatureAI(npc_command_screaming_shrike);
+
     RegisterSpellScript(spell_command_withering_fire);
     RegisterSpellScript(spell_command_player_chaos_pulse);
     RegisterSpellScript(spell_command_chaos_pulse_filter);

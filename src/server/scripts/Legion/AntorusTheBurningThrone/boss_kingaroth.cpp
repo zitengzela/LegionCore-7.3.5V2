@@ -4,6 +4,11 @@
 
 #include "AreaTriggerAI.h"
 #include "antorus.h"
+#include "ScriptMgr.h"
+#include "ScriptedCreature.h"
+#include "ScriptedGossip.h"
+#include "SpellScript.h"
+#include "SpellAuraEffects.h"
 
 enum Says
 {
@@ -1048,11 +1053,13 @@ void AddSC_boss_kingaroth()
     RegisterCreatureAI(npc_kingaroth_apocalypse_blast_stalker);
     RegisterCreatureAI(npc_kingaroth_garothi);
     RegisterCreatureAI(npc_kingaroth_annihilation_trigger);
+
     RegisterSpellScript(spell_kingaroth_diabolic_bomb);
     RegisterSpellScript(spell_kingaroth_diabolic_bomb_dmg);
     RegisterSpellScript(spell_kingaroth_annihilation_dmg);
     RegisterAuraScript(spell_kingaroth_energize_periodic);
     RegisterAuraScript(spell_kingaroth_apocalypse_protocol);
     RegisterAuraScript(spell_kingaroth_initializing);
+
     RegisterAreaTriggerAI(at_kingaroth_annihilation);
 }

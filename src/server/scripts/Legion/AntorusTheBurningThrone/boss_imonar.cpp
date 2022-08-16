@@ -3,6 +3,11 @@
 */
 
 #include "antorus.h"
+#include "ScriptMgr.h"
+#include "ScriptedCreature.h"
+#include "ScriptedGossip.h"
+#include "SpellScript.h"
+#include "SpellAuraEffects.h"
 
 enum Says
 {
@@ -691,6 +696,7 @@ void AddSC_boss_imonar()
     RegisterCreatureAI(boss_imonar);
     RegisterCreatureAI(npc_imonar_ship_generic);
     RegisterCreatureAI(npc_imonar_traps);
+
     RegisterSpellScript(spell_imonar_electrify);
     RegisterAuraScript(spell_imonar_jetpacks);
 }

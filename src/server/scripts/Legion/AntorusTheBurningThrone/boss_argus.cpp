@@ -4,6 +4,11 @@
 
 #include "antorus.h"
 #include "AreaTriggerAI.h"
+#include "ScriptMgr.h"
+#include "ScriptedCreature.h"
+#include "ScriptedGossip.h"
+#include "SpellScript.h"
+#include "SpellAuraEffects.h"
 
 enum Says
 {
@@ -2278,6 +2283,7 @@ void AddSC_boss_argus()
     RegisterCreatureAI(npc_argus_reorigination_module);
     RegisterCreatureAI(npc_argus_mote_of_titanic_power);
     RegisterCreatureAI(npc_argus_chains_of_sargeras);
+
     RegisterAuraScript(spell_argus_p1_energize_periodic);
     RegisterAuraScript(spell_argus_p2_energize_periodic);
     RegisterAuraScript(spell_argus_p4_energize_periodic);
@@ -2295,6 +2301,7 @@ void AddSC_boss_argus()
     RegisterSpellScript(spell_argus_apocalypsis_module);
     RegisterSpellScript(spell_argus_soulrending_scythe_script);
     RegisterSpellScript(spell_argus_rent_soul);
+
     RegisterAreaTriggerAI(at_argus_sargeras_fear);
     RegisterAreaTriggerAI(at_argus_rent_soul);
 }

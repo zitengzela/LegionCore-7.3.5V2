@@ -6,6 +6,11 @@
 */
 
 #include "black_rook_hold_dungeon.h"
+#include "ScriptMgr.h"
+#include "ScriptedCreature.h"
+#include "ScriptedGossip.h"
+#include "SpellScript.h"
+#include "SpellAuraEffects.h"
 
 enum Says
 {
@@ -484,5 +489,6 @@ void AddSC_boss_the_amalgam_of_souls()
     RegisterCreatureAI(npc_soul_echoes_stalker);
     RegisterCreatureAI(npc_soul_echoes_outro);
     RegisterCreatureAI(npc_amalgam_restless_soul);
-    new achievement_black_rook_moan();
+
+    RegisterAchievementScript(achievement_black_rook_moan);
 }

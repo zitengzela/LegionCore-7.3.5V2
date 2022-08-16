@@ -3,6 +3,11 @@
 */
 
 #include "antorus.h"
+#include "ScriptMgr.h"
+#include "ScriptedCreature.h"
+#include "ScriptedGossip.h"
+#include "SpellScript.h"
+#include "SpellAuraEffects.h"
 
 enum Says
 {
@@ -1478,6 +1483,7 @@ void AddSC_boss_hasabel()
     RegisterCreatureAI(npc_hasabel_portal_summon);
     RegisterCreatureAI(npc_hasabel_everburning_flames);
     RegisterCreatureAI(npc_hasabel_felsilk_web);
+
     RegisterSpellScript(spell_hasabel_bursting_darkness);
     RegisterAuraScript(spell_hasabel_reality_tear);
     RegisterAuraScript(spell_hasabel_energize);

@@ -4,6 +4,11 @@
 
 #include "antorus.h"
 #include "AreaTriggerAI.h"
+#include "ScriptMgr.h"
+#include "ScriptedCreature.h"
+#include "ScriptedGossip.h"
+#include "SpellScript.h"
+#include "SpellAuraEffects.h"
 
 enum Says
 {
@@ -1208,10 +1213,12 @@ void AddSC_boss_coven_shivarres()
     RegisterCreatureAI(npc_coven_whirling_saber);
     RegisterCreatureAI(npc_coven_shadow_blade);
     RegisterCreatureAI(npc_coven_cosmic_glare);
+
     RegisterSpellScript(spell_coven_fury_subsides);
     RegisterSpellScript(spell_coven_cosmic_glare);
     RegisterSpellScript(spell_coven_cosmic_glare_dmg);
     RegisterAuraScript(spell_coven_chilled_blood);
     RegisterAuraScript(spell_coven_orb_of_frost);
+
     RegisterAreaTriggerAI(at_coven_storm_of_darkness);
 }

@@ -1210,5 +1210,7 @@ public:
 #define RegisterConversationScript(script) new script()
 #define RegisterPlayerScript(script) new script()
 #define RegisterItemScript(script) new script()
+#define RegisterEventObjectScript(script) new script()
+#define RegisterAchievementScript(script) new script()
 
 #endif

@@ -6,6 +6,11 @@
 #include "cathedral_of_eternal_night.h"
 #include "AreaTrigger.h"
 #include "AreaTriggerAI.h"
+#include "ScriptMgr.h"
+#include "ScriptedCreature.h"
+#include "ScriptedGossip.h"
+#include "SpellScript.h"
+#include "SpellAuraEffects.h"
 
 enum Says
 {
@@ -64,346 +69,303 @@ Position const portals_position[4]
 };
 
 // 118804
-class boss_domatrax : public CreatureScript
+struct boss_domatrax : public BossAI
 {
-public:
-    boss_domatrax() : CreatureScript("boss_domatrax") {}
+    boss_domatrax(Creature* creature) : BossAI(creature, DATA_DOMATRAX) {}
+    
+    uint8 phase = 0;
+    uint32 const phases_hp_required[3] = {90, 50, 25};
 
-    struct boss_domatraxAI : public BossAI
+    void Reset() override
     {
-        boss_domatraxAI(Creature* creature) : BossAI(creature, DATA_DOMATRAX) {}
+        _Reset();
+     
+        phase = 0;
+        me->SetPower(POWER_ENERGY, 0);
         
-        uint8 phase = 0;
-        uint32 const phases_hp_required[3] = {90, 50, 25};
-
-        void Reset() override
+        if (Creature* egida = instance->instance->GetCreature(instance->GetGuidData(NPC_EGIDA_START)))
         {
-            _Reset();
-         
-            phase = 0;
-            me->SetPower(POWER_ENERGY, 0);
+            instance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, egida);
+            instance->SendEncounterUnit(ENCOUNTER_FRAME_INSTANCE_END, egida);
             
-            if (Creature* egida = instance->instance->GetCreature(instance->GetGuidData(NPC_EGIDA_START)))
-            {
-                instance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, egida);
-                instance->SendEncounterUnit(ENCOUNTER_FRAME_INSTANCE_END, egida);
-                
-                egida->RemoveAurasDueToSpell(SPELL_EGIDA_DISPLAY_BAR);
-                egida->RemoveAurasDueToSpell(SPELL_EGIDA_AT);
-            }
-            
-            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_SELECTABLE);
-            me->SetReactState(REACT_PASSIVE);
-            me->SetVisible(false);
+            egida->RemoveAurasDueToSpell(SPELL_EGIDA_DISPLAY_BAR);
+            egida->RemoveAurasDueToSpell(SPELL_EGIDA_AT);
         }
+        
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_SELECTABLE);
+        me->SetReactState(REACT_PASSIVE);
+        me->SetVisible(false);
+    }
 
-        void EnterCombat(Unit* /*who*/) override
+    void EnterCombat(Unit* /*who*/) override
+    {
+        Talk(SAY_AGGRO);
+        _EnterCombat();
+        
+        phase = 0;
+        me->SetPower(POWER_ENERGY, 0);
+
+        events.RescheduleEvent(EVENT_FELSOUL_CLEAVE, 8000);
+        events.RescheduleEvent(EVENT_CHAOTIC_ENERGY, 1000);
+        
+        if (Creature* egida = instance->instance->GetCreature(instance->GetGuidData(NPC_EGIDA_START)))
         {
-            Talk(SAY_AGGRO);
-            _EnterCombat();
+            instance->SendEncounterUnit(ENCOUNTER_FRAME_ENGAGE, egida);
+            instance->SendEncounterUnit(ENCOUNTER_FRAME_INSTANCE_START, egida);
             
-            phase = 0;
-            me->SetPower(POWER_ENERGY, 0);
-
-            events.RescheduleEvent(EVENT_FELSOUL_CLEAVE, 8000);
-            events.RescheduleEvent(EVENT_CHAOTIC_ENERGY, 1000);
-            
-            if (Creature* egida = instance->instance->GetCreature(instance->GetGuidData(NPC_EGIDA_START)))
+            egida->CastSpell(egida, SPELL_EGIDA_DISPLAY_BAR);
+            egida->AddDelayedEvent(1000, [egida]()-> void
             {
-                instance->SendEncounterUnit(ENCOUNTER_FRAME_ENGAGE, egida);
-                instance->SendEncounterUnit(ENCOUNTER_FRAME_INSTANCE_START, egida);
-                
-                egida->CastSpell(egida, SPELL_EGIDA_DISPLAY_BAR);
-                egida->AddDelayedEvent(1000, [egida]()-> void
+                egida->CastSpell(egida, SPELL_EGIDA_AT);
+            });
+        }
+        
+    }
+    
+    void JustSummoned(Creature* summon) override
+    {            
+        summons.Summon(summon);
+        
+        summon->CastSpell(summon, SPELL_VISUAL_SPAWN);
+        if (summon->GetEntry() == NPC_PORTAL_OWNER)
+        {
+            instance->SendEncounterUnit(ENCOUNTER_FRAME_ENGAGE, summon);
+            instance->SendEncounterUnit(ENCOUNTER_FRAME_INSTANCE_START, summon);
+            
+            summon->SetReactState(REACT_PASSIVE);
+            summon->CastSpell(summon, phase == 1 ? SPELL_PORTAL_PERIODIC_ONE: SPELL_PORTAL_PERIODIC_TWO); // periodic summon adds
+            
+            // me->SummonCreature(phase == 1 ? NPC_IMP : (GetDifficultyID() == DIFFICULTY_HEROIC ? NPC_FELGUARD : NPC_SHIVARRA), summon->GetPositionX(), summon->GetPositionY(), summon->GetPositionZ(), summon->GetOrientation());
+            
+            if (GetDifficultyID() != DIFFICULTY_HEROIC) // mythic and other. normal mode isn't exist
+                summon->CastSpell(summon, SPELL_PORTAL_MYTHIC_ADD);
+        }
+    
+        DoZoneInCombat(summon, 150.0f);
+    }
+    
+    
+    void SummonedCreatureDies(Creature* summon, Unit* /*killer*/) override
+    {
+        if (summon->GetEntry() == NPC_PORTAL_OWNER)
+        {
+            instance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, summon);
+            instance->SendEncounterUnit(ENCOUNTER_FRAME_INSTANCE_END, summon);
+        }
+    }
+    
+    void SpellFinishCast(const SpellInfo* spell) override
+    {
+        switch(spell->Id)
+        {
+            case SPELL_WAVE_TWO:
+                Talk(SAY_WAVE_TWO);
+                // no break
+            case SPELL_WAVE_ONE:
+                Talk(SAY_WAVE);
+                uint8 position = urand(0 ,3);
+                for (uint8 i = 0; i < 2; ++i)
                 {
-                    egida->CastSpell(egida, SPELL_EGIDA_AT);
-                });
-            }
-            
-        }
+                    me->SummonCreature(NPC_PORTAL_OWNER, portals_position[position++]);
+                    
+                    if (position >= 4)
+                        position = 0;
+                }
+                break;
+        }  
+    }
+
+    void DoAction(int32 const action) override
+    {
+        me->SetVisible(true);
+        DoCast(SPELL_INTRO);
         
-        void JustSummoned(Creature* summon) override
-        {            
-            summons.Summon(summon);
-            
-            summon->CastSpell(summon, SPELL_VISUAL_SPAWN);
-            if (summon->GetEntry() == NPC_PORTAL_OWNER)
-            {
-                instance->SendEncounterUnit(ENCOUNTER_FRAME_ENGAGE, summon);
-                instance->SendEncounterUnit(ENCOUNTER_FRAME_INSTANCE_START, summon);
-                
-                summon->SetReactState(REACT_PASSIVE);
-                summon->CastSpell(summon, phase == 1 ? SPELL_PORTAL_PERIODIC_ONE: SPELL_PORTAL_PERIODIC_TWO); // periodic summon adds
-                
-                // me->SummonCreature(phase == 1 ? NPC_IMP : (GetDifficultyID() == DIFFICULTY_HEROIC ? NPC_FELGUARD : NPC_SHIVARRA), summon->GetPositionX(), summon->GetPositionY(), summon->GetPositionZ(), summon->GetOrientation());
-                
-                if (GetDifficultyID() != DIFFICULTY_HEROIC) // mythic and other. normal mode isn't exist
-                    summon->CastSpell(summon, SPELL_PORTAL_MYTHIC_ADD);
-            }
-        
-            DoZoneInCombat(summon, 150.0f);
-        }
-        
-        
-        void SummonedCreatureDies(Creature* summon, Unit* /*killer*/) override
+        me->AddDelayedEvent(1000, [this]()-> void
         {
-            if (summon->GetEntry() == NPC_PORTAL_OWNER)
+            Talk(SAY_INTRO);
+        });
+        
+        me->AddDelayedEvent(3000, [this]()-> void
+        {
+            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_SELECTABLE);
+            me->SetReactState(REACT_DEFENSIVE);
+        });
+        
+    }
+    
+    void JustDied(Unit* /*killer*/) override
+    {
+        Talk(SAY_DEATH);
+        _JustDied();
+        
+        if (Creature* egida = instance->instance->GetCreature(instance->GetGuidData(NPC_EGIDA_START)))
+        {
+            instance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, egida);
+            instance->SendEncounterUnit(ENCOUNTER_FRAME_INSTANCE_END, egida);
+            
+            egida->RemoveAurasDueToSpell(SPELL_EGIDA_DISPLAY_BAR);
+            egida->RemoveAurasDueToSpell(SPELL_EGIDA_AT);
+            
+            me->CastSpell(egida, SPELL_OUTRO, true);
+            egida->CastSpell(egida, SPELL_EGIDA_OUTRO);
+            egida->DespawnOrUnsummon(3000);
+            
+            // egida->SummonCreature(NPC_EGIDA_GIVE_BUFF, egida->GetPositionX() + frand(-3, 3), egida->GetPositionY() + frand(-3, 3), egida->GetPositionZ(), egida->GetOrientation());
+        }
+    }
+    
+    void DamageTaken(Unit* /*attacker*/, uint32& damage, DamageEffectType dmgType) override
+    {
+        if (phase < 3 && me->HealthBelowPct(phases_hp_required[phase]))
+        {
+            switch(phase++)
             {
-                instance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, summon);
-                instance->SendEncounterUnit(ENCOUNTER_FRAME_INSTANCE_END, summon);
+                case 0:
+                    events.RescheduleEvent(EVENT_WAVE_ONE, 100);
+                    break;
+                case 1:
+                    events.RescheduleEvent(EVENT_WAVE_TWO, 100);
+                    break;
+                case 2:
+                    events.RescheduleEvent(EVENT_ENRAGE, 100);
+                    break;
+                default:
+                    break;
             }
         }
-        
-        void SpellFinishCast(const SpellInfo* spell) override
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        if (!UpdateVictim())
+            return;
+
+        events.Update(diff);
+
+        if (me->HasUnitState(UNIT_STATE_CASTING))
+            return;
+
+        if (uint32 eventId = events.ExecuteEvent())
         {
-            switch(spell->Id)
+            switch (eventId)
             {
-                case SPELL_WAVE_TWO:
-                    Talk(SAY_WAVE_TWO);
-                    // no break
-                case SPELL_WAVE_ONE:
-                    Talk(SAY_WAVE);
-                    uint8 position = urand(0 ,3);
-                    for (uint8 i = 0; i < 2; ++i)
+                case EVENT_FELSOUL_CLEAVE:
+                    DoCast(SPELL_FELSOUL_CLEAVE);
+                    events.RescheduleEvent(EVENT_FELSOUL_CLEAVE, 18000);
+                    break;
+                case EVENT_CHAOTIC_ENERGY:
+                    if (me->GetPower(POWER_ENERGY) < 100)
                     {
-                        me->SummonCreature(NPC_PORTAL_OWNER, portals_position[position++]);
-                        
-                        if (position >= 4)
-                            position = 0;
+                        me->SetPower(POWER_ENERGY, me->GetPower(POWER_ENERGY) + urand(2, 4));
+                        events.RescheduleEvent(EVENT_CHAOTIC_ENERGY, 1000);
+                    }
+                    else
+                    {
+                        Talk(SAY_CHAOTIC_ENERGY);
+                        Talk(SAY_CHAOTIC_ENERGY_1);
+                        DoCast(SPELL_CHAOTIC_ENERGY);
+                        DoCast(SPELL_CHAOTIC_ENERGY_DMG);
+                        events.RescheduleEvent(EVENT_CHAOTIC_ENERGY, 5000);
                     }
                     break;
-            }  
-        }
-
-        void DoAction(int32 const action) override
-        {
-            me->SetVisible(true);
-            DoCast(SPELL_INTRO);
-            
-            me->AddDelayedEvent(1000, [this]()-> void
-            {
-                Talk(SAY_INTRO);
-            });
-            
-            me->AddDelayedEvent(3000, [this]()-> void
-            {
-                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_SELECTABLE);
-                me->SetReactState(REACT_DEFENSIVE);
-            });
-            
-        }
-        
-        void JustDied(Unit* /*killer*/) override
-        {
-            Talk(SAY_DEATH);
-            _JustDied();
-            
-            if (Creature* egida = instance->instance->GetCreature(instance->GetGuidData(NPC_EGIDA_START)))
-            {
-                instance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, egida);
-                instance->SendEncounterUnit(ENCOUNTER_FRAME_INSTANCE_END, egida);
-                
-                egida->RemoveAurasDueToSpell(SPELL_EGIDA_DISPLAY_BAR);
-                egida->RemoveAurasDueToSpell(SPELL_EGIDA_AT);
-                
-                me->CastSpell(egida, SPELL_OUTRO, true);
-                egida->CastSpell(egida, SPELL_EGIDA_OUTRO);
-                egida->DespawnOrUnsummon(3000);
-                
-                // egida->SummonCreature(NPC_EGIDA_GIVE_BUFF, egida->GetPositionX() + frand(-3, 3), egida->GetPositionY() + frand(-3, 3), egida->GetPositionZ(), egida->GetOrientation());
+                case EVENT_WAVE_ONE:
+                    DoCast(SPELL_WAVE_ONE);
+                    break;
+                case EVENT_WAVE_TWO:
+                    DoCast(SPELL_WAVE_TWO);
+                    break;
+                case EVENT_ENRAGE:
+                    DoCast(SPELL_ENRAGE);
+                    break;
             }
         }
-        
-        void DamageTaken(Unit* /*attacker*/, uint32& damage, DamageEffectType dmgType) override
-        {
-            if (phase < 3 && me->HealthBelowPct(phases_hp_required[phase]))
-            {
-                switch(phase++)
-                {
-                    case 0:
-                        events.RescheduleEvent(EVENT_WAVE_ONE, 100);
-                        break;
-                    case 1:
-                        events.RescheduleEvent(EVENT_WAVE_TWO, 100);
-                        break;
-                    case 2:
-                        events.RescheduleEvent(EVENT_ENRAGE, 100);
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-
-        void UpdateAI(uint32 diff) override
-        {
-            if (!UpdateVictim())
-                return;
-
-            events.Update(diff);
-
-            if (me->HasUnitState(UNIT_STATE_CASTING))
-                return;
-
-            if (uint32 eventId = events.ExecuteEvent())
-            {
-                switch (eventId)
-                {
-                    case EVENT_FELSOUL_CLEAVE:
-                        DoCast(SPELL_FELSOUL_CLEAVE);
-                        events.RescheduleEvent(EVENT_FELSOUL_CLEAVE, 18000);
-                        break;
-                    case EVENT_CHAOTIC_ENERGY:
-                        if (me->GetPower(POWER_ENERGY) < 100)
-                        {
-                            me->SetPower(POWER_ENERGY, me->GetPower(POWER_ENERGY) + urand(2, 4));
-                            events.RescheduleEvent(EVENT_CHAOTIC_ENERGY, 1000);
-                        }
-                        else
-                        {
-                            Talk(SAY_CHAOTIC_ENERGY);
-                            Talk(SAY_CHAOTIC_ENERGY_1);
-                            DoCast(SPELL_CHAOTIC_ENERGY);
-                            DoCast(SPELL_CHAOTIC_ENERGY_DMG);
-                            events.RescheduleEvent(EVENT_CHAOTIC_ENERGY, 5000);
-                        }
-                        break;
-                    case EVENT_WAVE_ONE:
-                        DoCast(SPELL_WAVE_ONE);
-                        break;
-                    case EVENT_WAVE_TWO:
-                        DoCast(SPELL_WAVE_TWO);
-                        break;
-                    case EVENT_ENRAGE:
-                        DoCast(SPELL_ENRAGE);
-                        break;
-                }
-            }
-            DoMeleeAttackIfReady();
-        }
-    };
-
-    CreatureAI* GetAI(Creature* creature) const override
-    {
-        return new boss_domatraxAI (creature);
+        DoMeleeAttackIfReady();
     }
 };
 
 // 118884
-class npc_coen_egida : public CreatureScript
+struct npc_coen_egida : public ScriptedAI
 {
-public:
-    npc_coen_egida() : CreatureScript("npc_coen_egida") {}
-
-    struct npc_coen_egidaAI : public ScriptedAI
+    npc_coen_egida(Creature* creature) : ScriptedAI(creature)
     {
-        npc_coen_egidaAI(Creature* creature) : ScriptedAI(creature)  
-        {
-            me->SetReactState(REACT_PASSIVE);
-            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
-        }
-
-        void Reset() override {}
-
-        void sGossipSelect(Player* player, uint32 sender, uint32 action) override
-        {
-            me->RemoveAurasDueToSpell(144373);
-            me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
-            
-            if (InstanceScript* instance = me->GetInstanceScript())
-                if (Creature* domatrax = instance->instance->GetCreature(instance->GetGuidData(BOSS_DOMATRAX)))
-                    domatrax->AI()->DoAction(true);
-        }
-        
-        void UpdateAI(uint32 diff) override { }
-    };
-
-    CreatureAI* GetAI(Creature* creature) const override
-    {
-        return new npc_coen_egidaAI (creature);
+        me->SetReactState(REACT_PASSIVE);
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
     }
+
+    void Reset() override {}
+
+    void sGossipSelect(Player* player, uint32 sender, uint32 action) override
+    {
+        me->RemoveAurasDueToSpell(144373);
+        me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+        
+        if (InstanceScript* instance = me->GetInstanceScript())
+            if (Creature* domatrax = instance->instance->GetCreature(instance->GetGuidData(BOSS_DOMATRAX)))
+                domatrax->AI()->DoAction(true);
+    }
+    
+    void UpdateAI(uint32 diff) override { }
 };
 
 // 14825
-class areatrigger_domatrax_egida_shield : public AreaTriggerScript
+struct areatrigger_domatrax_egida_shield : AreaTriggerAI
 {
-    public:
-        areatrigger_domatrax_egida_shield() : AreaTriggerScript("areatrigger_domatrax_egida_shield") { }
-
-    struct areatrigger_domatrax_egida_shieldAI : AreaTriggerAI
+    areatrigger_domatrax_egida_shield(AreaTrigger* areatrigger) : AreaTriggerAI(areatrigger)
     {
-        areatrigger_domatrax_egida_shieldAI(AreaTrigger* areatrigger) : AreaTriggerAI(areatrigger) 
-        {
-            scale_by_one_pct = (at->GetRadius()) / 100;
-        }
-        
-        float scale_by_one_pct{};
-        
-        void ActionOnUpdate(GuidList& affectedPlayers) override
-        {
-            Unit* caster = at->GetCaster();
-            if (!caster)
-                return;
-            
-            float new_scale = scale_by_one_pct * caster->GetPower(POWER_ALTERNATE);
-            if (!new_scale)
-            {
-                at->Despawn();
-                return;
-            }
-            
-            at->SetSphereScale(new_scale, 100, true);
-        }
-
-    };
-
-    AreaTriggerAI* GetAI(AreaTrigger* areatrigger) const override
-    {
-        return new areatrigger_domatrax_egida_shieldAI(areatrigger);
+        scale_by_one_pct = (at->GetRadius()) / 100;
     }
+    
+    float scale_by_one_pct{};
+    
+    void ActionOnUpdate(GuidList& affectedPlayers) override
+    {
+        Unit* caster = at->GetCaster();
+        if (!caster)
+            return;
+        
+        float new_scale = scale_by_one_pct * caster->GetPower(POWER_ALTERNATE);
+        if (!new_scale)
+        {
+            at->Despawn();
+            return;
+        }
+        
+        at->SetSphereScale(new_scale, 100, true);
+    }
+
 };
 
 // 235827, 235881
-class spell_domatrax_portals : public SpellScriptLoader
+class spell_domatrax_portals : public AuraScript
 {
-    public:
-        spell_domatrax_portals() : SpellScriptLoader("spell_domatrax_portals") { }
+    PrepareAuraScript(spell_domatrax_portals);
 
-        class spell_domatrax_portals_AuraScript : public AuraScript
-        {
-            PrepareAuraScript(spell_domatrax_portals_AuraScript);
+    void OnTick(AuraEffect const* /*aurEff*/)
+    {
+        Unit* caster = GetCaster();
+        if (!caster || caster->GetEntry() != NPC_PORTAL_OWNER)
+            return;
+        
+        Unit* owner = caster->GetAnyOwner();
+        if (!owner || owner->GetEntry() != BOSS_DOMATRAX)
+            return;
+        
+        owner->SummonCreature(GetSpellInfo()->Id == SPELL_PORTAL_PERIODIC_ONE ? NPC_IMP : (caster->GetMap()->GetDifficultyID() == DIFFICULTY_HEROIC ? NPC_FELGUARD : NPC_SHIVARRA), caster->GetPositionX(), caster->GetPositionY(), caster->GetPositionZ(), caster->GetOrientation());
+    }
 
-            void OnTick(AuraEffect const* /*aurEff*/)
-            {
-                Unit* caster = GetCaster();
-                if (!caster || caster->GetEntry() != NPC_PORTAL_OWNER)
-                    return;
-                
-                Unit* owner = caster->GetAnyOwner();
-                if (!owner || owner->GetEntry() != BOSS_DOMATRAX)
-                    return;
-                
-                owner->SummonCreature(GetSpellInfo()->Id == SPELL_PORTAL_PERIODIC_ONE ? NPC_IMP : (caster->GetMap()->GetDifficultyID() == DIFFICULTY_HEROIC ? NPC_FELGUARD : NPC_SHIVARRA), caster->GetPositionX(), caster->GetPositionY(), caster->GetPositionZ(), caster->GetOrientation());
-            }
-
-            void Register() override
-            {
-                OnEffectPeriodic += AuraEffectPeriodicFn(spell_domatrax_portals_AuraScript::OnTick, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
-            }
-        };
-
-        AuraScript* GetAuraScript() const override
-        {
-            return new spell_domatrax_portals_AuraScript();
-        }
+    void Register() override
+    {
+        OnEffectPeriodic += AuraEffectPeriodicFn(spell_domatrax_portals::OnTick, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+    }
 };
-
 
 
 void AddSC_boss_domatrax()
 {
-    new boss_domatrax();
-    new npc_coen_egida();
-    new areatrigger_domatrax_egida_shield();
-    new spell_domatrax_portals();
+    RegisterCreatureAI(boss_domatrax);
+    RegisterCreatureAI(npc_coen_egida);
+
+    RegisterAuraScript(spell_domatrax_portals);
+
+    RegisterAreaTriggerAI(areatrigger_domatrax_egida_shield);
 }

@@ -4954,6 +4954,7 @@ void AddSC_invasion_point_argus()
     RegisterCreatureAI(npc_future_image);
     RegisterCreatureAI(npc_invasion_point_bunny);
     RegisterCreatureAI(npc_decimax);
+
     RegisterSpellScript(spell_creeping_doom_argus_dummy);
     RegisterSpellScript(spell_summon_explosive_orbs);
     RegisterSpellScript(spell_destroying_ip_argus);
@@ -4966,6 +4967,8 @@ void AddSC_invasion_point_argus()
     RegisterAuraScript(spell_narcolepsy);
     RegisterAuraScript(spell_surging_blood);
     RegisterAuraScript(spell_flash_freeze);
+
+    RegisterEventObjectScript(eventobject_braziers_warmth);
+
     new OutdoorPvP_ArgusInvasion();
-    new eventobject_braziers_warmth();
 }

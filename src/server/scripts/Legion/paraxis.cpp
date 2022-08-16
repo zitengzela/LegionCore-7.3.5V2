@@ -2,6 +2,9 @@
 #include "OutdoorPvPMgr.h"
 #include "AreaTrigger.h"
 #include "AreaTriggerAI.h"
+#include "ScriptMgr.h"
+#include "ScriptedCreature.h"
+#include "SpellScript.h"
 
 enum Misc
 {
@@ -354,7 +357,9 @@ class spell_paraxis_artillery : public SpellScript
 
 void Addsc_paraxis()
 {
-    new OutdoorPvP_Paraxis();
     RegisterCreatureAI(npc_paraxis);
+
     RegisterSpellScript(spell_paraxis_artillery);
+
+    new OutdoorPvP_Paraxis();
 }

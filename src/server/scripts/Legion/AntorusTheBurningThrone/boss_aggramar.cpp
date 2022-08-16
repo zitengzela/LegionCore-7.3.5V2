@@ -3,6 +3,11 @@
 */
 
 #include "antorus.h"
+#include "ScriptMgr.h"
+#include "ScriptedCreature.h"
+#include "ScriptedGossip.h"
+#include "SpellScript.h"
+#include "SpellAuraEffects.h"
 
 enum Says
 {
@@ -974,6 +979,7 @@ void AddSC_boss_aggramar()
     RegisterCreatureAI(boss_aggramar);
     RegisterCreatureAI(npc_aggramar_ember_of_taeshalach);
     RegisterCreatureAI(npc_aggramar_flame_of_taeshalach);
+
     RegisterAuraScript(spell_aggramar_energize_periodic);
     RegisterAuraScript(spell_aggramar_wrought_in_flame);
     RegisterAuraScript(spell_aggramar_meteor_swarm);

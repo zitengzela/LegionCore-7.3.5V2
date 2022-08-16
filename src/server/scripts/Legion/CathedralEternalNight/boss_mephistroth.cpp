@@ -6,6 +6,8 @@
 #include "cathedral_of_eternal_night.h"
 #include "AreaTrigger.h"
 #include "AreaTriggerAI.h"
+#include "ScriptMgr.h"
+#include "SpellScript.h"
 
 enum Says
 {
@@ -66,446 +68,391 @@ Position const adds_pos[8]
 };
 
 // 116944
-class boss_mephistroth : public CreatureScript
+struct boss_mephistroth : public BossAI
 {
-public:
-    boss_mephistroth() : CreatureScript("boss_mephistroth") {}
+    boss_mephistroth(Creature* creature) : BossAI(creature, DATA_MEPHISTROTH) {}
+    
+    std::map<uint8, ObjectGuid> justUseIt{};
+    
+    Creature* illidan_saved = nullptr;
 
-    struct boss_mephistrothAI : public BossAI
+    void Reset() override
     {
-        boss_mephistrothAI(Creature* creature) : BossAI(creature, DATA_MEPHISTROTH) {}
+        illidan_saved = nullptr;
+        me->RemoveAurasDueToSpell(SPELL_SHADOW_FADE);
+        me->RemoveAurasDueToSpell(SPELL_CREEPING_SHADOWS);
+        instance->DoRemoveAurasDueToSpellOnPlayers(234370);
+        instance->DoRemoveAurasDueToSpellOnPlayers(234382);
         
-        std::map<uint8, ObjectGuid> justUseIt{};
-        
-        Creature* illidan_saved = nullptr;
-
-        void Reset() override
-        {
-            illidan_saved = nullptr;
-            me->RemoveAurasDueToSpell(SPELL_SHADOW_FADE);
-            me->RemoveAurasDueToSpell(SPELL_CREEPING_SHADOWS);
-            instance->DoRemoveAurasDueToSpellOnPlayers(234370);
-            instance->DoRemoveAurasDueToSpellOnPlayers(234382);
-            
-                    
-                    
-            _Reset();
-            me->SetPower(POWER_ENERGY, 0);
-            justUseIt.clear();
-            
-            if (instance->GetBossState(DATA_DOMATRAX) == DONE)
-            {
-                me->SetVisible(true);
-                me->SetReactState(REACT_DEFENSIVE);
-                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC |UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
                 
-                // instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_EGIDA_BUFF);
-                // me->SummonCreature(NPC_EGIDA_GIVE_BUFF, -548.56f, 2527.75f, 533.94f, 3.19f);
-            }
-        }
-
-        void DefaultEvents(uint8 phase)
+                
+        _Reset();
+        me->SetPower(POWER_ENERGY, 0);
+        justUseIt.clear();
+        
+        if (instance->GetBossState(DATA_DOMATRAX) == DONE)
         {
-            events.Reset();
-            justUseIt.clear();
+            me->SetVisible(true);
+            me->SetReactState(REACT_DEFENSIVE);
+            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC |UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
             
-            switch(phase)
+            // instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_EGIDA_BUFF);
+            // me->SummonCreature(NPC_EGIDA_GIVE_BUFF, -548.56f, 2527.75f, 533.94f, 3.19f);
+        }
+    }
+
+    void DefaultEvents(uint8 phase)
+    {
+        events.Reset();
+        justUseIt.clear();
+        
+        switch(phase)
+        {
+            case 1:
+                summons.DespawnAll();
+                me->RemoveAurasDueToSpell(SPELL_CREEPING_SHADOWS);
+                instance->DoRemoveAurasDueToSpellOnPlayers(234370);
+                instance->DoRemoveAurasDueToSpellOnPlayers(234382);
+                
+                events.RescheduleEvent(EVENT_CHECK_ENERGY, 1000);
+                events.RescheduleEvent(EVENT_DEMONIC_UPHEAVAL, 3200);
+                events.RescheduleEvent(EVENT_DARK_SOLITUDE, 8000);
+                events.RescheduleEvent(EVENT_CARRION_SWARM, 15000);
+                break;
+            case 2:
+                events.RescheduleEvent(EVENT_PHASE_TWO_TICK, GetDifficultyID() == DIFFICULTY_HEROIC ? 5000 : 4000);
+                break;
+        }
+        
+    }
+    
+    void JustSummoned(Creature* summon) override
+    {            
+        summons.Summon(summon);
+        
+        summon->SetControlled(true, UNIT_STATE_ROOT);
+        summon->SetReactState(REACT_PASSIVE);
+        
+        if (summon->GetEntry() == NPC_SHADOW_OF_MEPHISTROTH)
+            if (illidan_saved)
             {
-                case 1:
-                    summons.DespawnAll();
-                    me->RemoveAurasDueToSpell(SPELL_CREEPING_SHADOWS);
-                    instance->DoRemoveAurasDueToSpellOnPlayers(234370);
-                    instance->DoRemoveAurasDueToSpellOnPlayers(234382);
-                    
-                    events.RescheduleEvent(EVENT_CHECK_ENERGY, 1000);
-                    events.RescheduleEvent(EVENT_DEMONIC_UPHEAVAL, 3200);
-                    events.RescheduleEvent(EVENT_DARK_SOLITUDE, 8000);
-                    events.RescheduleEvent(EVENT_CARRION_SWARM, 15000);
+                summon->AI()->AttackStart(illidan_saved);
+                summon->SetFacingTo(illidan_saved);
+                summon->AddUnitState(UNIT_STATE_ROTATING);
+            }
+            
+        DoZoneInCombat(summon, 150.0f);
+    }
+    
+    void EnterCombat(Unit* /*who*/) override
+    {
+        Talk(SAY_AGGRO);
+        _EnterCombat();
+
+        me->SetPower(POWER_ENERGY, 50);
+        DefaultEvents(1);
+    }
+
+    void JustDied(Unit* /*killer*/) override
+    {
+        Talk(SAY_DEATH);
+        _JustDied();
+        instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_EGIDA_BUFF);
+        instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_EGIDA_OVERRIDE);
+    }
+    
+    void SummonedCreatureDies(Creature* summon, Unit* /*killer*/) override
+    {
+        if (summon->GetEntry() == NPC_SHADOW_OF_MEPHISTROTH)
+        {
+            for (auto& ptr : justUseIt)
+                if (ptr.second == summon->GetGUID())
+                    ptr.second = ObjectGuid::Empty;
+                
+                
+            summon->CastSpell(summon, SPELL_ADD_DESPAWN);
+        }
+    }
+    
+    void SpellFinishCast(const SpellInfo* spell) override
+    {
+        if (spell->Id == SPELL_SHADOW_FADE)
+        {
+            me->SetVisible(false);
+            me->StopAttack();
+            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC |UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
+            
+            instance->SetData(NPC_ILLIDAN_VISUAL_OUT, 0);
+            
+            if (Creature* illidan = me->SummonCreature(NPC_ILLIDAN_MEPHISTROTH, -542.10f, 2526.12f, 533.94f, 0.0f))
+            {
+                illidan_saved = illidan;
+                instance->SendEncounterUnit(ENCOUNTER_FRAME_ENGAGE, illidan);
+                instance->SendEncounterUnit(ENCOUNTER_FRAME_INSTANCE_START, illidan);
+            }
+            
+            DoCast(SPELL_CONVERSATION_INVIS);
+            DoCast(SPELL_CREEPING_SHADOWS);
+            
+            for (uint8 i = 0; i < 8; ++i)
+                me->CastSpell(adds_pos[i], SPELL_SHADOW_FADE_VISUAL_DEST, true);
+        }
+        else if (spell->Id == SPELL_INVIS_REMOVED)
+        {
+            me->SetVisible(true);
+            illidan_saved = nullptr;
+            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC |UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
+            me->SetReactState(REACT_DEFENSIVE);
+            DefaultEvents(1);
+            instance->SetData(NPC_ILLIDAN_VISUAL_OUT, 1);
+        }
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        if (!UpdateVictim())
+            return;
+
+        events.Update(diff);
+
+        if (me->HasUnitState(UNIT_STATE_CASTING))
+            return;
+
+        if (uint32 eventId = events.ExecuteEvent())
+        {
+            switch (eventId)
+            {
+                case EVENT_CHECK_ENERGY:
+                    if (me->GetPower(POWER_ENERGY) < 100)
+                    {
+                        if (!me->HasAura(SPELL_SHADOW_FADE))
+                            me->SetPower(POWER_ENERGY, me->GetPower(POWER_ENERGY) + urand(1, 2));
+                        events.RescheduleEvent(EVENT_CHECK_ENERGY, 1000);
+                    }
+                    else
+                    {
+                        DoCast(SPELL_SHADOW_FADE);
+                        DefaultEvents(2);
+                    }
                     break;
-                case 2:
+                case EVENT_DEMONIC_UPHEAVAL:
+                    DoCast(SPELL_DEMONIC_UPHEAVAL);
+                    events.RescheduleEvent(EVENT_DEMONIC_UPHEAVAL, 27000);
+                    break;
+                case EVENT_DARK_SOLITUDE:
+                    DoCast(SPELL_DARK_SOLITUDE);
+                    events.RescheduleEvent(EVENT_DARK_SOLITUDE, 12000);
+                    break;
+                case EVENT_CARRION_SWARM:
+                    DoCastVictim(SPELL_CARRION_SWARM);
+                    events.RescheduleEvent(EVENT_CARRION_SWARM, 18000);
+                    break;
+                case EVENT_PHASE_TWO_TICK:
+                {
+                    std::vector<uint8> freeIds{};
+                    for (uint8 i = 0; i < 8; ++i)
+                        if (!justUseIt[i]) 
+                            freeIds.push_back(i);
+                        
+                    if (freeIds.size() > 0)
+                    {
+                        uint8 select = freeIds[urand(0, freeIds.size()-1)];
+                        if (Creature* add = me->SummonCreature(NPC_SHADOW_OF_MEPHISTROTH, adds_pos[select]))
+                            justUseIt[select] = add->GetGUID();
+                    }
                     events.RescheduleEvent(EVENT_PHASE_TWO_TICK, GetDifficultyID() == DIFFICULTY_HEROIC ? 5000 : 4000);
                     break;
-            }
-            
-        }
-        
-        void JustSummoned(Creature* summon) override
-        {            
-            summons.Summon(summon);
-            
-            summon->SetControlled(true, UNIT_STATE_ROOT);
-            summon->SetReactState(REACT_PASSIVE);
-            
-            if (summon->GetEntry() == NPC_SHADOW_OF_MEPHISTROTH)
-                if (illidan_saved)
-                {
-                    summon->AI()->AttackStart(illidan_saved);
-                    summon->SetFacingTo(illidan_saved);
-                    summon->AddUnitState(UNIT_STATE_ROTATING);
-                }
-                
-            DoZoneInCombat(summon, 150.0f);
-        }
-        
-        void EnterCombat(Unit* /*who*/) override
-        {
-            Talk(SAY_AGGRO);
-            _EnterCombat();
-
-            me->SetPower(POWER_ENERGY, 50);
-            DefaultEvents(1);
-        }
-
-        void JustDied(Unit* /*killer*/) override
-        {
-            Talk(SAY_DEATH);
-            _JustDied();
-            instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_EGIDA_BUFF);
-            instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_EGIDA_OVERRIDE);
-        }
-        
-        void SummonedCreatureDies(Creature* summon, Unit* /*killer*/) override
-        {
-            if (summon->GetEntry() == NPC_SHADOW_OF_MEPHISTROTH)
-            {
-                for (auto& ptr : justUseIt)
-                    if (ptr.second == summon->GetGUID())
-                        ptr.second = ObjectGuid::Empty;
-                    
-                    
-                summon->CastSpell(summon, SPELL_ADD_DESPAWN);
-            }
-        }
-        
-        void SpellFinishCast(const SpellInfo* spell) override
-        {
-            if (spell->Id == SPELL_SHADOW_FADE)
-            {
-                me->SetVisible(false);
-                me->StopAttack();
-                me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC |UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
-                
-                instance->SetData(NPC_ILLIDAN_VISUAL_OUT, 0);
-                
-                if (Creature* illidan = me->SummonCreature(NPC_ILLIDAN_MEPHISTROTH, -542.10f, 2526.12f, 533.94f, 0.0f))
-                {
-                    illidan_saved = illidan;
-                    instance->SendEncounterUnit(ENCOUNTER_FRAME_ENGAGE, illidan);
-                    instance->SendEncounterUnit(ENCOUNTER_FRAME_INSTANCE_START, illidan);
-                }
-                
-                DoCast(SPELL_CONVERSATION_INVIS);
-                DoCast(SPELL_CREEPING_SHADOWS);
-                
-                for (uint8 i = 0; i < 8; ++i)
-                    me->CastSpell(adds_pos[i], SPELL_SHADOW_FADE_VISUAL_DEST, true);
-            }
-            else if (spell->Id == SPELL_INVIS_REMOVED)
-            {
-                me->SetVisible(true);
-                illidan_saved = nullptr;
-                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC |UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
-                me->SetReactState(REACT_DEFENSIVE);
-                DefaultEvents(1);
-                instance->SetData(NPC_ILLIDAN_VISUAL_OUT, 1);
-            }
-        }
-
-        void UpdateAI(uint32 diff) override
-        {
-            if (!UpdateVictim())
-                return;
-
-            events.Update(diff);
-
-            if (me->HasUnitState(UNIT_STATE_CASTING))
-                return;
-
-            if (uint32 eventId = events.ExecuteEvent())
-            {
-                switch (eventId)
-                {
-                    case EVENT_CHECK_ENERGY:
-                        if (me->GetPower(POWER_ENERGY) < 100)
-                        {
-                            if (!me->HasAura(SPELL_SHADOW_FADE))
-                                me->SetPower(POWER_ENERGY, me->GetPower(POWER_ENERGY) + urand(1, 2));
-                            events.RescheduleEvent(EVENT_CHECK_ENERGY, 1000);
-                        }
-                        else
-                        {
-                            DoCast(SPELL_SHADOW_FADE);
-                            DefaultEvents(2);
-                        }
-                        break;
-                    case EVENT_DEMONIC_UPHEAVAL:
-                        DoCast(SPELL_DEMONIC_UPHEAVAL);
-                        events.RescheduleEvent(EVENT_DEMONIC_UPHEAVAL, 27000);
-                        break;
-                    case EVENT_DARK_SOLITUDE:
-                        DoCast(SPELL_DARK_SOLITUDE);
-                        events.RescheduleEvent(EVENT_DARK_SOLITUDE, 12000);
-                        break;
-                    case EVENT_CARRION_SWARM:
-                        DoCastVictim(SPELL_CARRION_SWARM);
-                        events.RescheduleEvent(EVENT_CARRION_SWARM, 18000);
-                        break;
-                    case EVENT_PHASE_TWO_TICK:
-                    {
-                        std::vector<uint8> freeIds{};
-                        for (uint8 i = 0; i < 8; ++i)
-                            if (!justUseIt[i]) 
-                                freeIds.push_back(i);
-                            
-                        if (freeIds.size() > 0)
-                        {
-                            uint8 select = freeIds[urand(0, freeIds.size()-1)];
-                            if (Creature* add = me->SummonCreature(NPC_SHADOW_OF_MEPHISTROTH, adds_pos[select]))
-                                justUseIt[select] = add->GetGUID();
-                        }
-                        events.RescheduleEvent(EVENT_PHASE_TWO_TICK, GetDifficultyID() == DIFFICULTY_HEROIC ? 5000 : 4000);
-                        break;
-                    }
                 }
             }
-            DoMeleeAttackIfReady();
         }
-    };
-
-    CreatureAI* GetAI(Creature* creature) const override
-    {
-        return new boss_mephistrothAI (creature);
+        DoMeleeAttackIfReady();
     }
 };
 
 // 117855
-class npc_mephistroth_illidan : public CreatureScript
+struct npc_mephistroth_illidan : public ScriptedAI
 {
-public:
-    npc_mephistroth_illidan() : CreatureScript("npc_mephistroth_illidan") {}
-
-    struct npc_mephistroth_illidanAI : public ScriptedAI
+    npc_mephistroth_illidan(Creature* creature) : ScriptedAI(creature)
     {
-        npc_mephistroth_illidanAI(Creature* creature) : ScriptedAI(creature) 
+        me->AddDelayedEvent(100, [this] ()-> void
         {
-            me->AddDelayedEvent(100, [this] ()-> void
-            {
-                me->CastSpell(me, SPELL_ILLIDAN_SPAWN);
-            });
-        }
+            me->CastSpell(me, SPELL_ILLIDAN_SPAWN);
+        });
+    }
+    
+    EventMap events;
+
+    void Reset() override
+    {
+        me->SetReactState(REACT_PASSIVE);
+        me->AddDelayedEvent(2000, [this] () -> void
+        {
+            DoCast(SPELL_PREPARE);
+            events.RescheduleEvent(EVENT_1, 1000);
+        });
         
-        EventMap events;
+    }
 
-        void Reset() override
+    void UpdateAI(uint32 diff) override
+    {
+        events.Update(diff);
+
+        if (events.ExecuteEvent() == EVENT_1)
         {
-            me->SetReactState(REACT_PASSIVE);
-            me->AddDelayedEvent(2000, [this] () -> void
+            if (me->GetPower(POWER_ALTERNATE) < 300)
             {
-                DoCast(SPELL_PREPARE);
                 events.RescheduleEvent(EVENT_1, 1000);
-            });
-            
-        }
-
-        void UpdateAI(uint32 diff) override
-        {
-            events.Update(diff);
-
-            if (events.ExecuteEvent() == EVENT_1)
+                if (urand(1, 4) == 1)
+                    me->SetFacingTo(frand(0, 2*M_PI));
+            }
+            else
             {
-                if (me->GetPower(POWER_ALTERNATE) < 300)
-                {
-                    events.RescheduleEvent(EVENT_1, 1000);
-                    if (urand(1, 4) == 1)
-                        me->SetFacingTo(frand(0, 2*M_PI));
-                }
-                else
-                {
-                    DoCast(SPELL_FOUND_MEPHISTROTH);
-                    DoCast(SPELL_CONVERSATION_FOUND);
-                    if (InstanceScript* instance = me->GetInstanceScript())
-                        if (Creature* meph = instance->instance->GetCreature(instance->GetGuidData(BOSS_MEPHISTROTH)))
-                        {
-                            meph->CastSpell(meph, SPELL_INVIS_REMOVED);
-                            meph->RemoveAurasDueToSpell(SPELL_SHADOW_FADE);
-                            meph->RemoveAurasDueToSpell(SPELL_CREEPING_SHADOWS);
-                        }
-                        
-                    me->AddDelayedEvent(3000, [this] () -> void
+                DoCast(SPELL_FOUND_MEPHISTROTH);
+                DoCast(SPELL_CONVERSATION_FOUND);
+                if (InstanceScript* instance = me->GetInstanceScript())
+                    if (Creature* meph = instance->instance->GetCreature(instance->GetGuidData(BOSS_MEPHISTROTH)))
                     {
-                        me->CastSpell(me, SPELL_ILLIDAN_DESPAWN);
-                        me->DespawnOrUnsummon(2100);
-                    });
-                }
+                        meph->CastSpell(meph, SPELL_INVIS_REMOVED);
+                        meph->RemoveAurasDueToSpell(SPELL_SHADOW_FADE);
+                        meph->RemoveAurasDueToSpell(SPELL_CREEPING_SHADOWS);
+                    }
+                    
+                me->AddDelayedEvent(3000, [this] () -> void
+                {
+                    me->CastSpell(me, SPELL_ILLIDAN_DESPAWN);
+                    me->DespawnOrUnsummon(2100);
+                });
             }
         }
-    };
-
-    CreatureAI* GetAI(Creature* creature) const override
-    {
-        return new npc_mephistroth_illidanAI (creature);
     }
 };
 
 // 233155
-class spell_mephistroth_carrion_swarm : public SpellScriptLoader
+class spell_mephistroth_carrion_swarm : public SpellScript
 {
-public:
-    spell_mephistroth_carrion_swarm() : SpellScriptLoader("spell_mephistroth_carrion_swarm") {}
+    PrepareSpellScript(spell_mephistroth_carrion_swarm);
 
-    class spell_mephistroth_carrion_swarm_SpellScript : public SpellScript
+    void HandleDummy(SpellEffIndex /*effIndex*/)
     {
-        PrepareSpellScript(spell_mephistroth_carrion_swarm_SpellScript);
-
-        void HandleDummy(SpellEffIndex /*effIndex*/)
+        Unit* caster = GetCaster();
+        Unit* target = GetHitUnit();
+            
+        if (caster && target)
         {
-            Unit* caster = GetCaster();
-            Unit* target = GetHitUnit();
-                
-            if (caster && target)
+            Position pos;
+            float angle = caster->GetRelativeAngle(target);
+            uint32 hit_range = 2;
+            for (uint8 i = 0; i < 3; i++)
             {
-                Position pos;
-                float angle = caster->GetRelativeAngle(target);
-                uint32 hit_range = 2;
-                for (uint8 i = 0; i < 3; i++)
+                caster->GetNearPoint2D(pos, hit_range, angle);
+                caster->AddDelayedEvent(100+i, [caster, pos] () -> void
                 {
-                    caster->GetNearPoint2D(pos, hit_range, angle);
-                    caster->AddDelayedEvent(100+i, [caster, pos] () -> void
-                    {
-                        caster->CastSpell(pos, 233175, false);
-                    });
-                    hit_range += 5;
-                }
-                
+                    caster->CastSpell(pos, 233175, false);
+                });
+                hit_range += 5;
             }
+            
         }
+    }
 
-        void Register() override
-        {
-            OnEffectLaunchTarget += SpellEffectFn(spell_mephistroth_carrion_swarm_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
-        }
-    };
-
-    SpellScript* GetSpellScript() const override
+    void Register() override
     {
-        return new spell_mephistroth_carrion_swarm_SpellScript();
+        OnEffectLaunchTarget += SpellEffectFn(spell_mephistroth_carrion_swarm::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 
 // 234114
-class spell_mephistroth_egida : public SpellScriptLoader
+class spell_mephistroth_egida : public AuraScript
 {
-    public:
-        spell_mephistroth_egida() : SpellScriptLoader("spell_mephistroth_egida") { }
+    PrepareAuraScript(spell_mephistroth_egida);
 
-        class spell_mephistroth_egida_AuraScript : public AuraScript
+    void OnRemove(AuraEffect const* aurEff, AuraEffectHandleModes /*mode*/)
+    {
+        if (Unit* caster = GetCaster())
         {
-            PrepareAuraScript(spell_mephistroth_egida_AuraScript);
-
-            void OnRemove(AuraEffect const* aurEff, AuraEffectHandleModes /*mode*/)
-            {
-                if (Unit* caster = GetCaster())
-                {
-                    AuraRemoveMode removeMode = GetTargetApplication()->GetRemoveMode();
-                    if (removeMode == AURA_REMOVE_BY_DEATH || removeMode == AURA_REMOVE_BY_CANCEL || removeMode == AURA_REMOVE_BY_EXPIRE)
-                        caster->SummonCreature(NPC_EGIDA_GIVE_BUFF, caster->GetPosition());
-                }
-            }
-
-            void Register() override
-            {
-                OnEffectRemove += AuraEffectRemoveFn(spell_mephistroth_egida_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_OVERRIDE_SPELLS, AURA_EFFECT_HANDLE_REAL);
-            }
-        };
-
-        AuraScript* GetAuraScript() const override 
-        {
-            return new spell_mephistroth_egida_AuraScript();
+            AuraRemoveMode removeMode = GetTargetApplication()->GetRemoveMode();
+            if (removeMode == AURA_REMOVE_BY_DEATH || removeMode == AURA_REMOVE_BY_CANCEL || removeMode == AURA_REMOVE_BY_EXPIRE)
+                caster->SummonCreature(NPC_EGIDA_GIVE_BUFF, caster->GetPosition());
         }
+    }
+
+    void Register() override
+    {
+        OnEffectRemove += AuraEffectRemoveFn(spell_mephistroth_egida::OnRemove, EFFECT_0, SPELL_AURA_OVERRIDE_SPELLS, AURA_EFFECT_HANDLE_REAL);
+    }
 };
 
-
 // 15295
-class areatrigger_mephistroth_shadow_blast : public AreaTriggerScript
+struct areatrigger_mephistroth_shadow_blast : AreaTriggerAI
 {
-    public:
-        areatrigger_mephistroth_shadow_blast() : AreaTriggerScript("areatrigger_mephistroth_shadow_blast") { }
+    areatrigger_mephistroth_shadow_blast(AreaTrigger* areatrigger) : AreaTriggerAI(areatrigger) {}
+    
+    void ActionOnUpdate(GuidList& affectedPlayers) override
+    {            
+        Unit* caster = at->GetCaster();
+        // if (InstanceScript* instance = at->GetInstanceScript())
+            // caster = instance->instance->GetCreature(instance->GetGuidData(BOSS_MEPHISTROTH));
 
-    struct areatrigger_mephistroth_shadow_blastAI : AreaTriggerAI
-    {
-        areatrigger_mephistroth_shadow_blastAI(AreaTrigger* areatrigger) : AreaTriggerAI(areatrigger) {}
-        
-        void ActionOnUpdate(GuidList& affectedPlayers) override
-        {            
-            Unit* caster = at->GetCaster();
-            // if (InstanceScript* instance = at->GetInstanceScript())
-                // caster = instance->instance->GetCreature(instance->GetGuidData(BOSS_MEPHISTROTH));
+        if (!caster)
+            return;
 
-            if (!caster)
-                return;
+        std::list<Player*> playerList;
+        at->GetPlayerListInGrid(playerList, at->GetRadius() + 2.4f); // i rly need it, because player + shield > at->GetRadius()
 
-            std::list<Player*> playerList;
-            at->GetPlayerListInGrid(playerList, at->GetRadius() + 2.4f); // i rly need it, because player + shield > at->GetRadius()
+        for (auto itr = playerList.begin(); itr != playerList.end(); ++itr)
+        {
+            Unit* target = *itr;
+            if (!target)
+                continue;
 
-            for (auto itr = playerList.begin(); itr != playerList.end(); ++itr)
+            if (target->HasAura(SPELL_EGIDA_BUFF) && target->IsPlayer())
             {
-                Unit* target = *itr;
-                if (!target)
-                    continue;
-
-                if (target->HasAura(SPELL_EGIDA_BUFF) && target->IsPlayer())
-                {
-                    if (target->isInFront(at) && at->isInFront(target, 7*M_PI/6))
-                    {
-                        caster->CastSpell(target, SPELL_SHADOW_HIT_EGIDA);
-                        at->Despawn();
-                        return;
-                    }
-                }
-            }
-
-            bool can_delete = false;
-
-            for (GuidList::iterator itr = affectedPlayers.begin(); itr != affectedPlayers.end(); ++itr)
-            {
-                Unit* target = ObjectAccessor::GetUnit(*at, *itr);
-                if (!target)
-                    continue;
-
-                if (target->GetEntry() == NPC_ILLIDAN_MEPHISTROTH)
-                {
-                    caster->CastSpell(target, SPELL_SHADOW_HIT_ILLIDAN);
-                    target->SetPower(POWER_ALTERNATE, 0);
-                    can_delete = true;
-                }
-                else if (target->HasAura(SPELL_EGIDA_BUFF) && target->IsPlayer() && target->isInFront(at) && at->isInFront(target, 7*M_PI/6))
+                if (target->isInFront(at) && at->isInFront(target, 7*M_PI/6))
                 {
                     caster->CastSpell(target, SPELL_SHADOW_HIT_EGIDA);
-                    can_delete = true;
-                }
-                else if (target->IsPlayer())
-                {
-                    caster->CastSpell(target, SPELL_SHADOW_HIT_PLR, true);
-                    can_delete = true;
+                    at->Despawn();
+                    return;
                 }
             }
-            if (can_delete)
-                at->Despawn();
         }
 
-    };
+        bool can_delete = false;
 
-    AreaTriggerAI* GetAI(AreaTrigger* areatrigger) const override
-    {
-        return new areatrigger_mephistroth_shadow_blastAI(areatrigger);
+        for (GuidList::iterator itr = affectedPlayers.begin(); itr != affectedPlayers.end(); ++itr)
+        {
+            Unit* target = ObjectAccessor::GetUnit(*at, *itr);
+            if (!target)
+                continue;
+
+            if (target->GetEntry() == NPC_ILLIDAN_MEPHISTROTH)
+            {
+                caster->CastSpell(target, SPELL_SHADOW_HIT_ILLIDAN);
+                target->SetPower(POWER_ALTERNATE, 0);
+                can_delete = true;
+            }
+            else if (target->HasAura(SPELL_EGIDA_BUFF) && target->IsPlayer() && target->isInFront(at) && at->isInFront(target, 7*M_PI/6))
+            {
+                caster->CastSpell(target, SPELL_SHADOW_HIT_EGIDA);
+                can_delete = true;
+            }
+            else if (target->IsPlayer())
+            {
+                caster->CastSpell(target, SPELL_SHADOW_HIT_PLR, true);
+                can_delete = true;
+            }
+        }
+        if (can_delete)
+            at->Despawn();
     }
 };
 
 void AddSC_boss_mephistroth()
 {
-    new boss_mephistroth();
-    new npc_mephistroth_illidan();
-    new spell_mephistroth_carrion_swarm();
-    new spell_mephistroth_egida();
-    new areatrigger_mephistroth_shadow_blast();
+    RegisterCreatureAI(boss_mephistroth);
+    RegisterCreatureAI(npc_mephistroth_illidan);
+
+    RegisterSpellScript(spell_mephistroth_carrion_swarm);
+    RegisterAuraScript(spell_mephistroth_egida);
+
+    RegisterAreaTriggerAI(areatrigger_mephistroth_shadow_blast);
 }

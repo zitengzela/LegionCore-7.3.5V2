@@ -4,6 +4,11 @@
 
 #include "antorus.h"
 #include "ScriptUtils.h"
+#include "ScriptMgr.h"
+#include "ScriptedCreature.h"
+#include "ScriptedGossip.h"
+#include "SpellScript.h"
+#include "SpellAuraEffects.h"
 
 enum eSays
 {
@@ -1985,6 +1990,7 @@ void AddSC_boss_eonar()
     RegisterCreatureAI(npc_eonar_spear_of_doom);
     RegisterCreatureAI(npc_eonar_paraxis_inquisitor);
     RegisterCreatureAI(npc_eonar_focusing_crystal);
+
     RegisterSpellScript(spell_eonar_paraxis_artillery);
     RegisterSpellScript(spell_eonar_paraxis_purge_filter);
     RegisterSpellScript(spell_eonar_spear_of_doom_filter);

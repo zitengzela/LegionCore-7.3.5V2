@@ -6,6 +6,11 @@
 */
 
 #include "black_rook_hold_dungeon.h"
+#include "ScriptMgr.h"
+#include "ScriptedCreature.h"
+#include "ScriptedGossip.h"
+#include "SpellScript.h"
+#include "SpellAuraEffects.h"
 
 enum Says
 {
@@ -359,5 +364,6 @@ void AddSC_boss_smashspite_the_hateful()
     RegisterCreatureAI(boss_smashspite_the_hateful);
     RegisterCreatureAI(npc_smashspite_fel_bat);
     RegisterCreatureAI(npc_brh_fel_bat);
+
     RegisterAuraScript(spell_smashpite_brutality_proc);
 }
