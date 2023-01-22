@@ -1,145 +1,139 @@
-# ![logo](http://nordrassil.cubava.cu/files/2020/02/icono-Nordrassil-Gold.png)
+# ![logo](https://github.com/Devir7/Legion_Proyect/blob/V2/icono-Nordrassil-Gold.png)
 # Nordrassil Core 
 VS 2017 x64
 boost 1.64
 openssl 1.0
 cmake settings libeay32MDd.lib libeay32MD.lib  ssleay32MDd.lib ssleay32MD.lib
 
-Version 7.3.5 26124
-Este Servidor es Privado de World Of Warcraft Solo con Fines de uso privado por el Equipo de Desarrollo Nordrassil 
+Version 7.3.5 
 
-CLIENTES LINK
-Descarga cliente completo desde FTP: ftp://10.97.1.12/Clientes%20de%20WOW/Legion%207.3.5%20%2026124.rar
-Descargar rund and play http://www.mediafire.com/file/fpsbts93ka2q0g5/Rund_and_play_BlackCore.rar/file
-Este cliente se va descargando mientras se juega.
-
-DATA LINK oficiales 26124
-https://www.mediafire.com/file/tbvzrzbda7xrnq6/data_7.3.5.7z/file
-
-Systems:
-- Garrison/Class Hall (WIP)
-- World Quests
-- Challenge Mode (Mythic+)
-- Mercenary battleground system
-- Rated Arenas
+Системы:
+- Гарнизон/Классный зал (WIP)
+- Мировые квесты
+- Режим вызова (Mythic+)
+- Система мест сражений наемников
+- Рейтинговые арены
 - TimeWalkers (BC/WotLK/Cataclsym/MoP)
-- Personnal/Master loots
+- Персональные/мастерские луты
 
 
-Zones:
-Argus quest-line 3-3 (tested player alliance)
-Azsuna quest-line 5-5 (tested player alliance)
-Val shara quest-line 7-7 (tested player alliance)
-Highmountain quest-line 7-7 (tested player alliance)
-Stormheim quest-line 8-8 (tested player alliance)
-Suramar quest-line 11-11 (tested player alliance)
-Broken Shore quest-line: ? (not tested)
-DH zones 2-2 (tested player alliance)
+Зоны:
+Аргус квест-линия 3-3 (проверено альянсом игроков)
+Азсуна квест-линия 5-5 (проверено альянсом игроков)
+Вал-шара квест-линия 7-7 (проверено альянсом игроков)
+Highmountain квест-линия 7-7 (проверено альянсом игроков)
+Штормхейм квест-линия 8-8 (проверено альянсом игроков)
+Сурамар квест-линия 11-11 (проверено альянсом игроков)
+Квестовая линия Broken Shore: ? (не тестировалось)
+Зоны DH 2-2 (проверено альянсом игроков)
 
-Legion scripts:
-Dungeons:
-- Black Rook Hold Dungeon
-- Cathedral of Eternal Night
-- Court of Stars
-- Dark Heart Thicket
-- Eye of Azshara
-- Halls of Valor
-- Maw of Souls
-- Neltharions Lair
-- Return To Karazhan
-- The Arcway
-- The Seat of The Triumvirate
-- Vault of the Wardens
-- Violet Hold Legion
-Raids:
+Скрипты Легиона:
+Подземелья:
+- Подземелье холда Черная ладья
+- Собор Вечной Ночи
+- Двор Звезд
+- Заросли Темного Сердца
+- Око Азшары
+- Залы доблести
+- Утроба душ
+- Логово Нелтариона
+- Возвращение в Каражан
+- Арквей
+- Заседание Триумвирата
+- Хранилище варденов
+- Легион Violet Hold
+Рейды:
 - Antorus The Burning Throne
-- Tomb of Sargeras
-- Trial of Valor
-- The Nighthold
-- The Emerald Nightmare
-Misc:
-- Invasion point Argus
-- Invasion point world bosses
-- World bosses legion
-- Micro Holidays
+- Гробница Саргераса
+- Испытание доблести
+- Найтхолд
+- Изумрудный кошмар
+Разное:
+- Точка вторжения Аргус
+- Мировые боссы точки вторжения
+- Мировые боссы легиона
+- Микропраздники
 
 
 Draenor
-- Auchindoun
-- Blackrock Foundry
-- Bloodmaul Slag Mines
-- Hellfire Citadel
-- Highmaul
-- Iron Docks
-- Shadowmoon Burial Grounds
-- Skyreach
-- The Everbloom
-- Upper Blackrock Spire
-- Dark Portal
-- Forstfire Ridge
-- Shadowmoon Valley
-- World Bosses Draenor
+- Аучиндун
+- Литейный завод Блэкрок
+- Шлаковые шахты Бладмаула
+- Цитадель Адского Пламени
+- Хаймаул
+- Железные доки
+- Сумеречные захоронения
+- Скайрич
+- Вечноцветущий
+- Верхний шпиль Блэкрок
+- Темный портал
+- Хребет Форстфайр
+- Долина Сумерек
+- Боссы мира Draenor
 
-Pandaria
-- Gate Setting Sun
-- Heart of Fear
-- Mogu'shan Palace
-- Mogu'shan Vault
-- Shado-pan Monastery
-- Siege of Niuzao Temple
-- Siege of Orgrimmar
-- Stormstout Brewery
-- Temple of the Jade Serpent
-- Terrace of Endless Spring
-- Throne of Thunder
-- Timeless isle
-- Kun-Lai Summit
-- Valley of the Four Winds
-- Wandering Island
-- Krasarang Wilds
-- Boss Galion
-- Boss Nalak
-- Boss Oondasta
-- Boss Sha of Anger
+Пандария
+- Врата Заходящего Солнца
+- Сердце страха
+- Дворец Могу'шан
+- Хранилище Могу'шан
+- Монастырь Шадо-пань
+- Осада храма Ниузао
+- Осада Оргриммара
+- Пивоварня Штормстаут
+- Храм Нефритового Змея
+- Терраса бесконечной весны
+- Трон Грома
+- Остров Безвременья
+- Вершина Кунь-Лай
+- Долина Четырех Ветров
+- Блуждающий остров
+- Дикие земли Красаранга
+- Босс Галион
+- Босс Налак
+- Босс Оондаста
+- Босс Ша Гнева
 
-Artifact Scenarios:
-- Paladin
-- Druida
-- Hunter
-- Warrior
-- Sacerdote 
-- Brujo
-- Dh
-- Picaro
-- DK
-- Chaman 
+Сценарии с артефактами:
+- Паладин
+- Друида
+- Охотник
+- Воин
+- Сакердот 
+- Брухо
+- Дх
+- Пикаро
+- ДК
+- Чаман 
 - Brujo Fuego verde
 
-Scenarios
-- A Brewing Storm
-- A Little Patience
-- Arena of Annihilation
-- Army Training
-- Artifacts
-- Assault on Broken Shore (tested player alliance)
-- Assault on Zan'vess
-- Battle on the High Seas
-- Battle Pet Instance
-- Blood in the Snow
-- Brewmoon Festival
-- Broken Islands (Work alliance and horde)
-- The Celestial Tournament
-- Crypt of Forgotten Kings
-- Dagger in the Dark
-- Dark Heart of Pandaria
-- Domination Point
-- Fall of Shan Bu
-- Greenstone Village
-- Legion Invasion
-- Lion's Landing
-- Proving Grounds
-- Pursuing the Black Harvest
-- The Secrets of Ragefire
-- The Thunder Forge
-- Troves of the Thunder King
-- Unga Ingoo
+Сценарии
+- Надвигающийся шторм
+- Немного терпения
+- Арена уничтожения
+- Армейская подготовка
+- Артефакты
+- Нападение на Сломанный Берег (проверенный альянс игроков)
+- Нападение на Зан'весс
+- Битва в открытом море
+- Инстанс боевых питомцев
+- Кровь на снегу
+- Фестиваль Брюмуна
+- Разбитые острова (работа альянса и орды)
+- Небесный турнир
+- Гробница забытых королей
+- Кинжал во тьме
+- Темное сердце Пандарии
+- Точка господства
+- Падение Шань Бу
+- Деревня Зеленого Камня
+- Вторжение легиона
+- Львиная высадка
+- Испытательные полигоны
+- В погоне за Черной Жатвой
+- Секреты Рейджфайра
+- Кузница Грома
+- Трофеи Короля Грома
+- Унга Ингу
+
+
+Переведено с помощью www.DeepL.com/Translator (бесплатная версия)
