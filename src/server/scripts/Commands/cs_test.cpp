@@ -1,6 +1,6 @@
 #include "ScriptMgr.h"
 #include "Chat.h"
-#include "Areatrigger.h"
+#include "AreaTrigger.h"
 #include "Vehicle.h"
 #include "EventObject.h"
 

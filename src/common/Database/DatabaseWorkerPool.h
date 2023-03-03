@@ -57,8 +57,6 @@ class DatabaseWorkerPool
     std::vector<std::vector<T*>> _connections;
     uint32 _connectionCount[2];                     //! Counter of MySQL connections;
     MySQLConnectionInfo _connectionInfo;
-	uint8 _async_threads, _synch_threads;
-
 
 public:
     DatabaseWorkerPool()
@@ -75,40 +73,6 @@ public:
         _queue->Cancel();
         delete _queue;
     }
-
-	bool DatabaseWorkerPool<T>::PrepareStatements()
-	{
-		for (auto& connections : _connections)
-			for (auto& connection : connections)
-			{
-				connection->LockIfReady();
-				if (!connection->PrepareStatements())
-				{
-					connection->Unlock();
-					Close();
-					return false;
-				}
-				else
-					connection->Unlock();
-			}
-
-		return true;
-	}
-
-
-	void DatabaseWorkerPool<T>::SetConnectionInfo(std::string const& infoString,
-		uint8 const asyncThreads, uint8 const synchThreads)
-	{
-		_connectionInfo = MySQLConnectionInfo(infoString);
-
-		_async_threads = asyncThreads;
-		_synch_threads = synchThreads;
-	}
-
-	inline MySQLConnectionInfo GetConnectionInfo() const
-	{
-		return _connectionInfo;
-	}
 
     bool Open(const std::string& infoString, uint8 async_threads, uint8 synch_threads)
     {

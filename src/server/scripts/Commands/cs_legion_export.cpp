@@ -1094,10 +1094,10 @@ public:
 														// Obtener cada uno de los parámetros de la tabla de la bd según sus indices
 				uint32 id = _Fields[_Index++].GetUInt32();
 				uint32 point = _Fields[_Index++].GetUInt32();
-				FLOAT position_x = _Fields[_Index++].GetFloat();
-				FLOAT position_y = _Fields[_Index++].GetFloat();
-				FLOAT position_z = _Fields[_Index++].GetFloat();
-				FLOAT orientation = _Fields[_Index++].GetFloat();
+				float position_x = _Fields[_Index++].GetFloat();
+				float position_y = _Fields[_Index++].GetFloat();
+				float position_z = _Fields[_Index++].GetFloat();
+				float orientation = _Fields[_Index++].GetFloat();
 				uint32 delay = _Fields[_Index++].GetUInt32();
 				uint32 delay_chance = _Fields[_Index++].GetUInt32();
 				uint32 move_flag = _Fields[_Index++].GetUInt32();

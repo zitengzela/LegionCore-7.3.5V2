@@ -31,7 +31,6 @@
 #include <openssl/opensslv.h>
 
 
-#include "DatabaseLoader.h"
 #include "AsyncAcceptor.h"
 #include "BattlegroundMgr.h"
 #include "BigNumber.h"
@@ -345,41 +344,71 @@ extern int main(int argc, char **argv)
     if (cliThread != nullptr)
     {
 #ifdef _WIN32
+        // First try to cancel any I/O in the CLI thread
+        if (!CancelSynchronousIo(cliThread->native_handle()))
+        {
+            // if CancelSynchronousIo() fails, print the error and try with old way
+            DWORD errorCode = GetLastError();
 
-        // this only way to terminate CLI thread exist at Win32 (alt. way exist only in Windows Vista API)
-        //_exit(1);
-        // send keyboard input to safely unblock the CLI thread
-        INPUT_RECORD b[4];
-        HANDLE hStdIn = GetStdHandle(STD_INPUT_HANDLE);
-        b[0].EventType = KEY_EVENT;
-        b[0].Event.KeyEvent.bKeyDown = TRUE;
-        b[0].Event.KeyEvent.uChar.AsciiChar = 'X';
-        b[0].Event.KeyEvent.wVirtualKeyCode = 'X';
-        b[0].Event.KeyEvent.wRepeatCount = 1;
+            // if CancelSynchronousIo fails with ERROR_NOT_FOUND then there was nothing to cancel, proceed with shutdown
+            if (errorCode != ERROR_NOT_FOUND)
+            {
+                LPSTR errorBuffer;
+                DWORD numCharsWritten = FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS,
+                    nullptr, errorCode, 0, (LPTSTR)&errorBuffer, 0, nullptr);
+                if (!numCharsWritten)
+                    errorBuffer = "Unknown error";
+												  
+											 
 
-        b[1].EventType = KEY_EVENT;
-        b[1].Event.KeyEvent.bKeyDown = FALSE;
-        b[1].Event.KeyEvent.uChar.AsciiChar = 'X';
-        b[1].Event.KeyEvent.wVirtualKeyCode = 'X';
-        b[1].Event.KeyEvent.wRepeatCount = 1;
+                TC_LOG_DEBUG(LOG_FILTER_WORLDSERVER, "Error cancelling I/O of CliThread, error code %u, detail: %s", uint32(errorCode), errorBuffer);
+											 
+												  
+												  
+											 
 
-        b[2].EventType = KEY_EVENT;
-        b[2].Event.KeyEvent.bKeyDown = TRUE;
-        b[2].Event.KeyEvent.dwControlKeyState = 0;
-        b[2].Event.KeyEvent.uChar.AsciiChar = '\r';
-        b[2].Event.KeyEvent.wVirtualKeyCode = VK_RETURN;
-        b[2].Event.KeyEvent.wRepeatCount = 1;
-        b[2].Event.KeyEvent.wVirtualScanCode = 0x1c;
+                if (numCharsWritten)
+                    LocalFree(errorBuffer);
+												  
+												   
+														
+											 
+													
 
-        b[3].EventType = KEY_EVENT;
-        b[3].Event.KeyEvent.bKeyDown = FALSE;
-        b[3].Event.KeyEvent.dwControlKeyState = 0;
-        b[3].Event.KeyEvent.uChar.AsciiChar = '\r';
-        b[3].Event.KeyEvent.wVirtualKeyCode = VK_RETURN;
-        b[3].Event.KeyEvent.wVirtualScanCode = 0x1c;
-        b[3].Event.KeyEvent.wRepeatCount = 1;
-        DWORD numb;
-        WriteConsoleInput(hStdIn, b, 4, &numb);
+                // send keyboard input to safely unblock the CLI thread
+                INPUT_RECORD b[4];
+                HANDLE hStdIn = GetStdHandle(STD_INPUT_HANDLE);
+                b[0].EventType = KEY_EVENT;
+                b[0].Event.KeyEvent.bKeyDown = TRUE;
+                b[0].Event.KeyEvent.uChar.AsciiChar = 'X';
+                b[0].Event.KeyEvent.wVirtualKeyCode = 'X';
+                b[0].Event.KeyEvent.wRepeatCount = 1;
+
+                b[1].EventType = KEY_EVENT;
+                b[1].Event.KeyEvent.bKeyDown = FALSE;
+                b[1].Event.KeyEvent.uChar.AsciiChar = 'X';
+                b[1].Event.KeyEvent.wVirtualKeyCode = 'X';
+                b[1].Event.KeyEvent.wRepeatCount = 1;
+
+                b[2].EventType = KEY_EVENT;
+                b[2].Event.KeyEvent.bKeyDown = TRUE;
+                b[2].Event.KeyEvent.dwControlKeyState = 0;
+                b[2].Event.KeyEvent.uChar.AsciiChar = '\r';
+                b[2].Event.KeyEvent.wVirtualKeyCode = VK_RETURN;
+                b[2].Event.KeyEvent.wRepeatCount = 1;
+                b[2].Event.KeyEvent.wVirtualScanCode = 0x1c;
+
+                b[3].EventType = KEY_EVENT;
+                b[3].Event.KeyEvent.bKeyDown = FALSE;
+                b[3].Event.KeyEvent.dwControlKeyState = 0;
+                b[3].Event.KeyEvent.uChar.AsciiChar = '\r';
+                b[3].Event.KeyEvent.wVirtualKeyCode = VK_RETURN;
+                b[3].Event.KeyEvent.wVirtualScanCode = 0x1c;
+                b[3].Event.KeyEvent.wRepeatCount = 1;
+                DWORD numb;
+                WriteConsoleInput(hStdIn, b, 4, &numb);
+            }
+        }
 #endif
         cliThread->join();
         delete cliThread;
@@ -446,7 +475,7 @@ bool LoadRealmInfo()
     realm.PopulationLevel = fields[10].GetFloat();
     realm.Id.Region = fields[12].GetUInt8();
     realm.Id.Site = fields[13].GetUInt8();
-    realm.Build = fields[11].GetUInt32();
+    realm.Build = sConfigMgr->GetIntDefault("Game.Build.Version", 26972);
     return true;
 }
 
@@ -657,17 +686,107 @@ bool StartDB()
 {
     MySQL::Library_Init();
 
-	// Load databases
-	DatabaseLoader loader("server.worldserver", DatabaseLoader::DATABASE_NONE);
-	loader
-		.AddDatabase(LoginDatabase, "Login")
-		.AddDatabase(CharacterDatabase, "Character")
-		.AddDatabase(WorldDatabase, "World")
-		.AddDatabase(HotfixDatabase, "Hotfix");
+    std::string dbString = sConfigMgr->GetStringDefault("WorldDatabaseInfo", "");
+    if (dbString.empty())
+    {
+        TC_LOG_ERROR(LOG_FILTER_WORLDSERVER, "World database not specified in configuration file");
+        return false;
+    }
+										 
 
-	if (!loader.Load())
-		return false;
+    uint8 asyncThreads = uint8(sConfigMgr->GetIntDefault("WorldDatabase.WorkerThreads", 1));
+    if (asyncThreads < 1 || asyncThreads > 32)
+    {
+        TC_LOG_ERROR(LOG_FILTER_WORLDSERVER, "World database: invalid number of worker threads specified. "
+            "Please pick a value between 1 and 32.");
+        return false;
+    }
 
+    uint8 synchThreads = uint8(sConfigMgr->GetIntDefault("WorldDatabase.SynchThreads", 1));
+    ///- Initialize the world database
+    if (!WorldDatabase.Open(dbString, asyncThreads, synchThreads))
+    {
+        TC_LOG_ERROR(LOG_FILTER_WORLDSERVER, "Cannot connect to world database %s", dbString.c_str());
+        return false;
+    }
+
+    ///- Get character database info from configuration file
+    dbString = sConfigMgr->GetStringDefault("CharacterDatabaseInfo", "");
+    if (dbString.empty())
+    {
+        TC_LOG_ERROR(LOG_FILTER_WORLDSERVER, "Character database not specified in configuration file");
+        return false;
+    }
+
+    asyncThreads = uint8(sConfigMgr->GetIntDefault("CharacterDatabase.WorkerThreads", 1));
+    if (asyncThreads < 1 || asyncThreads > 32)
+    {
+        TC_LOG_ERROR(LOG_FILTER_WORLDSERVER, "Character database: invalid number of worker threads specified. "
+            "Please pick a value between 1 and 32.");
+        return false;
+    }
+
+    synchThreads = uint8(sConfigMgr->GetIntDefault("CharacterDatabase.SynchThreads", 2));
+
+    ///- Initialize the Character database
+    if (!CharacterDatabase.Open(dbString, asyncThreads, synchThreads))
+    {
+        TC_LOG_ERROR(LOG_FILTER_WORLDSERVER, "Cannot connect to Character database %s", dbString.c_str());
+        return false;
+    }
+
+    ///- Get login database info from configuration file
+    dbString = sConfigMgr->GetStringDefault("LoginDatabaseInfo", "");
+    if (dbString.empty())
+    {
+        TC_LOG_ERROR(LOG_FILTER_WORLDSERVER, "Login database not specified in configuration file");
+        return false;
+    }
+
+    asyncThreads = uint8(sConfigMgr->GetIntDefault("LoginDatabase.WorkerThreads", 1));
+    if (asyncThreads < 1 || asyncThreads > 32)
+    {
+        TC_LOG_ERROR(LOG_FILTER_WORLDSERVER, "Login database: invalid number of worker threads specified. "
+            "Please pick a value between 1 and 32.");
+        return false;
+    }
+
+    synchThreads = uint8(sConfigMgr->GetIntDefault("LoginDatabase.SynchThreads", 1));
+    ///- Initialise the login database
+    if (!LoginDatabase.Open(dbString, asyncThreads, synchThreads))
+    {
+        TC_LOG_ERROR(LOG_FILTER_WORLDSERVER, "Cannot connect to login database %s", dbString.c_str());
+        return false;
+    }
+
+    dbString = sConfigMgr->GetStringDefault("HotfixDatabaseInfo", "");
+    if (dbString.empty())
+    {
+        TC_LOG_ERROR(LOG_FILTER_WORLDSERVER, "Hotfix database not specified in configuration file");
+        return false;
+    }
+
+    asyncThreads = uint8(sConfigMgr->GetIntDefault("HotfixDatabase.WorkerThreads", 1));
+    if (asyncThreads < 1 || asyncThreads > 32)
+    {
+        TC_LOG_ERROR(LOG_FILTER_WORLDSERVER, "Hotfix database: invalid number of worker threads specified. "
+            "Please pick a value between 1 and 32.");
+        return false;
+    }
+
+    synchThreads = uint8(sConfigMgr->GetIntDefault("HotfixDatabase.SynchThreads", 1));
+    if (!HotfixDatabase.Open(dbString, asyncThreads, synchThreads))
+    {
+        TC_LOG_ERROR(LOG_FILTER_WORLDSERVER, "Cannot connect to world database %s", dbString.c_str());
+        return false;
+    }
+
+    dbString = sConfigMgr->GetStringDefault("HotfixDatabaseInfo", "");
+    if (dbString.empty())
+    {
+        TC_LOG_ERROR(LOG_FILTER_WORLDSERVER, "Hotfix database not specified in configuration file");
+        return false;
+    }
     ///- Get the realm Id from the configuration file
     realm.Id.Realm = sConfigMgr->GetIntDefault("RealmID", 0);
     if (!realm.Id.Realm)
@@ -681,9 +800,12 @@ bool StartDB()
     ///- Clean the database before starting
     ClearOnlineAccounts();
 
-    ///- Insert version info into DB
+    // Insert version info into DB
     //WorldDatabase.PExecute("UPDATE version SET core_version = '%s', core_revision = '%s'", GitRevision::GetFullVersion(), _HASH);        // One-time query
-
+    LoginDatabase.PExecute("UPDATE version SET core_version = '%s'", GitRevision::GetFullVersion());
+    CharacterDatabase.PExecute("UPDATE version SET core_version = '%s'", GitRevision::GetFullVersion());
+    //HotfixDatabase.PExecute("UPDATE version SET core_version = '%s'", GitRevision::GetFullVersion());
+    WorldDatabase.PExecute("UPDATE version SET core_version = '%s'", GitRevision::GetFullVersion());        // One-time query
     sWorld->LoadDBVersion();
 
     TC_LOG_INFO(LOG_FILTER_WORLDSERVER, "Using World DB: %s", sWorld->GetDBVersion());

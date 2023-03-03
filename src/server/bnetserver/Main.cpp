@@ -32,7 +32,6 @@
 #include <iostream>
 #include <openssl/crypto.h>
 
-#include "DatabaseLoader.h"
 #include "AppenderDB.h"
 #include "Common.h"
 #include "DatabaseEnv.h"
@@ -226,7 +225,7 @@ int main(int argc, char** argv)
     _banExpiryCheckTimer->expires_from_now(boost::posix_time::seconds(_banExpiryCheckInterval));
     _banExpiryCheckTimer->async_wait(BanExpiryHandler);
 
-    TC_LOG_INFO(LOG_FILTER_BATTLENET, "Battlenet::Initialized");
+    TC_LOG_INFO(LOG_FILTER_BATTLENET, "%s (bnetserver-daemon) ready...", GitRevision::GetFullVersion());
 
 #if PLATFORM == PLATFORM_WINDOWS
     if (m_ServiceStatus != -1)
@@ -273,12 +272,29 @@ bool StartDB()
 {
     MySQL::Library_Init();
 
-	DatabaseLoader loader("server.bnetserver", DatabaseLoader::DATABASE_NONE);
-	loader
-		.AddDatabase(LoginDatabase, "Login");
+    std::string dbstring = sConfigMgr->GetStringDefault("LoginDatabaseInfo", "");
+    if (dbstring.empty())
+    {
+        TC_LOG_ERROR(LOG_FILTER_BATTLENET, "Database not specified");
+        return false;
+    }
 
-	if (!loader.Load())
-		return false;
+    int32 worker_threads = sConfigMgr->GetIntDefault("LoginDatabase.WorkerThreads", 1);
+    if (worker_threads < 1 || worker_threads > 32)
+    {
+        TC_LOG_ERROR(LOG_FILTER_BATTLENET, "Improper value specified for LoginDatabase.WorkerThreads, defaulting to 1.");
+        worker_threads = 1;
+    }
+
+    int32 synch_threads = sConfigMgr->GetIntDefault("LoginDatabase.SynchThreads", 1);
+    if (synch_threads < 1 || synch_threads > 32)
+    {
+        TC_LOG_ERROR(LOG_FILTER_BATTLENET, "Improper value specified for LoginDatabase.SynchThreads, defaulting to 1.");
+        synch_threads = 1;
+    }
+
+    if (!LoginDatabase.Open(dbstring, uint8(worker_threads), uint8(synch_threads)))
+        return false;
 
     TC_LOG_INFO(LOG_FILTER_BATTLENET, "Started auth database connection pool.");
     sLog->SetRealmID(0); // Enables DB appenders when realm is set.
