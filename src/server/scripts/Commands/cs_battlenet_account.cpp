@@ -31,37 +31,33 @@ class battlenet_account_commandscript : public CommandScript
 public:
     battlenet_account_commandscript() : CommandScript("battlenet_account_commandscript") { }
 
-    ChatCommand* GetCommands() const override
+    std::vector<ChatCommand> GetCommands() const override
     {
-        static ChatCommand accountSetCommandTable[] =
+        static std::vector<ChatCommand> accountSetCommandTable =
         {
-            { "password", SEC_ADMINISTRATOR,                                 true,  &HandleAccountSetPasswordCommand, "", NULL },
-            { NULL,       0,                                                 false, NULL,                             "", NULL }
+            { "password",          SEC_ADMINISTRATOR,                        true,  &HandleAccountSetPasswordCommand, ""}
         };
 
-        static ChatCommand accountLockCommandTable[] =
+        static std::vector<ChatCommand> accountLockCommandTable =
         {
-            //{ "country", SEC_ADMINISTRATOR,                                 true, &HandleAccountLockCountryCommand, "", NULL },
-            { "ip",      SEC_ADMINISTRATOR,                                 true, &HandleAccountLockIpCommand, "", NULL },
-            { NULL,      0,                                                 false, NULL,                             "", NULL }
+            //{ "country",         SEC_ADMINISTRATOR,                        true,  &HandleAccountLockCountryCommand, ""},
+            { "ip",                SEC_ADMINISTRATOR,                        true,  &HandleAccountLockIpCommand,      ""}
         };
 
-        static ChatCommand accountCommandTable[] =
+        static std::vector<ChatCommand> accountCommandTable =
         {
-            { "create",     SEC_ADMINISTRATOR,                                true, &HandleAccountCreateCommand, "", NULL },
-            { "gameaccountcreate", SEC_ADMINISTRATOR,                          true,  &HandleGameAccountCreateCommand, "", NULL                    },
-            { "lock",       SEC_ADMINISTRATOR,                                false, NULL, "", accountLockCommandTable },
-            { "set",        SEC_ADMINISTRATOR,                                true, NULL, "", accountSetCommandTable },
-            { "password",   SEC_ADMINISTRATOR,                                false, &HandleAccountPasswordCommand, "", NULL },
-            { "link",              SEC_ADMINISTRATOR,                          true,  &HandleAccountLinkCommand,       "", NULL                    },
-            { "unlink",            SEC_ADMINISTRATOR,                          true,  &HandleAccountUnlinkCommand,     "", NULL                    },
-            { NULL,         0,                                                false, NULL,                            "", NULL                    }
+            { "create",            SEC_ADMINISTRATOR,                        true,  &HandleAccountCreateCommand,      ""},
+            { "gameaccountcreate", SEC_ADMINISTRATOR,                        true,  &HandleGameAccountCreateCommand,  ""},
+            { "lock",              SEC_ADMINISTRATOR,                        false, NULL, "", accountLockCommandTable   },
+            { "set",               SEC_ADMINISTRATOR,                        true,  NULL, "", accountSetCommandTable    },
+            { "password",          SEC_ADMINISTRATOR,                        false, &HandleAccountPasswordCommand,    ""},
+            { "link",              SEC_ADMINISTRATOR,                        true,  &HandleAccountLinkCommand,        ""},
+            { "unlink",            SEC_ADMINISTRATOR,                        true,  &HandleAccountUnlinkCommand,      ""}
         };
 
-        static ChatCommand commandTable[] =
+        static std::vector<ChatCommand> commandTable =
         {
-            { "bnetaccount", SEC_ADMINISTRATOR,                          true, NULL, "", accountCommandTable },
-            { NULL,               0,                                    false, NULL, "", NULL                }
+            { "bnetaccount",       SEC_ADMINISTRATOR,                        true,  NULL, "", accountCommandTable       }
         };
 
         return commandTable;

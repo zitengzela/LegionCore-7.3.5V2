@@ -4829,21 +4829,19 @@ class export_commandscript : public CommandScript
 public:
 	export_commandscript() : CommandScript("export_commandscript") { }
 
-	ChatCommand* GetCommands() const
+	std::vector<ChatCommand> GetCommands() const override
 	{
-		static ChatCommand exportCommandTable[] =
+		static std::vector<ChatCommand> exportCommandTable =
 		{
-			{ "position",       SEC_GAMEMASTER,     true, &HandleExportPositionCommand, "", NULL },
-			{ "creature",       SEC_GAMEMASTER,     false, HandleExportCreatureCommand, "", NULL },
-			{ "quest",          SEC_GAMEMASTER,     false, &HandleExportQuestCommand,    "", NULL },
-			{ "go",             SEC_GAMEMASTER,     false, &HandleExportGOCommand,       "", NULL },
-			{ "",               SEC_GAMEMASTER,     false, NULL,		                 "", NULL },
-			{ NULL,             0,              false, NULL,                         "", NULL }
+			{ "position",       SEC_GAMEMASTER,     true,  &HandleExportPositionCommand, ""},
+			{ "creature",       SEC_GAMEMASTER,     false, HandleExportCreatureCommand,  ""},
+			{ "quest",          SEC_GAMEMASTER,     false, &HandleExportQuestCommand,    ""},
+			{ "go",             SEC_GAMEMASTER,     false, &HandleExportGOCommand,       ""},
+			{ "",               SEC_GAMEMASTER,     false, NULL,		                 ""}
 		};
-		static ChatCommand commandTable[] =
+		static std::vector<ChatCommand> commandTable =
 		{
-			{ "export",     SEC_ADMINISTRATOR,     true, NULL,        "", exportCommandTable },
-			{ NULL,         0,                     false, NULL,        "", NULL }
+			{ "export",     SEC_ADMINISTRATOR,     true, NULL,        "", exportCommandTable }
 		};
 		return commandTable;
 	}

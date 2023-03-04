@@ -25,19 +25,17 @@ class rbg_commandscript : public CommandScript
 public:
     rbg_commandscript() : CommandScript("rbg_commandscript") { }
 
-    ChatCommand* GetCommands() const override
+    std::vector<ChatCommand> GetCommands() const override
     {
-        static ChatCommand rgbSetCommandTable[] =
+        static std::vector<ChatCommand> rgbSetCommandTable =
         {
-            { "info",          SEC_PLAYER,               false,  &HandleRBGCommand,         "", NULL },
-            { "join",          SEC_MODERATOR,            false,  &HandleJoinCommand,     "", NULL },
-            { NULL,            SEC_PLAYER,               false,  NULL,                      "", NULL }
+            { "info",          SEC_PLAYER,               false,  &HandleRBGCommand,         ""},
+            { "join",          SEC_MODERATOR,            false,  &HandleJoinCommand,        ""}
         };
 
-        static ChatCommand commandTable[] =
+        static std::vector<ChatCommand> commandTable =
         {
-            { "bracket",            SEC_PLAYER,         true,  NULL,                   "", rgbSetCommandTable },
-            { NULL,             0,                  false, NULL,                   "", NULL }
+            { "bracket",       SEC_PLAYER,               true,  NULL,  "", rgbSetCommandTable }
         };
         return commandTable;
     }

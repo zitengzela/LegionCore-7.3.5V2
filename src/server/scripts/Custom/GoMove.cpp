@@ -224,12 +224,11 @@ public:
         SPAWNSPELL,
     };
 
-    ChatCommand* GetCommands() const override
+    std::vector<ChatCommand> GetCommands() const override
     {
-        static ChatCommand GOMoveCommandTable[] =
+        static std::vector<ChatCommand> GOMoveCommandTable =
         {
-            { "gomove", SEC_ADMINISTRATOR, false, &GOMove_Command, "", NULL},
-            { NULL, 0, false, NULL, "", NULL }
+            { "gomove", SEC_ADMINISTRATOR, false, &GOMove_Command, ""}
         };
         return GOMoveCommandTable;
     }

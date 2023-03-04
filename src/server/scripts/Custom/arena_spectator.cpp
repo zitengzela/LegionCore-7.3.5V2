@@ -257,21 +257,19 @@ public:
         return true;
     }
 
-    ChatCommand* GetCommands() const override
+    std::vector<ChatCommand> GetCommands() const override
     {
-        static ChatCommand spectateCommandTable[] =
+        static std::vector<ChatCommand> spectateCommandTable =
         {
-            { "player", SEC_PLAYER, true, &HandleSpectateCommand, "", nullptr },
-            { "view", SEC_PLAYER, true, &HandleSpectateFromCommand, "", nullptr },
-            { "reset", SEC_PLAYER, true, &HandleSpectateResetCommand, "", nullptr },
-            { "leave", SEC_PLAYER, true, &HandleSpectateCancelCommand, "", nullptr },
-            { nullptr, SEC_PLAYER, false, nullptr, "", nullptr }
+            { "player", SEC_PLAYER, true,  &HandleSpectateCommand,       ""},
+            { "view",   SEC_PLAYER, true,  &HandleSpectateFromCommand,   ""},
+            { "reset",  SEC_PLAYER, true,  &HandleSpectateResetCommand,  ""},
+            { "leave",  SEC_PLAYER, true,  &HandleSpectateCancelCommand, ""}
         };
 
-        static ChatCommand commandTable[] =
+        static std::vector<ChatCommand> commandTable =
         {
-            { "spectate", SEC_PLAYER, false, nullptr, "", spectateCommandTable },
-            { nullptr, SEC_PLAYER, false, nullptr, "", nullptr }
+            { "spectate", SEC_PLAYER, false, nullptr, "", spectateCommandTable }
         };
         return commandTable;
     }

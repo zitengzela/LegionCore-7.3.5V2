@@ -9,64 +9,57 @@ class command_donate : public CommandScript
 public:
     command_donate() : CommandScript("command_donate") { }
 
-    ChatCommand* GetCommands() const
+    std::vector<ChatCommand> GetCommands() const
     {
 
-        static ChatCommand morphCommandTable[] =
+        static std::vector<ChatCommand> morphCommandTable =
         {
-            { "list",           SEC_PLAYER,         false, &HandleListMorphCommand,             "", NULL },
-            { "use",            SEC_PLAYER,         false, &HandleUseMorphCommand,              "", NULL },
-            { "remove",         SEC_PLAYER,         false, &HandleRemoveMorphCommand,           "", NULL },
-            { "add",            SEC_ADMINISTRATOR,  false, &HandleAddMorphCommand,              "", NULL },
-            { "del",            SEC_ADMINISTRATOR,  false, &HandleDelMorphCommand,              "", NULL },
-            { NULL,             0,                  false, NULL,                                "", NULL }
+            { "list",           SEC_PLAYER,         false, &HandleListMorphCommand,             ""},
+            { "use",            SEC_PLAYER,         false, &HandleUseMorphCommand,              ""},
+            { "remove",         SEC_PLAYER,         false, &HandleRemoveMorphCommand,           ""},
+            { "add",            SEC_ADMINISTRATOR,  false, &HandleAddMorphCommand,              ""},
+            { "del",            SEC_ADMINISTRATOR,  false, &HandleDelMorphCommand,              ""}
         };
         
-        static ChatCommand mountFlyCommandTable[] =
+        static std::vector<ChatCommand> mountFlyCommandTable =
         {
-            { "list",           SEC_PLAYER,         false, &HandleListMountFlyCommand,             "", NULL },
-            { "use",            SEC_PLAYER,         false, &HandleUseMountFlyCommand,              "", NULL },
-            { "add",            SEC_ADMINISTRATOR,  false, &HandleAddMountFlyCommand,              "", NULL },
-            { "del",            SEC_ADMINISTRATOR,  false, &HandleDelMountFlyCommand,              "", NULL },
-            { NULL,             0,                  false, NULL,                                "", NULL }
+            { "list",           SEC_PLAYER,         false, &HandleListMountFlyCommand,             ""},
+            { "use",            SEC_PLAYER,         false, &HandleUseMountFlyCommand,              ""},
+            { "add",            SEC_ADMINISTRATOR,  false, &HandleAddMountFlyCommand,              ""},
+            { "del",            SEC_ADMINISTRATOR,  false, &HandleDelMountFlyCommand,              ""}
         };
         
-        static ChatCommand mountGroundCommandTable[] =
+        static std::vector<ChatCommand> mountGroundCommandTable =
         {
-            { "list",           SEC_PLAYER,         false, &HandleListMountGroundCommand,             "", NULL },
-            { "use",            SEC_PLAYER,         false, &HandleUseMountGroundCommand,              "", NULL },
-            { "add",            SEC_ADMINISTRATOR,  false, &HandleAddMountGroundCommand,              "", NULL },
-            { "del",            SEC_ADMINISTRATOR,  false, &HandleDelMountGroundCommand,              "", NULL },
-            { NULL,             0,                  false, NULL,                                "", NULL }
+            { "list",           SEC_PLAYER,         false, &HandleListMountGroundCommand,             ""},
+            { "use",            SEC_PLAYER,         false, &HandleUseMountGroundCommand,              ""},
+            { "add",            SEC_ADMINISTRATOR,  false, &HandleAddMountGroundCommand,              ""},
+            { "del",            SEC_ADMINISTRATOR,  false, &HandleDelMountGroundCommand,              ""}
         };
         
-        static ChatCommand mountCommandTable[] =
+        static std::vector<ChatCommand> mountCommandTable =
         {
             { "fly",           SEC_PLAYER,         false, NULL,             "", mountFlyCommandTable },
-            { "ground",        SEC_PLAYER,         false, NULL,             "", mountGroundCommandTable },
-            { NULL,             0,                  false, NULL,                                "", NULL }
+            { "ground",        SEC_PLAYER,         false, NULL,             "", mountGroundCommandTable }
         };
         
-        static ChatCommand tokensCommandTable[] =
+        static std::vector<ChatCommand> tokensCommandTable =
         {
-            { "info",           SEC_CONFIRMED_GAMEMASTER,         false, &HandleInfoTokensCommand,           "", NULL },
-            { "modify",         SEC_ADMINISTRATOR,         false, &HandleModTokensCommand,            "", NULL },
-            { NULL,             0,                  false, NULL,                                "", NULL }
+            { "info",           SEC_CONFIRMED_GAMEMASTER,         false, &HandleInfoTokensCommand,           ""},
+            { "modify",         SEC_ADMINISTRATOR,         false, &HandleModTokensCommand,            ""},
         };
 
-        static ChatCommand donateCommandTable[] =
+        static std::vector<ChatCommand> donateCommandTable =
         {
             { "morph",          SEC_PLAYER,         false, NULL,                                "", morphCommandTable },
             { "mount",          SEC_PLAYER,         false, NULL,                                "", mountCommandTable },
-            { "add",            SEC_ADMINISTRATOR,  false, &HandleAddDonatCommand,              "", NULL },
-            { "tokens",         SEC_CONFIRMED_GAMEMASTER,  false, NULL,                         "", tokensCommandTable },
-            { NULL,             0,                  false, NULL,                                "", NULL }
+            { "add",            SEC_ADMINISTRATOR,  false, &HandleAddDonatCommand,              ""},
+            { "tokens",         SEC_CONFIRMED_GAMEMASTER,  false, NULL,                         "", tokensCommandTable }
         };
 
-        static ChatCommand commandTable[] =
+        static std::vector<ChatCommand> commandTable =
         {
-            { "donate",         SEC_PLAYER,         false, NULL,                                "", donateCommandTable },
-            { NULL,             0,                  false, NULL,                                "", NULL }
+            { "donate",         SEC_PLAYER,         false, NULL,                                "", donateCommandTable }
         };
         return commandTable;
     }

@@ -11,65 +11,60 @@ class command_arena : public CommandScript
 public:
     command_arena() : CommandScript("command_arena") { }
 
-    ChatCommand* GetCommands() const override
+    std::vector<ChatCommand> GetCommands() const override
     {
-        static ChatCommand arenaDelCommandTable[] =
+        static std::vector<ChatCommand> arenaDelCommandTable =
         {
-            { "1x1",            SEC_GAMEMASTER,     false, &HandleArenaDel1x1Command,           "", NULL },
-            { "2x2",            SEC_GAMEMASTER,     false, &HandleArenaDel2x2Command,           "", NULL },
-            { "3x3",            SEC_GAMEMASTER,     false, &HandleArenaDel3x3Command,           "", NULL },
-            { "rbg",            SEC_GAMEMASTER,     false, &HandleArenaDelRbgCommand,           "", NULL },
-            { NULL,             0,                  false, NULL,                                "", NULL }
+            { "1x1",            SEC_GAMEMASTER,     false, &HandleArenaDel1x1Command,           ""},
+            { "2x2",            SEC_GAMEMASTER,     false, &HandleArenaDel2x2Command,           ""},
+            { "3x3",            SEC_GAMEMASTER,     false, &HandleArenaDel3x3Command,           ""},
+            { "rbg",            SEC_GAMEMASTER,     false, &HandleArenaDelRbgCommand,           ""}
         };
 
-        static ChatCommand arenaCommandTable[] =
+        static std::vector<ChatCommand> arenaCommandTable =
         {
             { "del",            SEC_GAMEMASTER,     false, NULL,                                "", arenaDelCommandTable },
-            { "closeseason",    SEC_ADMINISTRATOR,  false, &HandleCloseSeasonCommand,           "", NULL },
-            { NULL,             0,                  false, NULL,                                "", NULL }
+            { "closeseason",    SEC_ADMINISTRATOR,  false, &HandleCloseSeasonCommand,           ""}
         };
 
-        static ChatCommand antifloodCommandTable[] =
+        static std::vector<ChatCommand> antifloodCommandTable =
         {
-            { "add",            SEC_GAMEMASTER,     false, &HandleAntiFloodAddPhrase,           "", NULL },
-            { "update",         SEC_GAMEMASTER,     false, &HandleAntiFloodUpdatePharase,       "", NULL },
-            { "list",           SEC_GAMEMASTER,     false, &HandleAntiFloodList,                "", NULL },
-            { "addfromlfg",     SEC_GAMEMASTER,     false, &HandleAntiFloodAddFromLfgPhrase,    "", NULL },
-            { NULL,             0,                  false, NULL,                                "", NULL }
+            { "add",            SEC_GAMEMASTER,     false, &HandleAntiFloodAddPhrase,           ""},
+            { "update",         SEC_GAMEMASTER,     false, &HandleAntiFloodUpdatePharase,       ""},
+            { "list",           SEC_GAMEMASTER,     false, &HandleAntiFloodList,                ""},
+            { "addfromlfg",     SEC_GAMEMASTER,     false, &HandleAntiFloodAddFromLfgPhrase,    ""}
         };
 
-        static ChatCommand customCommandTable[] =
+        static std::vector<ChatCommand> customCommandTable =
         {
-            { "arenasliver",    SEC_GAMEMASTER,     false, &HandleArenaSliverCommand,           "", NULL },
-            { "unarenasliver",  SEC_GAMEMASTER,     false, &HandleUnArenaSliverCommand,         "", NULL },
-            { "lootcleanid",    SEC_GAMEMASTER,     false, &HandleLootCleanIdCommand,           "", NULL },
-            { "unlootcleanid",  SEC_GAMEMASTER,     false, &HandleUnLootCleanIdCommand,         "", NULL },
-            { "recoveryitem",   SEC_ADMINISTRATOR,  false, &HandleRecoveryItemCommand,          "", NULL },
-            { "unrecoveryitem", SEC_ADMINISTRATOR,  false, &HandleUnRecoveryItemCommand,        "", NULL },
-            { "listname",       SEC_GAMEMASTER,     false, &HandleListChangeName,               "", NULL },
-            { "modmoney",       SEC_ADMINISTRATOR,  false, &HandleModMoneyCommand,              "", NULL },
+            { "arenasliver",    SEC_GAMEMASTER,     false, &HandleArenaSliverCommand,           ""},
+            { "unarenasliver",  SEC_GAMEMASTER,     false, &HandleUnArenaSliverCommand,         ""},
+            { "lootcleanid",    SEC_GAMEMASTER,     false, &HandleLootCleanIdCommand,           ""},
+            { "unlootcleanid",  SEC_GAMEMASTER,     false, &HandleUnLootCleanIdCommand,         ""},
+            { "recoveryitem",   SEC_ADMINISTRATOR,  false, &HandleRecoveryItemCommand,          ""},
+            { "unrecoveryitem", SEC_ADMINISTRATOR,  false, &HandleUnRecoveryItemCommand,        ""},
+            { "listname",       SEC_GAMEMASTER,     false, &HandleListChangeName,               ""},
+            { "modmoney",       SEC_ADMINISTRATOR,  false, &HandleModMoneyCommand,              ""},
             { "antiflood",      SEC_GAMEMASTER,     false, NULL,                                "", antifloodCommandTable},
-            { "pvebug",         SEC_GAMEMASTER,     false, &HandlePvEBugCommand,                "", NULL },
-            { "cleanachievement",SEC_GAMEMASTER,    false, &HandleCleanPvEAchievements,         "", NULL },
-            { "cleanguildachiev",SEC_GAMEMASTER,    false, &HandleCleanGuildAchievements,       "", NULL },
-            { "cleanprestige",  SEC_GAMEMASTER,     false, &HandleCleanPrestige,                "", NULL },
-            { "cancelbanscore",  SEC_GAMEMASTER,     false, &HandleCancelBanScore,                "", NULL },
-            { NULL,             0,                  false, NULL,                                "", NULL }
+            { "pvebug",         SEC_GAMEMASTER,     false, &HandlePvEBugCommand,                ""},
+            { "cleanachievement",SEC_GAMEMASTER,    false, &HandleCleanPvEAchievements,         ""},
+            { "cleanguildachiev",SEC_GAMEMASTER,    false, &HandleCleanGuildAchievements,       ""},
+            { "cleanprestige",  SEC_GAMEMASTER,     false, &HandleCleanPrestige,                ""},
+            { "cancelbanscore",  SEC_GAMEMASTER,     false, &HandleCancelBanScore,              ""}
         };
 
         // static ChatCommand logCommandTable[] =
         // {
-            // { "addchar",        SEC_GAMEMASTER,     false, &HandleAddCharCommand,               "", NULL },
-            // { "removechar",     SEC_GAMEMASTER,     false, &HandleRemoveCharCommand,            "", NULL },
-            // { NULL,             0,                  false, NULL,                                "", NULL }
+            // { "addchar",        SEC_GAMEMASTER,     false, &HandleAddCharCommand,               ""},
+            // { "removechar",     SEC_GAMEMASTER,     false, &HandleRemoveCharCommand,            ""},
+            // { NULL,             0,                  false, NULL,                                ""}
         // };
 
-        static ChatCommand commandTable[] =
+        static std::vector<ChatCommand> commandTable =
         {
             { "custom",         SEC_GAMEMASTER,     false, NULL,                                "", customCommandTable },
-            { "arena",          SEC_GAMEMASTER,     false, NULL,                                "", arenaCommandTable },
+            { "arena",          SEC_GAMEMASTER,     false, NULL,                                "", arenaCommandTable }
             // { "log",            SEC_GAMEMASTER,   false, NULL,                                  "", logCommandTable },
-            { NULL,             0,                  false, NULL,                                "", NULL }
         };
 
         return commandTable;

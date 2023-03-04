@@ -22,26 +22,23 @@ class traffic_commandscript : public CommandScript
 public:
     traffic_commandscript() : CommandScript("traffic_commandscript") { }
 
-    ChatCommand* GetCommands() const override
+    std::vector<ChatCommand> GetCommands() const override
     {
-        static ChatCommand byCommandTable[] =
+        static std::vector<ChatCommand> byCommandTable =
         {
-            { "avg",                          SEC_ADMINISTRATOR, false, &HandleTrafficByAvgCommand,    "", NULL },
-            { "size",                         SEC_ADMINISTRATOR, false, &HandleTrafficBySizeCommand,   "", NULL },
-            { "count",                        SEC_ADMINISTRATOR, false, &HandleTrafficByCountCommand,  "", NULL },
-            { NULL,                           0,                 false, NULL,                          "", NULL }
+            { "avg",                          SEC_ADMINISTRATOR, false, &HandleTrafficByAvgCommand,    ""},
+            { "size",                         SEC_ADMINISTRATOR, false, &HandleTrafficBySizeCommand,   ""},
+            { "count",                        SEC_ADMINISTRATOR, false, &HandleTrafficByCountCommand,  ""}
         };
 
-        static ChatCommand trafficCommandTable[] =
+        static std::vector<ChatCommand> trafficCommandTable =
         {
-            { "by",                           SEC_ADMINISTRATOR, false, NULL,                   "", byCommandTable },
-            { NULL,                           0,                 false, NULL,                   "", NULL }
+            { "by",                           SEC_ADMINISTRATOR, false, NULL,                   "", byCommandTable }
         };
 
-        static ChatCommand commandTable[] =
+        static std::vector<ChatCommand> commandTable =
         {
-            { "traffic",        SEC_ADMINISTRATOR,  false, NULL,                               "", trafficCommandTable },
-            { NULL,             0,                  false, NULL,                               "", NULL }
+            { "traffic",        SEC_ADMINISTRATOR,  false, NULL,                               "", trafficCommandTable }
         };
         return commandTable;
     }

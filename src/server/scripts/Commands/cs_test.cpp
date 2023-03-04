@@ -9,20 +9,18 @@ class test_commandscript : public CommandScript
 public:
     test_commandscript() : CommandScript("test_commandscript") { }
 
-    ChatCommand* GetCommands() const override
+    std::vector<ChatCommand> GetCommands() const override
     {
-        static ChatCommand TestTable[] =
+        static std::vector<ChatCommand> TestTable =
         {
-            { "summon",             SEC_GAMEMASTER,         true,  &HandleTestSummon,                   "", NULL },
-            { "",                   SEC_GAMEMASTER,         true,  &HandleTestSummon,                   "", NULL },
-            { NULL,                 0,                      false, NULL,                                "", NULL }
+            { "summon",             SEC_GAMEMASTER,         true,  &HandleTestSummon,                   ""},
+            { "",                   SEC_GAMEMASTER,         true,  &HandleTestSummon,                   ""}
         };
 
-        static ChatCommand CommandTable[] =
+        static std::vector<ChatCommand> CommandTable =
         {
-             { "test",                  SEC_ADMINISTRATOR,  true,   nullptr,                        "", TestTable },
-             { "sizeof",                SEC_GAMEMASTER,     false,  &HandleSizeofCommand,           "", nullptr },
-             { nullptr,                 0,                  false,  nullptr,                        "", nullptr }
+             { "test",                  SEC_ADMINISTRATOR,  true,   nullptr,    "", TestTable             },
+             { "sizeof",                SEC_GAMEMASTER,     false,  &HandleSizeofCommand,               ""}
         };
 
         return CommandTable;
