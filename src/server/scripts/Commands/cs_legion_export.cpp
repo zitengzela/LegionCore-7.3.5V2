@@ -4829,7 +4829,7 @@ class export_commandscript : public CommandScript
 public:
 	export_commandscript() : CommandScript("export_commandscript") { }
 
-	std::vector<ChatCommand> GetCommands() const override
+	std::vector<ChatCommand> GetCommands() const
 	{
 		static std::vector<ChatCommand> exportCommandTable =
 		{
