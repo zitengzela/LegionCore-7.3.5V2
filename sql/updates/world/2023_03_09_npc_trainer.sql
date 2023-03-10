@@ -1,0 +1,9 @@
+UPDATE `npc_trainer` SET `reqskillvalue` = 50 WHERE `spell` = 89129 AND `reqskill` = 794;
+UPDATE `npc_trainer` SET `reqskillvalue` = 125 WHERE `spell` = 89723 AND `reqskill` = 794;
+UPDATE `npc_trainer` SET `reqskillvalue` = 200 WHERE `spell` = 89724 AND `reqskill` = 794;
+UPDATE `npc_trainer` SET `reqskillvalue` = 275 WHERE `spell` = 89725 AND `reqskill` = 794;
+UPDATE `npc_trainer` SET `reqskillvalue` = 350 WHERE `spell` = 89726 AND `reqskill` = 794;
+UPDATE `npc_trainer` SET `reqskillvalue` = 425 WHERE `spell` = 89727 AND `reqskill` = 794;
+UPDATE `npc_trainer` SET `reqskillvalue` = 500 WHERE `spell` = 110394 AND `reqskill` = 794;
+UPDATE `npc_trainer` SET `reqskillvalue` = 575 WHERE `spell` = 158763 AND `reqskill` = 794;
+UPDATE `npc_trainer` SET `reqskillvalue` = 600 WHERE `spell` = 201709 AND `reqskill` = 794;
