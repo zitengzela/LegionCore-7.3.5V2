@@ -1286,181 +1286,117 @@ void WorldSession::HandleRepairItem(WorldPackets::Item::RepairItem& packet)
     else
         player->DurabilityRepairAll(true, discountMod, packet.UseGuildBank);
 }
-
-bool StoreItemAndStack(Player* player, Item* item, uint8 bagSlot)
+// This anonymous namespace contains utility functions for handling BagAutoSort.
+namespace
 {
-    ItemPosCountVec dest;
-    if (player->CanStoreItem(bagSlot, NULL_SLOT, dest, item, false) == EQUIP_ERR_OK && !(dest.size() == 1 && dest[0].pos == item->GetPos()))
+    // Look in the bag if the item can be store or stacked.
+    bool StoreItemAndStack(Player* player, Item* item, uint8 bag)
     {
-        player->RemoveItem(item->GetBagSlot(), item->GetSlot(), true);
-        player->StoreItem(dest, item, true);
+        uint16 src = item->GetPos();
 
-        return true;
+        ItemPosCountVec dest;
+        InventoryResult result = player->CanStoreItem(bag, NULL_SLOT, dest, item, false);
+        if (result == EQUIP_ERR_OK && !(dest.size() == 1 && dest[0].pos == src))
+        {
+            player->RemoveItem(item->GetBagSlot(), item->GetSlot(), true);
+            player->StoreItem(dest, item, true);
+
+            return true;
+        }
+
+        return false;
     }
 
-    return false;
-}
+    bool BankItemAndStack(Player* player, Item* item, uint8 bag, bool reagent = false)
+    {
+        uint16 src = item->GetPos();
 
-void StoreItemInBags(Player* player, Item* item)
-{
-    if (StoreItemAndStack(player, item, INVENTORY_SLOT_BAG_0))
-        return;
+        ItemPosCountVec dest;
+        InventoryResult result = player->CanBankItem(reagent ? bag == NULL_BAG : bag, NULL_SLOT, dest, item, false, true);
+        if (result == EQUIP_ERR_OK && !(dest.size() == 1 && dest[0].pos == src))
+        {
+            player->RemoveItem(item->GetBagSlot(), item->GetSlot(), true);
+            player->BankItem(dest, item, true);
 
-    for (uint32 i = INVENTORY_SLOT_ITEM_START; i < player->GetInventoryEndSlot(); i++)
-        if (StoreItemAndStack(player, item, i))
-            break;
-}
+            return true;
+        }
 
-bool BankItemAndStack(Player* player, Item* item, uint8 bagSlot)
-{
-    ItemPosCountVec dest;
-    if (player->CanBankItem(bagSlot, NULL_SLOT, dest, item, false) != EQUIP_ERR_OK)
         return false;
+    }
 
-    player->RemoveItem(item->GetBagSlot(), item->GetSlot(), true);
-    player->BankItem(dest, item, true);
-
-    return true;
-}
-
-void StoreItemInBanks(Player* player, Item* item)
-{
-    if (BankItemAndStack(player, item, NULL_SLOT))
-        return;
-
-    for (uint32 i = BANK_SLOT_BAG_START; i < BANK_SLOT_BAG_END; i++)
-        if (BankItemAndStack(player, item, i))
-            break;
-}
-
-void WorldSession::HandleSortBags(WorldPackets::Item::SortBags& /*packet*/)
-{
-    SendPacket(WorldPackets::Item::SortBagsResult().Write());
-    return;
-    _player->ApplyOnItems(1, [](Player* player, Item* item, uint8 /*bagSlot*/, uint8)
+    // Loop through all the bags to see if it can be stack or not.
+    void StoreItemInBags(Player* player, Item* item)
     {
-        StoreItemInBags(player, item);
-        return true;
-    });
+        if (StoreItemAndStack(player, item, INVENTORY_SLOT_BAG_0))
+            return;
 
-    std::unordered_map<uint32, uint32> itemsQuality;
-    std::multimap<uint32, Item*> items;
+        for (uint32 i = INVENTORY_SLOT_ITEM_START; i < INVENTORY_SLOT_ITEM_END; i++)
+        {
+            if (StoreItemAndStack(player, item, i))
+                break;
+        }
+    }
 
-    _player->ApplyOnItems(1, [&items, &itemsQuality](Player* player, Item* item, uint8 /*bagSlot*/, uint8)
+    void StoreItemInBank(Player* player, Item* item)
     {
-        if (!item)
-            return false;
+        if (BankItemAndStack(player, item, NULL_SLOT))
+            return;
 
-        if (!sObjectMgr->GetItemTemplate(item->GetEntry()))
+        for (uint32 i = BANK_SLOT_BAG_START; i < BANK_SLOT_BAG_END; i++)
+        {
+            if (BankItemAndStack(player, item, i))
+                break;
+        }
+    }
+
+    void StoreItemInReagentBank(Player* player, Item* item)
+    {
+        if (BankItemAndStack(player, item, NULL_SLOT, true))
+            return;
+
+        for (uint32 i = REAGENT_SLOT_START; i < REAGENT_SLOT_END; i++)
+        {
+            if (BankItemAndStack(player, item, i, true))
+                break;
+        }
+    }
+
+    void SortBags(Player* player, void(Player::* fn)(std::function<bool(Player*, Item*, uint8 /*bag*/, uint8 /*slot*/)>&&))
+    {
+        // First pass to stack items in caller.
+        std::unordered_map<uint32, uint32> itemsQuality;
+        typedef std::multimap<uint32, Item*> SortItemsContainer;
+        SortItemsContainer items;
+
+        // Second pass, we collect the informations for sorting.
+        (player->*fn)([&items, &itemsQuality](Player* player, Item* item, uint8 /*bag*/, uint8 /*slot*/)
+        {
+            // We get the number of non-distinct items and item level for sorting.
+            items.insert(std::make_pair(item->GetEntry(), item));
+            itemsQuality[item->GetEntry()] = item->GetItemLevel();
+
             return true;
+        });
 
-        items.insert(std::make_pair(item->GetEntry(), item));
-        itemsQuality[item->GetEntry()] = item->GetItemLevel();
+        // We get advantage of the multimap properties to sort our items.
+        std::multimap<uint32, SortItemsContainer::value_type> resultMap;
+        for (auto const& pair : items)
+            resultMap.insert(std::make_pair(itemsQuality[pair.first], pair));
 
-        return true;
-    });
+        // Third pass to swap all the items correctly.
+        auto itr = std::begin(resultMap);
+        (player->*fn)([&resultMap, &itr](Player* player, Item* /*item*/, uint8 bag, uint8 slot)
+        {
+            if (itr == std::end(resultMap))
+                return false;
 
-    std::multimap<uint32, std::pair<uint32, Item*>> resultMap;
-    for (auto const& v : items)
-        resultMap.insert(std::make_pair(itemsQuality[v.first], v));
+            uint16 pos = itr->second.second->GetPos();
+            player->SwapItem(pos, (bag << 8) | slot);
+            ++itr;
 
-    auto itr = std::begin(resultMap);
-    _player->ApplyOnItems(1, [&resultMap, &itr](Player* player, Item* /*item*/, uint8 bagSlot, uint8 itemSlot)
-    {
-        if (itr == std::end(resultMap) || !itr->second.second)
-            return false;
-
-        player->SwapItem(itr->second.second->GetPos(), (bagSlot << 8) | itemSlot);
-        ++itr;
-
-        return true;
-    });
-}
-
-void WorldSession::HandleSortBankBags(WorldPackets::Item::SortBankBags& /*packet*/)
-{
-    SendPacket(WorldPackets::Item::SortBagsResult().Write());
-    return;
-    _player->ApplyOnItems(2, [](Player* player, Item* item, uint8 /*bagSlot*/, uint8)
-    {
-        StoreItemInBanks(player, item);
-        return true;
-    });
-
-    std::unordered_map<uint32, uint32> bankItemsQuality;
-    std::multimap<uint32, Item*> bankItems;
-
-    _player->ApplyOnItems(2, [&bankItems, &bankItemsQuality](Player* player, Item* item, uint8 /*bagSlot*/, uint8)
-    {
-        if (!item)
-            return false;
-
-        if (!sObjectMgr->GetItemTemplate(item->GetEntry()))
             return true;
-
-        bankItems.insert(std::make_pair(item->GetEntry(), item));
-        bankItemsQuality[item->GetEntry()] = item->GetItemLevel();
-
-        return true;
-    });
-
-    std::multimap<uint32, std::pair<uint32, Item*>> bankResultMap;
-    for (auto const& v : bankItems)
-        bankResultMap.insert(std::make_pair(bankItemsQuality[v.first], v));
-
-    auto itr = std::begin(bankResultMap);
-    _player->ApplyOnItems(2, [&bankResultMap, &itr](Player* player, Item* /*item*/, uint8 bagSlot, uint8 itemSlot)
-    {
-        if (itr == std::end(bankResultMap))
-            return false;
-
-        player->SwapItem(itr->second.second->GetPos(), (bagSlot << 8) | itemSlot);
-        ++itr;
-
-        return true;
-    });
-}
-
-void WorldSession::HandleSortReagentBankBags(WorldPackets::Item::SortReagentBankBags& /*packet*/)
-{
-    SendPacket(WorldPackets::Item::SortBagsResult().Write());
-    return;
-
-    _player->ApplyOnItems(3, [](Player* player, Item* item, uint8 /*bagSlot*/, uint8)
-    {
-        StoreItemInBanks(player, item);
-        return true;
-    });
-
-    std::unordered_map<uint32, uint32> bankItemsQuality;
-    std::multimap<uint32, Item*> bankItems;
-
-    _player->ApplyOnItems(3, [&bankItems, &bankItemsQuality](Player* player, Item* item, uint8 /*bagSlot*/, uint8)
-    {
-        if (!sObjectMgr->GetItemTemplate(item->GetEntry()))
-            return true;
-
-        bankItems.insert(std::make_pair(item->GetEntry(), item));
-        bankItemsQuality[item->GetEntry()] = item->GetItemLevel();
-
-        return true;
-    });
-
-    std::multimap<uint32, std::pair<uint32, Item*>> bankResultMap;
-    for (auto const& v : bankItems)
-        bankResultMap.insert(std::make_pair(bankItemsQuality[v.first], v));
-
-    auto itr = std::begin(bankResultMap);
-    _player->ApplyOnItems(3, [&bankResultMap, &itr](Player* player, Item* /*item*/, uint8 bagSlot, uint8 itemSlot)
-    {
-        if (itr == std::end(bankResultMap))
-            return false;
-
-        player->SwapItem(itr->second.second->GetPos(), (bagSlot << 8) | itemSlot);
-        ++itr;
-
-        return true;
-    });
+        });
+    }
 }
 
 void WorldSession::HandleUseCritterItem(WorldPackets::Item::UseCritterItem& useCritterItem)
@@ -1597,3 +1533,40 @@ void WorldSession::HandleRemoveNewItem(WorldPackets::Item::RemoveNewItem& remove
         item->SetState(ITEM_CHANGED, _player);
     }
 }
+
+void WorldSession::HandleSortBags(WorldPackets::Item::SortBags& /*sortBags*/)
+{
+    _player->ApplyOnBagsItems([](Player* player, Item* item, uint8 /*bag*/, uint8 /*slot*/)
+    {
+        StoreItemInBags(player, item);
+        return true;
+    });
+
+    SortBags(_player, &Player::ApplyOnBagsItems);
+    SendPacket(WorldPackets::Item::SortBagsResult().Write());
+}
+
+void WorldSession::HandleSortBankBags(WorldPackets::Item::SortBankBags& /*sortBankBags*/)
+{
+    _player->ApplyOnBankItems([](Player* player, Item* item, uint8 /*bag*/, uint8 /*slot*/)
+    {
+        StoreItemInBank(player, item);
+        return true;
+    });
+
+    SortBags(_player, &Player::ApplyOnBankItems);
+    SendPacket(WorldPackets::Item::SortBagsResult().Write());
+}
+
+void WorldSession::HandleSortReagentBankBags(WorldPackets::Item::SortReagentBankBags& /*sortReagentBankBags*/)
+{
+    _player->ApplyOnReagentBankItems([](Player* player, Item* item, uint8 /*bag*/, uint8 /*slot*/)
+    {
+        StoreItemInReagentBank(player, item);
+        return true;
+    });
+
+    SortBags(_player, &Player::ApplyOnReagentBankItems);
+    SendPacket(WorldPackets::Item::SortBagsResult().Write());
+}
+

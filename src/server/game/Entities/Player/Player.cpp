@@ -16824,7 +16824,8 @@ void Player::SplitItem(uint16 src, uint16 dst, uint32 count)
 
 void Player::SwapItem(uint16 src, uint16 dst)
 {
-    if (!IsInWorld())
+    // If we want to swap the same item it is useless.
+    if (src == dst)
         return;
 
     uint8 srcbag = src >> 8;
@@ -16859,19 +16860,19 @@ void Player::SwapItem(uint16 src, uint16 dst)
             }
         }
     }
-    // else if (pDstItem && pDstItem->HasFlag(ITEM_FIELD_DYNAMIC_FLAGS, ITEM_FLAG_CHILD))
-    // {
-        // if (Item* parentItem = GetItemByGuid(pDstItem->GetGuidValue(ITEM_FIELD_CREATOR)))
-        // {
-            // if (IsEquipmentPos(dst))
-            // {
-                // AutoUnequipChildItem(parentItem);   // we need to unequip child first since it cannot go into whatever is going to happen next
-                // SwapItem(src, dst);                 // dst is now empty
-                // SwapItem(parentItem->GetPos(), src);// src is now empty
-                // return;
-            // }
-        // }
-    // }
+    else if (pDstItem && pDstItem->HasFlag(ITEM_FIELD_DYNAMIC_FLAGS, ITEM_FLAG_CHILD))
+    {
+        if (Item* parentItem = GetItemByGuid(pDstItem->GetGuidValue(ITEM_FIELD_CREATOR)))
+        {
+            if (IsEquipmentPos(dst))
+            {
+                AutoUnequipChildItem(parentItem);   // we need to unequip child first since it cannot go into whatever is going to happen next
+                SwapItem(src, dst);                 // dst is now empty
+                SwapItem(parentItem->GetPos(), src);// src is now empty
+                return;
+            }
+        }
+    }
 
     TC_LOG_DEBUG(LOG_FILTER_PLAYER_ITEMS, "STORAGE: SwapItem bag = %u, slot = %u, item = %u", dstbag, dstslot, pSrcItem->GetEntry());
 
@@ -39520,4 +39521,71 @@ std::string Player::GetShortDescription() const
     std::stringstream oss;
     oss << GetName() << ":" << GetGUIDLow() << ":" << GetSession()->GetAccountId() << "@" << GetSession()->GetRemoteAddress().c_str() << "]";
     return oss.str();
+}
+
+
+void Player::ApplyOnBagsItems(std::function<bool(Player*, Item*, uint8 /*bag*/, uint8 /*slot*/)>&& function)
+{
+    for (uint32 i = INVENTORY_SLOT_ITEM_START; i < INVENTORY_SLOT_ITEM_END; ++i)
+    {
+        if (Item* item = GetItemByPos(INVENTORY_SLOT_BAG_0, i))
+        {
+            if (!function(this, item, INVENTORY_SLOT_BAG_0, i))
+                return;
+        }
+    }
+
+    for (uint32 i = INVENTORY_SLOT_BAG_START; i < INVENTORY_SLOT_BAG_END; ++i)
+    {
+        if (Bag* bag = (Bag*)GetItemByPos(INVENTORY_SLOT_BAG_0, i))
+        {
+            for (uint32 j = 0; j < bag->GetBagSize(); ++j)
+            {
+                if (Item* item = GetItemByPos(i, j))
+                {
+                    if (!function(this, item, i, j))
+                        return;
+                }
+            }
+        }
+    }
+}
+
+void Player::ApplyOnBankItems(std::function<bool(Player*, Item*, uint8 /*bag*/, uint8 /*slot*/)>&& function)
+{
+    for (uint32 i = BANK_SLOT_ITEM_START; i < BANK_SLOT_ITEM_END; ++i)
+    {
+        if (Item* item = GetItemByPos(INVENTORY_SLOT_BAG_0, i))
+        {
+            if (!function(this, item, INVENTORY_SLOT_BAG_0, i))
+                return;
+        }
+    }
+
+    for (uint32 i = BANK_SLOT_BAG_START; i < BANK_SLOT_BAG_END; ++i)
+    {
+        if (Bag* bag = (Bag*)GetItemByPos(INVENTORY_SLOT_BAG_0, i))
+        {
+            for (uint32 j = 0; j < bag->GetBagSize(); ++j)
+            {
+                if (Item* item = GetItemByPos(i, j))
+                {
+                    if (!function(this, item, i, j))
+                        return;
+                }
+            }
+        }
+    }
+}
+
+void Player::ApplyOnReagentBankItems(std::function<bool(Player*, Item*, uint8 /*bag*/, uint8 /*slot*/)>&& function)
+{
+    for (uint32 i = REAGENT_SLOT_START; i < REAGENT_SLOT_END; ++i)
+    {
+        if (Item* item = GetItemByPos(INVENTORY_SLOT_BAG_0, i))
+        {
+            if (!function(this, item, INVENTORY_SLOT_BAG_0, i))
+                return;
+        }
+    }
 }

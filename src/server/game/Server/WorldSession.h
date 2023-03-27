@@ -1742,9 +1742,9 @@ class WorldSession
 
         void HandleSocketGems(WorldPackets::Item::SocketGems& packet);
 
-        void HandleSortBags(WorldPackets::Item::SortBags& packet);
-        void HandleSortBankBags(WorldPackets::Item::SortBankBags& packet);
-        void HandleSortReagentBankBags(WorldPackets::Item::SortReagentBankBags& packet);
+        void HandleSortBags(WorldPackets::Item::SortBags& sortBags);
+        void HandleSortBankBags(WorldPackets::Item::SortBankBags& sortBankBags);
+        void HandleSortReagentBankBags(WorldPackets::Item::SortReagentBankBags& sortReagentBankBags);
 
         void HandleCancelTempEnchantmentOpcode(WorldPackets::Item::CancelTempEnchantment& packet);
 
