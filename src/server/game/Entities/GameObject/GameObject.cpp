@@ -3202,7 +3202,7 @@ public:
     uint32 GetDisplayId() const override { return _owner->GetDisplayId(); }
     uint8 GetNameSetId() const override { return _owner->GetNameSetId(); }
 	//bool IsInPhase(std::set<uint32> const& phases) const override { return _owner->GetPhases()}
-    bool InSamePhaseId(std::set<uint32> const& phases) const override { return _owner->InSamePhaseId(phases);; }
+    bool InSamePhaseId(std::set<uint32> const& phases, bool otherUsePlayerPhasingRules) const override { return _owner->InSamePhaseId(phases, otherUsePlayerPhasingRules); }
    // uint32 GetPhaseMask() const override { return _owner->GetPhaseMask(); }
     G3D::Vector3 GetPosition() const override { return G3D::Vector3(_owner->GetPositionX(), _owner->GetPositionY(), _owner->GetPositionZ()); }
     float GetOrientation() const override { return _owner->GetOrientation(); }

@@ -3393,7 +3393,7 @@ bool ConditionMgr::IsPlayerMeetingCondition(Unit* unit, PlayerConditionEntry con
 
     if (player && condition->PhaseGroupID)
     {
-        if (!player->InSamePhaseId(sDB2Manager.GetPhasesForGroup(condition->PhaseGroupID)))
+        if (!player->InSamePhaseId(sDB2Manager.GetPhasesForGroup(condition->PhaseGroupID), false))
             return false;
     }
 
