@@ -63,6 +63,9 @@ include(Macros)
 find_package(PCHSupport)
 find_package(MySQL)
 
+# find mysql client binary (needed by genrev)
+find_package(MySQL OPTIONAL_COMPONENTS binary)
+
 if(NOT WITHOUT_GIT)
   find_package(Git 1.7)
 endif()
