@@ -1061,6 +1061,14 @@ InstantLogout = 1
 DisableWaterBreath = 4
 
 #
+#    FastFishing
+#        Description: Makes fishing faster, or removes the wait entirely.
+#        Default:     0  - (Disabled)
+#                     1  - (Faster)
+#                     2  - (Instant)
+
+FastFishing = 0
+#
 #    AllFlightPaths
 #        Description: Character knows all flight paths (of both factions) after creation.
 #        Default:     0 - (Disabled)
@@ -2905,9 +2913,6 @@ CharDelete.MinLevel = 10
 CharDelete.KeepDays = 0
 
 #
-###################################################################################################
-
-###################################################################################################
 # CUSTOM SERVER OPTIONS
 #
 #    PlayerStart.AllReputation
@@ -4299,5 +4304,28 @@ PvP.TemplateSecondaryStad = 6600
 # Custom stad for each specialization
 
 Pvp.EnableCustomStad = 0
+
+###################################################################################################
+
+####################################################################################################
+###PLAYTIMEREWARD###
+####################
+#
+# PlayedTimeReward.Money is copper so 10000 copper is 1 gold. Interval 3600000 = 1hour
+ PlayedTimeReward.Money
+# PlayedTimeReward.Item  Nordrassil Coin
+#
+# 505051 = Nordrassil Coin(1 monedas) 
+# 505052 = Nordrassil Coin(2 monedas) 
+# 505053 = Nordrassil Coin(3 monedas) 
+# 505054 = Nordrassil Coin(4 monedas) 
+# 505055 = Nordrassil Coin(5 monedas) 
+# 505056 = Nordrassil Coin(10 monedas)
+# 
+PlayedTimeReward.Interval = 300000
+PlayedTimeReward.Money    = 1
+PlayedTimeReward.Item     = 505056
+#
+####################################################################################################
 
 ###################################################################################################

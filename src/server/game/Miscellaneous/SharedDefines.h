@@ -328,6 +328,8 @@ enum UnitClass
 
 constexpr auto CLASSMASK_ALL_CREATURES = ((1 << (UNIT_CLASS_WARRIOR - 1)) | (1 << (UNIT_CLASS_PALADIN - 1)) | (1 << (UNIT_CLASS_ROGUE - 1)) | (1 << (UNIT_CLASS_MAGE - 1)));
 
+#define CLASSMASK_WAND_USERS ((1<<(CLASS_PRIEST-1)) | (1<<(CLASS_MAGE-1)) | (1<<(CLASS_WARLOCK-1)))
+
 const auto PLAYER_MAX_BATTLEGROUND_QUEUES = 2;
 
 enum ReputationRank

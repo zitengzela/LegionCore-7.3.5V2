@@ -136,6 +136,15 @@ m_skipCheck(triggerData.skipCheck), m_spellMissMask(0), m_auraScaleMask(0), m_cu
     }
 
     m_spellSchoolMask = info->GetSchoolMask();           // Can be override for some spell (wand shoot for example)
+    
+    if (Player const* playerCaster = m_caster->ToPlayer())
+    {
+        // wand case
+        if (m_attackType == RANGED_ATTACK)
+            if ((playerCaster->getClassMask() & CLASSMASK_WAND_USERS) != 0)
+                if (Item* pItem = playerCaster->GetWeaponForAttack(RANGED_ATTACK))
+                    m_spellSchoolMask = SpellSchoolMask(1 << pItem->GetTemplate()->GetDamageDamageType());
+    }
 
     if (!triggerData.originalCaster.IsEmpty())
         m_originalCasterGUID = triggerData.originalCaster;

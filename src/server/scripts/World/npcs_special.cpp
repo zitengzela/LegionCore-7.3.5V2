@@ -4530,23 +4530,19 @@ class npc_wild_imp : public CreatureScript
 {
     public:
         npc_wild_imp() : CreatureScript("npc_wild_imp") { }
-
         struct npc_wild_impAI : public ScriptedAI
         {
             npc_wild_impAI(Creature *creature) : ScriptedAI(creature)
             {
 				initReactState();
             }
-
             void Reset() override
             {
 				initReactState();
-
                 if (me->GetOwner())
                     if (me->GetOwner()->getVictim())
                         AttackStart(me->GetOwner()->getVictim());
             }
-
             void UpdateAI(uint32 diff) override
             {
 				if (sWorld->getBoolConfig(CONFIG_PLAYER_CONTROL_GUARDIAN_PETS))
@@ -4559,32 +4555,22 @@ class npc_wild_imp : public CreatureScript
 					if (me->GetReactState() != REACT_AGGRESSIVE)
 						me->SetReactState(REACT_AGGRESSIVE);
 				}
-
                 if (!me->GetOwner())
                     return;
-
                 if (!me->GetOwner()->ToPlayer())
                     return;
 
                 if (me->HasUnitState(UNIT_STATE_CASTING))
                     return;
 
-				if (sWorld->getBoolConfig(CONFIG_PLAYER_CONTROL_GUARDIAN_PETS))
-
-					if (!me->getVictim())
-						return;
-					
-					if (me->getVictim() == nullptr)
-						return;
-
-					if (!me->getVictim()->isAlive())
-						return;
-
+				if (sWorld->getBoolConfig(CONFIG_PLAYER_CONTROL_GUARDIAN_PETS) && me->getVictim())
+                {
 					if (!me->getVictim()->IsWithinLOSInMap(me) || me->getVictim()->GetDistance(me) > 35.f)
 					{
 						Follow(me->getVictim());
 						return;
 					}
+                }
 
                 if (me->getVictim() && me->getVictim()->HasCrowdControlAura(me))
                 {
